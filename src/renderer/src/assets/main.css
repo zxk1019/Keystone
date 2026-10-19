@@ -1,0 +1,18 @@
+@import 'tailwindcss';
+
+/* Dark mode follows the data-theme attribute set by useApplySettings */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+html {
+  color-scheme: light;
+}
+
+/* Makes scrollbars and native controls (select, dialogs) dark too */
+html[data-theme='dark'] {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+}
