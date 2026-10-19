@@ -3,9 +3,28 @@
 export type ThemeSetting = 'light' | 'dark' | 'system'
 export type Language = 'es' | 'en' | 'zh-CN'
 
+/** Days before an exam that a reminder can be sent */
+export const EXAM_REMINDER_DAYS = [14, 7, 5, 3, 2, 1] as const
+/** Hours between repeated overdue reminders; 0 means "do not repeat" */
+export const OVERDUE_REPEAT_HOURS = [1, 2, 3, 4, 0] as const
+
+export interface NotificationSettings {
+  enabled: boolean
+  /** "HH:mm": daily summary, and also when exam reminders go out */
+  summaryTime: string
+  overdueRepeatHours: (typeof OVERDUE_REPEAT_HOURS)[number]
+  examDaysBefore: number[]
+  /** "HH:mm" to "HH:mm"; may wrap past midnight (22:00 to 08:00) */
+  quietStart: string
+  quietEnd: string
+}
+
 export interface Settings {
   theme: ThemeSetting
   language: Language
+  notifications: NotificationSettings
+  /** Only has an effect in the installed app */
+  startWithWindows: boolean
 }
 
 /** Palette for subjects. Each name maps to light and dark styles in the renderer. */
@@ -84,9 +103,20 @@ export interface AppData {
 /** The part of the data the agenda screens work with. */
 export type AgendaData = Pick<AppData, 'subjects' | 'schedule' | 'items'>
 
+export const DEFAULT_NOTIFICATIONS: NotificationSettings = {
+  enabled: true,
+  summaryTime: '17:00',
+  overdueRepeatHours: 2,
+  examDaysBefore: [7, 3, 1],
+  quietStart: '22:00',
+  quietEnd: '08:00'
+}
+
 export const DEFAULT_SETTINGS: Settings = {
   theme: 'system',
-  language: 'es'
+  language: 'es',
+  notifications: DEFAULT_NOTIFICATIONS,
+  startWithWindows: false
 }
 
 export const THEMES: ThemeSetting[] = ['light', 'dark', 'system']
@@ -101,7 +131,7 @@ export const LANGUAGES: { code: Language; name: string }[] = [
 export function createDefaultData(): AppData {
   return {
     version: DATA_VERSION,
-    settings: { ...DEFAULT_SETTINGS },
+    settings: { ...DEFAULT_SETTINGS, notifications: { ...DEFAULT_NOTIFICATIONS } },
     subjects: [],
     schedule: [],
     items: []

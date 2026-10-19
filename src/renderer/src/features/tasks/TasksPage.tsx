@@ -9,6 +9,7 @@ import { useNow } from '../../hooks/useNow'
 import { buildSections, type StatusFilter } from '../../lib/taskSections'
 import { useAgendaStore } from '../../store/agendaStore'
 import { useItemDialogStore } from '../../store/itemDialogStore'
+import { useNavigationStore } from '../../store/navigationStore'
 import TaskRow from './TaskRow'
 
 const STATUSES: StatusFilter[] = ['pending', 'overdue', 'done', 'all']
@@ -20,7 +21,8 @@ export default function TasksPage(): JSX.Element | null {
   const agenda = useAgendaStore((state) => state.agenda)
   const openNew = useItemDialogStore((state) => state.openNew)
   const now = useNow()
-  const [status, setStatus] = useState<StatusFilter>('pending')
+  const status = useNavigationStore((state) => state.tasksStatus)
+  const setStatus = useNavigationStore((state) => state.setTasksStatus)
   const [type, setType] = useState<AgendaItemType | 'all'>('all')
   const [subject, setSubject] = useState<SubjectFilter>('all')
 

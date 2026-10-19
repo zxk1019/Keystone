@@ -2,13 +2,17 @@ import { isValidTime, timeToMinutes } from './schedule'
 import {
   AGENDA_ITEM_TYPES,
   DATA_VERSION,
+  DEFAULT_NOTIFICATIONS,
   DEFAULT_SETTINGS,
+  EXAM_REMINDER_DAYS,
   LANGUAGES,
+  OVERDUE_REPEAT_HOURS,
   PRIORITIES,
   SUBJECT_COLORS,
   THEMES,
   type AgendaItem,
   type AppData,
+  type NotificationSettings,
   type ScheduleSlot,
   type Settings,
   type Subject
@@ -41,7 +45,40 @@ export function sanitizeSettings(value: unknown, fallback: Settings = DEFAULT_SE
   const input = isRecord(value) ? value : {}
   const theme = THEMES.find((option) => option === input.theme) ?? fallback.theme
   const language = LANGUAGES.find(({ code }) => code === input.language)?.code ?? fallback.language
-  return { theme, language }
+  return {
+    theme,
+    language,
+    notifications: sanitizeNotifications(input.notifications, fallback.notifications),
+    startWithWindows:
+      typeof input.startWithWindows === 'boolean'
+        ? input.startWithWindows
+        : fallback.startWithWindows
+  }
+}
+
+/** Same idea as sanitizeSettings, for the notification options. */
+function sanitizeNotifications(
+  value: unknown,
+  fallback: NotificationSettings = DEFAULT_NOTIFICATIONS
+): NotificationSettings {
+  const input = isRecord(value) ? value : {}
+  const time = (key: 'summaryTime' | 'quietStart' | 'quietEnd'): string => {
+    const candidate = input[key]
+    return isValidTime(candidate) ? candidate : fallback[key]
+  }
+  const examDays = Array.isArray(input.examDaysBefore)
+    ? EXAM_REMINDER_DAYS.filter((day) => (input.examDaysBefore as unknown[]).includes(day))
+    : fallback.examDaysBefore
+  return {
+    enabled: typeof input.enabled === 'boolean' ? input.enabled : fallback.enabled,
+    summaryTime: time('summaryTime'),
+    overdueRepeatHours:
+      OVERDUE_REPEAT_HOURS.find((hours) => hours === input.overdueRepeatHours) ??
+      fallback.overdueRepeatHours,
+    examDaysBefore: examDays,
+    quietStart: time('quietStart'),
+    quietEnd: time('quietEnd')
+  }
 }
 
 export function parseSubject(value: unknown): Subject | null {

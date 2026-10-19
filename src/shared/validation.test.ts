@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { DEFAULT_SETTINGS } from './types'
 import {
   parseAgendaItem,
   parseAppData,
@@ -8,10 +9,43 @@ import {
 } from './validation'
 
 describe('sanitizeSettings', () => {
+  const current = { ...DEFAULT_SETTINGS, theme: 'dark' as const }
+
   it('keeps the current value when the new one is not valid', () => {
-    expect(
-      sanitizeSettings({ theme: 'purple', language: 'en' }, { theme: 'dark', language: 'es' })
-    ).toEqual({ theme: 'dark', language: 'en' })
+    const result = sanitizeSettings({ theme: 'purple', language: 'en' }, current)
+    expect(result.theme).toBe('dark')
+    expect(result.language).toBe('en')
+  })
+
+  it('fills in the notification options missing from older data files', () => {
+    expect(sanitizeSettings({ theme: 'light', language: 'es' })).toEqual({
+      ...DEFAULT_SETTINGS,
+      theme: 'light'
+    })
+  })
+
+  it('checks each notification option on its own', () => {
+    const { notifications } = sanitizeSettings(
+      {
+        notifications: {
+          enabled: false,
+          summaryTime: '25:00',
+          overdueRepeatHours: 7,
+          examDaysBefore: [1, 9, 7, 'x'],
+          quietStart: '23:30',
+          quietEnd: 'morning'
+        }
+      },
+      current
+    )
+    expect(notifications).toEqual({
+      enabled: false,
+      summaryTime: '17:00',
+      overdueRepeatHours: 2,
+      examDaysBefore: [7, 1],
+      quietStart: '23:30',
+      quietEnd: '08:00'
+    })
   })
 })
 
@@ -113,7 +147,7 @@ describe('parseAppData', () => {
       ],
       items: ['nonsense']
     })
-    expect(data?.settings).toEqual({ theme: 'dark', language: 'es' })
+    expect(data?.settings).toEqual({ ...DEFAULT_SETTINGS, theme: 'dark' })
     expect(data?.subjects.map((s) => s.id)).toEqual(['maths'])
     expect(data?.schedule.map((s) => s.id)).toEqual(['a'])
     expect(data?.items).toEqual([])

@@ -1,7 +1,7 @@
-import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'fs'
-import { dirname } from 'path'
+import { existsSync, readFileSync, renameSync } from 'fs'
 import { createDefaultData, type AppData } from '@shared/types'
 import { parseAppData } from '@shared/validation'
+import { writeJsonAtomic } from './jsonFile'
 
 /** Keeps all the app data in memory and saves it to a single JSON file. */
 export class DataStore {
@@ -37,10 +37,6 @@ export class DataStore {
   }
 
   private save(): void {
-    mkdirSync(dirname(this.filePath), { recursive: true })
-    // Write to a temporary file first so a crash halfway never leaves a half-written data file
-    const tempPath = `${this.filePath}.tmp`
-    writeFileSync(tempPath, JSON.stringify(this.data, null, 2), 'utf-8')
-    renameSync(tempPath, this.filePath)
+    writeJsonAtomic(this.filePath, this.data)
   }
 }

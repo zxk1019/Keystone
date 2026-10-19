@@ -4,10 +4,14 @@ import { electronApp, optimizer } from '@electron-toolkit/utils'
 import type { Settings } from '@shared/types'
 import { ItemsRepo, ScheduleRepo, SubjectsRepo } from './data/agendaRepos'
 import { DataStore } from './data/dataStore'
+import { NotificationLog } from './data/notificationLog'
 import { SettingsRepo } from './data/settingsRepo'
 import { createTranslator } from './i18n'
 import { broadcastSettings, registerIpc } from './ipc'
 import { createMainWindow, showMainWindow } from './mainWindow'
+import { openTarget } from './navigation'
+import { Notifier } from './notifier'
+import { applyStartWithWindows, startsHidden } from './startup'
 import { createTray, updateTrayMenu } from './tray'
 
 const APP_ID = 'com.miestudio.app'
@@ -34,13 +38,21 @@ function start(): void {
   // F12 opens DevTools in development; Ctrl+R reload is disabled in production
   app.on('browser-window-created', (_, window) => optimizer.watchWindowShortcuts(window))
 
-  const store = new DataStore(join(app.getPath('userData'), 'mi-estudio-data.json'))
+  const userData = app.getPath('userData')
+  const store = new DataStore(join(userData, 'mi-estudio-data.json'))
   const settings = new SettingsRepo(store)
+  const notifier = new Notifier({
+    store,
+    settings,
+    log: new NotificationLog(join(userData, 'mi-estudio-avisos.json')),
+    open: openTarget
+  })
 
   const applySettings = (current: Settings): void => {
     // Also drives prefers-color-scheme in the renderer and the color of the title bar
     nativeTheme.themeSource = current.theme
     updateTrayMenu(createTranslator(current.language))
+    applyStartWithWindows(current.startWithWindows)
   }
 
   registerIpc({
@@ -49,13 +61,17 @@ function start(): void {
     subjects: new SubjectsRepo(store),
     schedule: new ScheduleRepo(store),
     items: new ItemsRepo(store),
+    notifier,
     onSettingsChanged: (current) => {
       applySettings(current)
       broadcastSettings(current)
+      // E.g. notifications were just turned on, or the summary time moved to now
+      notifier.check()
     }
   })
 
   createTray(createTranslator(settings.get().language))
   applySettings(settings.get())
-  createMainWindow()
+  createMainWindow({ show: !startsHidden() })
+  notifier.start()
 }
