@@ -1,4 +1,4 @@
-import { useEffect, useState, type ComponentType, type JSX } from 'react'
+import { useEffect, type ComponentType, type JSX } from 'react'
 import Sidebar from './components/Sidebar'
 import AgendaPage from './features/agenda/AgendaPage'
 import SettingsPage from './features/settings/SettingsPage'
@@ -8,6 +8,8 @@ import TodayPage from './features/today/TodayPage'
 import { useApplySettings } from './hooks/useApplySettings'
 import { platform } from './platform'
 import type { SectionId } from './sections'
+import { useAgendaStore } from './store/agendaStore'
+import { useNavigationStore } from './store/navigationStore'
 import { useSettingsStore } from './store/settingsStore'
 
 const PAGES: Record<SectionId, ComponentType> = {
@@ -20,14 +22,24 @@ const PAGES: Record<SectionId, ComponentType> = {
 
 export default function App(): JSX.Element | null {
   const settings = useSettingsStore((state) => state.settings)
-  const load = useSettingsStore((state) => state.load)
-  const [section, setSection] = useState<SectionId>('today')
+  const loadSettings = useSettingsStore((state) => state.load)
+  const loadAgenda = useAgendaStore((state) => state.load)
+  const section = useNavigationStore((state) => state.section)
+  const goTo = useNavigationStore((state) => state.goTo)
 
   useEffect(() => {
-    load()
+    loadSettings()
+    loadAgenda()
     // Changes that do not come from this window's own updates, e.g. importing a backup
-    return platform.onSettingsChanged((updated) => useSettingsStore.setState({ settings: updated }))
-  }, [load])
+    const stopSettings = platform.onSettingsChanged((updated) =>
+      useSettingsStore.setState({ settings: updated })
+    )
+    const stopData = platform.onDataChanged(() => loadAgenda())
+    return () => {
+      stopSettings()
+      stopData()
+    }
+  }, [loadSettings, loadAgenda])
 
   useApplySettings(settings)
 
@@ -37,7 +49,7 @@ export default function App(): JSX.Element | null {
 
   return (
     <div className="flex h-screen bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100">
-      <Sidebar current={section} onSelect={setSection} />
+      <Sidebar current={section} onSelect={goTo} />
       <main className="min-w-0 flex-1 overflow-y-auto">
         <Page />
       </main>

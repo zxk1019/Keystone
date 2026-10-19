@@ -8,13 +8,31 @@ export interface Settings {
   language: Language
 }
 
+/** Palette for subjects. Each name maps to light and dark styles in the renderer. */
+export const SUBJECT_COLORS = [
+  'red',
+  'orange',
+  'amber',
+  'lime',
+  'emerald',
+  'teal',
+  'cyan',
+  'sky',
+  'blue',
+  'indigo',
+  'violet',
+  'pink'
+] as const
+
+export type SubjectColor = (typeof SUBJECT_COLORS)[number]
+
 export interface Subject {
   id: string
   name: string
-  color: string
+  color: SubjectColor
 }
 
-/** A fixed weekly slot: a class (with subjectId) or a break such as recess (without it). */
+/** A fixed weekly slot: a class (with subjectId) or a break such as recess (with a label instead). */
 export interface ScheduleSlot {
   id: string
   subjectId?: string
@@ -27,8 +45,11 @@ export interface ScheduleSlot {
   room?: string
 }
 
-export type AgendaItemType = 'homework' | 'exam' | 'project' | 'event'
-export type Priority = 'high' | 'medium' | 'low'
+export const AGENDA_ITEM_TYPES = ['homework', 'exam', 'project', 'event'] as const
+export type AgendaItemType = (typeof AGENDA_ITEM_TYPES)[number]
+
+export const PRIORITIES = ['high', 'medium', 'low'] as const
+export type Priority = (typeof PRIORITIES)[number]
 
 export interface AgendaItem {
   id: string
@@ -47,6 +68,9 @@ export interface AgendaItem {
   topics?: string
 }
 
+/** What is being created or edited: new records have no id yet, the main process assigns it. */
+export type Draft<T extends { id: string }> = Omit<T, 'id'> & { id?: string }
+
 export const DATA_VERSION = 1
 
 export interface AppData {
@@ -56,6 +80,9 @@ export interface AppData {
   schedule: ScheduleSlot[]
   items: AgendaItem[]
 }
+
+/** The part of the data the agenda screens work with. */
+export type AgendaData = Pick<AppData, 'subjects' | 'schedule' | 'items'>
 
 export const DEFAULT_SETTINGS: Settings = {
   theme: 'system',

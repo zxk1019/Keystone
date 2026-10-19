@@ -1,9 +1,12 @@
 import { useState, type JSX, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Download, Monitor, Moon, Sun, Upload, type LucideIcon } from 'lucide-react'
+import { Download, Monitor, Moon, Pencil, Sun, Upload, type LucideIcon } from 'lucide-react'
 import { LANGUAGES, THEMES, type Language, type ThemeSetting } from '@shared/types'
+import Button from '../../components/Button'
 import PageHeader from '../../components/PageHeader'
+import { inputClass, segmentClass, segmentedClass } from '../../components/styles'
 import { platform } from '../../platform'
+import { useNavigationStore } from '../../store/navigationStore'
 import { useSettingsStore } from '../../store/settingsStore'
 
 const THEME_ICONS: Record<ThemeSetting, LucideIcon> = {
@@ -18,6 +21,7 @@ export default function SettingsPage(): JSX.Element | null {
   const { t } = useTranslation()
   const settings = useSettingsStore((state) => state.settings)
   const update = useSettingsStore((state) => state.update)
+  const openScheduleEditor = useNavigationStore((state) => state.openScheduleEditor)
   const [status, setStatus] = useState<Status | null>(null)
 
   if (!settings) return null
@@ -59,11 +63,7 @@ export default function SettingsPage(): JSX.Element | null {
 
       <SettingsSection title={t('settings.appearance')}>
         <SettingsRow label={t('settings.theme.label')}>
-          <div
-            role="radiogroup"
-            aria-label={t('settings.theme.label')}
-            className="inline-flex rounded-lg bg-zinc-100 p-1 dark:bg-zinc-800"
-          >
+          <div role="radiogroup" aria-label={t('settings.theme.label')} className={segmentedClass}>
             {THEMES.map((theme) => {
               const Icon = THEME_ICONS[theme]
               const active = settings.theme === theme
@@ -74,11 +74,7 @@ export default function SettingsPage(): JSX.Element | null {
                   role="radio"
                   aria-checked={active}
                   onClick={() => update({ theme })}
-                  className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
-                    active
-                      ? 'bg-white text-zinc-900 shadow-sm dark:bg-zinc-600 dark:text-zinc-50'
-                      : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100'
-                  }`}
+                  className={segmentClass(active)}
                 >
                   <Icon className="size-4" />
                   {t(`settings.theme.${theme}`)}
@@ -92,7 +88,7 @@ export default function SettingsPage(): JSX.Element | null {
           <select
             value={settings.language}
             onChange={(event) => update({ language: event.target.value as Language })}
-            className="rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+            className={inputClass}
           >
             {LANGUAGES.map(({ code, name }) => (
               <option key={code} value={code}>
@@ -104,12 +100,25 @@ export default function SettingsPage(): JSX.Element | null {
       </SettingsSection>
 
       <SettingsSection
+        title={t('settings.schedule.title')}
+        description={t('settings.schedule.description')}
+      >
+        <Button icon={Pencil} onClick={openScheduleEditor} className="self-start">
+          {t('settings.schedule.open')}
+        </Button>
+      </SettingsSection>
+
+      <SettingsSection
         title={t('settings.data.title')}
         description={t('settings.data.description')}
       >
         <div className="flex flex-wrap gap-3">
-          <ActionButton icon={Download} label={t('settings.data.export')} onClick={handleExport} />
-          <ActionButton icon={Upload} label={t('settings.data.import')} onClick={handleImport} />
+          <Button icon={Download} onClick={handleExport}>
+            {t('settings.data.export')}
+          </Button>
+          <Button icon={Upload} onClick={handleImport}>
+            {t('settings.data.import')}
+          </Button>
         </div>
         {status && (
           <p
@@ -152,23 +161,5 @@ function SettingsRow({ label, children }: { label: string; children: ReactNode }
       <span className="text-sm text-zinc-700 dark:text-zinc-300">{label}</span>
       {children}
     </div>
-  )
-}
-
-function ActionButton(props: {
-  icon: LucideIcon
-  label: string
-  onClick: () => void
-}): JSX.Element {
-  const Icon = props.icon
-  return (
-    <button
-      type="button"
-      onClick={props.onClick}
-      className="flex items-center gap-2 rounded-lg border border-zinc-300 px-3 py-1.5 text-sm font-medium transition-colors hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
-    >
-      <Icon className="size-4" />
-      {props.label}
-    </button>
   )
 }

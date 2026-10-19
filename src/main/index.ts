@@ -2,6 +2,7 @@ import { app, nativeTheme } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer } from '@electron-toolkit/utils'
 import type { Settings } from '@shared/types'
+import { ScheduleRepo, SubjectsRepo } from './data/agendaRepos'
 import { DataStore } from './data/dataStore'
 import { SettingsRepo } from './data/settingsRepo'
 import { createTranslator } from './i18n'
@@ -40,6 +41,8 @@ function start(): void {
   registerIpc({
     store,
     settings,
+    subjects: new SubjectsRepo(store),
+    schedule: new ScheduleRepo(store),
     onSettingsChanged: (current) => {
       applySettings(current)
       broadcastSettings(current)
