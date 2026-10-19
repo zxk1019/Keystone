@@ -8,6 +8,7 @@ import { inputClass, segmentClass, segmentedClass } from '../../components/style
 import { platform } from '../../platform'
 import { useNavigationStore } from '../../store/navigationStore'
 import { useSettingsStore } from '../../store/settingsStore'
+import EyeBreakSection from './EyeBreakSection'
 import NotificationsSection from './NotificationsSection'
 import StudySection from './StudySection'
 import { SettingsRow, SettingsSection } from './SettingsLayout'
@@ -112,6 +113,8 @@ export default function SettingsPage(): JSX.Element | null {
       </SettingsSection>
 
       <StudySection settings={settings} update={update} />
+
+      <EyeBreakSection settings={settings} update={update} />
 
       <NotificationsSection settings={settings} update={update} />
 

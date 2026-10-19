@@ -196,6 +196,14 @@
       }
     }
   },
+  "eyeBreak": {
+    "lookAway": "Mira algo lejano (a unos 6 m)",
+    "hint": "Relaja los ojos y parpadea.",
+    "skip": "Saltar",
+    "next": "Próximo descanso de vista en {{count}} min",
+    "pausedUntil": "Descanso de vista en pausa hasta las {{time}}",
+    "pausedRestart": "Descanso de vista en pausa hasta reiniciar la app"
+  },
   "agenda": {
     "week": "Semana",
     "month": "Mes",
@@ -290,6 +298,18 @@
       "focusMinutes": "Minutos de estudio",
       "breakMinutes": "Minutos de descanso"
     },
+    "eyeBreak": {
+      "title": "Descanso de la vista (20-20-20)",
+      "description": "Cada cierto tiempo usando el ordenador, mira algo lejano durante unos segundos.",
+      "enabled": "Activar",
+      "interval": "Cada",
+      "duration": "Durante",
+      "idle": "Volver a contar si no uso el ordenador durante",
+      "minutes": "{{count}} min",
+      "seconds": "{{count}} s",
+      "test": "Probar ahora",
+      "resume": "Reanudar"
+    },
     "notifications": {
       "title": "Avisos",
       "description": "Te avisa de lo que tienes pendiente, aunque la ventana esté cerrada.",
@@ -328,7 +348,12 @@
     "quit": "Salir",
     "studying": "Estudiando · quedan {{minutes}} min",
     "onBreak": "Descanso · quedan {{minutes}} min",
-    "paused": "Estudio en pausa"
+    "paused": "Estudio en pausa",
+    "eyePause": "Pausar 20-20-20",
+    "eyePause30": "30 minutos",
+    "eyePause60": "1 hora",
+    "eyePauseRestart": "Hasta reiniciar la app",
+    "eyeResume": "Reanudar 20-20-20"
   },
   "notify": {
     "summaryTitle": "Resumen de hoy",

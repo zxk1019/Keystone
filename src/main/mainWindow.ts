@@ -6,6 +6,9 @@ import icon from '../../resources/icon.ico?asset'
 // Same colors as the app background in main.css, so the window never flashes white in dark mode
 const BACKGROUND = { light: '#ffffff', dark: '#09090b' }
 
+/** The preload script every window of the app uses */
+export const PRELOAD_PATH = join(__dirname, '../preload/index.js')
+
 let mainWindow: BrowserWindow | null = null
 let isQuitting = false
 
@@ -30,7 +33,7 @@ export function createMainWindow({ show = true }: { show?: boolean } = {}): Brow
     autoHideMenuBar: true,
     backgroundColor: backgroundColor(),
     webPreferences: {
-      preload: join(__dirname, '../preload/index.js'),
+      preload: PRELOAD_PATH,
       sandbox: true,
       contextIsolation: true,
       nodeIntegration: false
@@ -65,13 +68,17 @@ export function createMainWindow({ show = true }: { show?: boolean } = {}): Brow
     if (mainWindow === window) mainWindow = null
   })
 
-  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-    window.loadURL(process.env['ELECTRON_RENDERER_URL'])
-  } else {
-    window.loadFile(join(__dirname, '../renderer/index.html'))
-  }
-
+  loadRenderer(window)
   return window
+}
+
+/** Loads the React app; `hash` picks a special screen, e.g. the eye break ("eye-break?..."). */
+export function loadRenderer(window: BrowserWindow, hash = ''): void {
+  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
+    window.loadURL(`${process.env['ELECTRON_RENDERER_URL']}${hash ? `#${hash}` : ''}`)
+  } else {
+    window.loadFile(join(__dirname, '../renderer/index.html'), hash ? { hash } : undefined)
+  }
 }
 
 export function showMainWindow(): BrowserWindow {

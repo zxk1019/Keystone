@@ -6,6 +6,7 @@ import Button from '../../components/Button'
 import { useNow } from '../../hooks/useNow'
 import { formatClock, formatCountdown } from '../../lib/time'
 import { useStudyStore } from '../../store/studyStore'
+import EyeBreakNotice from '../eyeBreak/EyeBreakNotice'
 
 const RADIUS = 96
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS
@@ -101,6 +102,7 @@ export default function TimerCard({ timer }: { timer: TimerState }): JSX.Element
           {t('study.silenced')}
         </p>
       )}
+      <EyeBreakNotice />
     </section>
   )
 }

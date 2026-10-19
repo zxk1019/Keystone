@@ -196,6 +196,14 @@
       }
     }
   },
+  "eyeBreak": {
+    "lookAway": "Look at something far away (about 6 m)",
+    "hint": "Relax your eyes and blink.",
+    "skip": "Skip",
+    "next": "Next eye break in {{count}} min",
+    "pausedUntil": "Eye breaks paused until {{time}}",
+    "pausedRestart": "Eye breaks paused until the app restarts"
+  },
   "agenda": {
     "week": "Week",
     "month": "Month",
@@ -290,6 +298,18 @@
       "focusMinutes": "Study minutes",
       "breakMinutes": "Break minutes"
     },
+    "eyeBreak": {
+      "title": "Eye breaks (20-20-20)",
+      "description": "Every so often while using the computer, look at something far away for a few seconds.",
+      "enabled": "Turn on",
+      "interval": "Every",
+      "duration": "For",
+      "idle": "Start counting again after not using the computer for",
+      "minutes": "{{count}} min",
+      "seconds": "{{count}} s",
+      "test": "Try it now",
+      "resume": "Resume"
+    },
     "notifications": {
       "title": "Notifications",
       "description": "Reminds you of what you have to do, even with the window closed.",
@@ -328,7 +348,12 @@
     "quit": "Quit",
     "studying": "Studying · {{minutes}} min left",
     "onBreak": "On a break · {{minutes}} min left",
-    "paused": "Study paused"
+    "paused": "Study paused",
+    "eyePause": "Pause 20-20-20",
+    "eyePause30": "30 minutes",
+    "eyePause60": "1 hour",
+    "eyePauseRestart": "Until the app restarts",
+    "eyeResume": "Resume 20-20-20"
   },
   "notify": {
     "summaryTitle": "Today's summary",

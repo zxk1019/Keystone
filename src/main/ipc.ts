@@ -1,8 +1,9 @@
 import { app, BrowserWindow, ipcMain, type IpcMainInvokeEvent } from 'electron'
-import { IPC } from '@shared/api'
+import { EYE_BREAK_COMMANDS, IPC, type EyeBreakCommand } from '@shared/api'
 import type { Settings } from '@shared/types'
 import { agendaOf, type ItemsRepo, type ScheduleRepo, type SubjectsRepo } from './data/agendaRepos'
 import { exportBackup, importBackup } from './data/backup'
+import type { EyeBreakService } from './eyeBreak'
 import type { DataStore } from './data/dataStore'
 import type { SettingsRepo } from './data/settingsRepo'
 import { createTranslator } from './i18n'
@@ -18,6 +19,7 @@ interface IpcDeps {
   items: ItemsRepo
   notifier: Notifier
   studyTimer: StudyTimer
+  eyeBreak: EyeBreakService
   /** Called whenever the settings change, from the UI or from an imported backup. */
   onSettingsChanged: (settings: Settings) => void
 }
@@ -47,6 +49,7 @@ export function registerIpc({
   items,
   notifier,
   studyTimer,
+  eyeBreak,
   onSettingsChanged
 }: IpcDeps): void {
   const translator = (): ReturnType<typeof createTranslator> =>
@@ -90,5 +93,13 @@ export function registerIpc({
       throw new Error('Unknown timer command')
     }
     return studyTimer.command(command)
+  })
+
+  ipcMain.handle(IPC.getEyeBreakStatus, () => eyeBreak.status())
+  ipcMain.handle(IPC.eyeBreakCommand, (_event, command: unknown) => {
+    if (!EYE_BREAK_COMMANDS.includes(command as EyeBreakCommand)) {
+      throw new Error('Unknown eye break command')
+    }
+    return eyeBreak.command(command as EyeBreakCommand)
   })
 }
