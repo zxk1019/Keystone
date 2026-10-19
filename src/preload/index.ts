@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer, type IpcRendererEvent } from 'electron'
 import { IPC, type DesktopApi } from '@shared/api'
+import type { PhaseEvent, TimerState } from '@shared/studyTimer'
 import type { Settings } from '@shared/types'
 
 /** Subscribes to a channel and returns the function that unsubscribes. */
@@ -30,7 +31,12 @@ const api: DesktopApi = {
   getAppInfo: () => ipcRenderer.invoke(IPC.getAppInfo),
   sendTestNotification: () => ipcRenderer.invoke(IPC.sendTestNotification),
   onNavigate: (callback) => listen(IPC.navigate, () => callback()),
-  takeNavigation: () => ipcRenderer.invoke(IPC.takeNavigation)
+  takeNavigation: () => ipcRenderer.invoke(IPC.takeNavigation),
+
+  getStudyState: () => ipcRenderer.invoke(IPC.getStudyState),
+  studyCommand: (command) => ipcRenderer.invoke(IPC.studyCommand, command),
+  onStudyState: (callback) => listen<TimerState>(IPC.studyState, callback),
+  onStudyPhase: (callback) => listen<PhaseEvent>(IPC.studyPhase, callback)
 }
 
 contextBridge.exposeInMainWorld('api', api)

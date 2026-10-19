@@ -1,18 +1,22 @@
 import { app, nativeTheme } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer } from '@electron-toolkit/utils'
+import { IPC } from '@shared/api'
+import { isStudying } from '@shared/studyTimer'
 import type { Settings } from '@shared/types'
 import { ItemsRepo, ScheduleRepo, SubjectsRepo } from './data/agendaRepos'
 import { DataStore } from './data/dataStore'
 import { NotificationLog } from './data/notificationLog'
 import { SettingsRepo } from './data/settingsRepo'
 import { createTranslator } from './i18n'
-import { broadcastSettings, registerIpc } from './ipc'
-import { createMainWindow, showMainWindow } from './mainWindow'
+import { broadcast, broadcastSettings, registerIpc } from './ipc'
+import { createMainWindow, isMainWindowInFront, showMainWindow } from './mainWindow'
 import { openTarget } from './navigation'
 import { Notifier } from './notifier'
 import { applyStartWithWindows, startsHidden } from './startup'
-import { createTray, updateTrayMenu } from './tray'
+import { StudyTimer } from './studyTimer'
+import { phaseNotification, trayStatus } from './studyText'
+import { createTray, setTrayStatus, updateTrayMenu } from './tray'
 
 const APP_ID = 'com.miestudio.app'
 
@@ -45,7 +49,30 @@ function start(): void {
     store,
     settings,
     log: new NotificationLog(join(userData, 'mi-estudio-avisos.json')),
+    isStudying: () => isStudying(studyTimer.get()),
     open: openTarget
+  })
+
+  const translator = (): ReturnType<typeof createTranslator> =>
+    createTranslator(settings.get().language)
+  const refreshTrayStatus = (): void =>
+    setTrayStatus(trayStatus(studyTimer.get(), Date.now(), translator()))
+
+  let wasStudying = false
+  const studyTimer = new StudyTimer({
+    durations: () => settings.get().study,
+    onChange: (state) => {
+      broadcast(IPC.studyState, state)
+      refreshTrayStatus()
+      // Reminders held back during the study block go out as soon as it ends
+      const studying = isStudying(state)
+      if (wasStudying && !studying) notifier.check()
+      wasStudying = studying
+    },
+    onPhaseEvent: (event, state) => {
+      broadcast(IPC.studyPhase, event)
+      if (!isMainWindowInFront()) notifier.show(phaseNotification(event, state, translator()))
+    }
   })
 
   const applySettings = (current: Settings): void => {
@@ -62,9 +89,12 @@ function start(): void {
     schedule: new ScheduleRepo(store),
     items: new ItemsRepo(store),
     notifier,
+    studyTimer,
     onSettingsChanged: (current) => {
       applySettings(current)
       broadcastSettings(current)
+      studyTimer.durationsChanged()
+      refreshTrayStatus()
       // E.g. notifications were just turned on, or the summary time moved to now
       notifier.check()
     }
@@ -74,4 +104,6 @@ function start(): void {
   applySettings(settings.get())
   createMainWindow({ show: !startsHidden() })
   notifier.start()
+  // Keeps the minutes in the tray tooltip up to date
+  setInterval(refreshTrayStatus, 15_000)
 }

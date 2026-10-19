@@ -23,3 +23,8 @@ export function updateTrayMenu(t: Translate): void {
     ])
   )
 }
+
+/** E.g. "Mi Estudio · Estudiando · quedan 23 min" while the study timer runs. */
+export function setTrayStatus(status: string | null): void {
+  tray?.setToolTip(status ? `Mi Estudio · ${status}` : 'Mi Estudio')
+}

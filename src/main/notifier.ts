@@ -15,6 +15,8 @@ interface NotifierDeps {
   store: DataStore
   settings: SettingsRepo
   log: NotificationLog
+  /** While studying, reminders wait for the break */
+  isStudying: () => boolean
   /** Opens the app on what the notification is about */
   open: (target: NavigationTarget) => void
 }
@@ -36,7 +38,13 @@ export class Notifier {
     if (!Notification.isSupported()) return
     const { store, settings, log } = this.deps
     const current = settings.get()
-    const plan = planNotifications(now, agendaOf(store), current.notifications, log.get())
+    const plan = planNotifications(
+      now,
+      agendaOf(store),
+      current.notifications,
+      log.get(),
+      this.deps.isStudying()
+    )
     if (plan.sentKeys.length === 0) return
 
     const t = createTranslator(current.language)
@@ -57,7 +65,8 @@ export class Notifier {
     })
   }
 
-  private show({ title, body, target }: NotificationContent): void {
+  /** Shows a notification right away, outside the reminder planning (e.g. the study timer). */
+  show({ title, body, target }: NotificationContent): void {
     const notification = new Notification({ title, body, icon })
     this.shown.add(notification)
     notification.on('click', () => {

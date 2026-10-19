@@ -97,6 +97,105 @@
     "exams": "Próximos exámenes",
     "noExams": "No tienes exámenes en los próximos 30 días."
   },
+  "study": {
+    "phase": {
+      "focus": "Estudio",
+      "break": "Descanso"
+    },
+    "block": "Bloque {{count}}",
+    "start": "Empezar",
+    "resume": "Seguir",
+    "pause": "Pausar",
+    "skip": "Saltar",
+    "reset": "Reiniciar",
+    "ready": "Listo para empezar",
+    "paused": "En pausa",
+    "breakAt": "Descanso a las {{time}}",
+    "backAt": "Vuelves a las {{time}}",
+    "silenced": "Mientras estudias, los avisos esperan al descanso.",
+    "tip": "Consejo",
+    "anotherTip": "Otro consejo",
+    "close": "Cerrar",
+    "tips": [
+      "Antes de releer, intenta escribir de memoria lo que recuerdas del tema.",
+      "Deja el móvil en otra habitación o, al menos, fuera de tu vista.",
+      "Empieza por la tarea que más te cuesta, cuando tienes más energía.",
+      "Ponte un objetivo concreto para este bloque: «hacer los ejercicios 1 a 5», no «estudiar mates».",
+      "Explica el tema en voz alta como si se lo enseñaras a alguien.",
+      "Repasa hoy un poco de lo que estudiaste hace una semana.",
+      "Mezcla tipos de ejercicios en vez de hacer veinte iguales seguidos.",
+      "Bebe agua y ten a mano todo lo que vas a necesitar antes de empezar.",
+      "Si te distrae una idea, apúntala en un papel y sigue; ya la mirarás en el descanso.",
+      "Subrayar no es estudiar: después de leer, cierra el libro y resume con tus palabras.",
+      "Hazte preguntas tipo examen y respóndelas sin mirar los apuntes.",
+      "En el descanso, levántate y muévete; no lo pases mirando el móvil.",
+      "Dormir bien también es estudiar: lo que aprendes se asienta mientras duermes.",
+      "Cuando algo no te salga, busca un ejemplo resuelto y rehazlo tú solo.",
+      "Divide los trabajos largos en pasos pequeños y marca cada uno al terminarlo.",
+      "Estudia en el mismo sitio y a la misma hora: tu cabeza se acostumbra antes a concentrarse.",
+      "Relaciona lo nuevo con algo que ya sepas: un ejemplo de tu vida, otra asignatura...",
+      "Al acabar, escribe en una línea qué has aprendido hoy.",
+      "Si llevas mucho rato atascado, cambia de tarea y vuelve después con la cabeza fresca.",
+      "Haz dibujos o esquemas: ver la información de otra forma ayuda a recordarla."
+    ],
+    "techniques": {
+      "title": "Técnicas de estudio",
+      "what": "Qué es",
+      "how": "Cómo se hace",
+      "when": "Cuándo usarla",
+      "items": {
+        "activeRecall": {
+          "name": "Recuperación activa",
+          "summary": "Sacar la información de tu memoria en vez de volver a leerla.",
+          "what": "Consiste en intentar recordar lo que has estudiado sin mirar los apuntes. Cada vez que tu cerebro hace el esfuerzo de recordar algo, ese recuerdo se vuelve más fuerte.",
+          "how": "Lee una parte del tema, cierra el libro y escribe o di en voz alta todo lo que recuerdes. Después compara con los apuntes y repasa lo que se te olvidó. También sirve hacerte preguntas o usar tarjetas de pregunta y respuesta.",
+          "when": "Siempre que quieras recordar algo para un examen. Es de las técnicas que mejor funcionan, sobre todo combinada con el repaso espaciado."
+        },
+        "spacedRepetition": {
+          "name": "Repaso espaciado",
+          "summary": "Repasar varias veces, dejando cada vez más días entre repaso y repaso.",
+          "what": "En lugar de estudiarlo todo el día antes, repartes los repasos en el tiempo. Olvidar un poco entre repasos obliga a tu memoria a esforzarse, y eso hace que lo recuerdes durante más tiempo.",
+          "how": "Repasa un tema el mismo día que lo das, luego a los 2 o 3 días, después a la semana y otra vez a las dos semanas. Si un repaso te cuesta mucho, acorta el siguiente intervalo.",
+          "when": "Para preparar exámenes con tiempo y para todo lo que tengas que recordar durante el curso: vocabulario, fórmulas, comandos, conceptos..."
+        },
+        "feynman": {
+          "name": "Técnica Feynman",
+          "summary": "Explicar el tema con palabras sencillas para descubrir lo que no entiendes.",
+          "what": "Lleva el nombre del físico Richard Feynman. La idea es que, si no sabes explicar algo de forma sencilla, todavía no lo entiendes del todo.",
+          "how": "Elige un concepto y explícalo por escrito o en voz alta como si se lo contaras a alguien que no sabe nada del tema. Cuando te atasques o tengas que usar palabras complicadas, vuelve a los apuntes, aclara esa parte y repite la explicación.",
+          "when": "Con temas que hay que entender, no solo memorizar: cómo funciona algo, por qué pasa algo, cómo se relacionan dos ideas."
+        },
+        "interleaving": {
+          "name": "Práctica intercalada",
+          "summary": "Mezclar distintos tipos de ejercicios en lugar de hacerlos por bloques.",
+          "what": "Normalmente se practica un tipo de ejercicio muchas veces seguidas. Al intercalar, mezclas tipos distintos, y así aprendes también a reconocer qué método usar en cada caso, que es justo lo que pide un examen.",
+          "how": "Cuando repases, alterna ejercicios de varios temas o de varios tipos (por ejemplo, consultas SQL distintas, o problemas de varias unidades) en vez de hacer diez iguales seguidos.",
+          "when": "En asignaturas con problemas y ejercicios prácticos, cuando ya conoces los métodos y quieres prepararte para el examen."
+        },
+        "selfExplanation": {
+          "name": "Autoexplicación",
+          "summary": "Preguntarte el porqué de cada paso mientras estudias.",
+          "what": "Mientras lees o resuelves algo, te explicas a ti mismo por qué es así y cómo se relaciona con lo que ya sabes. Así entiendes mejor y detectas antes lo que no te cuadra.",
+          "how": "Después de cada paso de un ejemplo resuelto o de cada párrafo, pregúntate: ¿por qué se hace esto?, ¿qué pasaría si cambio este dato?, ¿con qué otra cosa se relaciona? Responde con tus palabras.",
+          "when": "Al estudiar ejemplos resueltos, código o demostraciones, y al leer textos con ideas nuevas."
+        },
+        "mindMaps": {
+          "name": "Mapas mentales",
+          "summary": "Dibujar el tema como un esquema con ramas a partir de una idea central.",
+          "what": "Un mapa mental pone la idea principal en el centro y las ideas relacionadas en ramas a su alrededor. Ayuda a ver la estructura del tema y cómo se conectan las partes.",
+          "how": "Escribe el tema en el centro de una hoja. Dibuja ramas con las ideas principales y, de cada una, ramas más pequeñas con los detalles. Usa palabras clave, colores y dibujos, no frases largas. Mejor si lo haces de memoria y luego lo completas con los apuntes.",
+          "when": "Para tener una visión de conjunto de un tema largo, organizar ideas antes de un trabajo o repasar rápido antes de un examen."
+        },
+        "pomodoro": {
+          "name": "Pomodoro",
+          "summary": "Estudiar en bloques de tiempo fijos con descansos cortos entre ellos.",
+          "what": "Es la técnica en la que se basa el temporizador de esta app: trabajas concentrado durante un tiempo fijo y después descansas un poco. Saber que el descanso llega ayuda a empezar y a no distraerse.",
+          "how": "Elige una tarea, pon el temporizador (aquí, 45 minutos) y trabaja solo en eso hasta que suene. Descansa 5 minutos lejos de la pantalla y vuelve a empezar. Si te viene una distracción a la cabeza, apúntala y sigue.",
+          "when": "Cuando te cuesta ponerte a estudiar, cuando tienes muchas tareas o cuando estudias muchas horas seguidas."
+        }
+      }
+    }
+  },
   "agenda": {
     "week": "Semana",
     "month": "Mes",
@@ -185,6 +284,12 @@
       "description": "Crea tus asignaturas y monta tu horario semanal.",
       "open": "Editar horario"
     },
+    "study": {
+      "title": "Estudio",
+      "description": "Duración de los bloques del temporizador.",
+      "focusMinutes": "Minutos de estudio",
+      "breakMinutes": "Minutos de descanso"
+    },
     "notifications": {
       "title": "Avisos",
       "description": "Te avisa de lo que tienes pendiente, aunque la ventana esté cerrada.",
@@ -220,7 +325,10 @@
   },
   "tray": {
     "open": "Abrir Mi Estudio",
-    "quit": "Salir"
+    "quit": "Salir",
+    "studying": "Estudiando · quedan {{minutes}} min",
+    "onBreak": "Descanso · quedan {{minutes}} min",
+    "paused": "Estudio en pausa"
   },
   "notify": {
     "summaryTitle": "Resumen de hoy",
@@ -234,7 +342,11 @@
     "examTomorrow": "Examen mañana: {{title}}",
     "examIn": "Examen dentro de {{count}} días: {{title}}",
     "testTitle": "Los avisos funcionan",
-    "testBody": "Así te avisará Mi Estudio de lo que tienes pendiente."
+    "testBody": "Así te avisará Mi Estudio de lo que tienes pendiente.",
+    "breakStartTitle": "¡Descanso!",
+    "breakStartBody": "Levántate y despéjate {{count}} minutos.",
+    "breakEndTitle": "Fin del descanso",
+    "breakEndBody": "Cuando quieras, empieza el bloque {{count}}."
   },
   "dialog": {
     "exportTitle": "Exportar copia de seguridad",

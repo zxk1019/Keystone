@@ -19,10 +19,22 @@ export interface NotificationSettings {
   quietEnd: string
 }
 
+export interface StudySettings {
+  /** Length of a study block */
+  focusMinutes: number
+  breakMinutes: number
+}
+
+export const STUDY_LIMITS = {
+  focusMinutes: { min: 1, max: 120 },
+  breakMinutes: { min: 1, max: 60 }
+} as const
+
 export interface Settings {
   theme: ThemeSetting
   language: Language
   notifications: NotificationSettings
+  study: StudySettings
   /** Only has an effect in the installed app */
   startWithWindows: boolean
 }
@@ -112,10 +124,13 @@ export const DEFAULT_NOTIFICATIONS: NotificationSettings = {
   quietEnd: '08:00'
 }
 
+export const DEFAULT_STUDY: StudySettings = { focusMinutes: 45, breakMinutes: 5 }
+
 export const DEFAULT_SETTINGS: Settings = {
   theme: 'system',
   language: 'es',
   notifications: DEFAULT_NOTIFICATIONS,
+  study: DEFAULT_STUDY,
   startWithWindows: false
 }
 

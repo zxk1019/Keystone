@@ -4,10 +4,12 @@ import {
   DATA_VERSION,
   DEFAULT_NOTIFICATIONS,
   DEFAULT_SETTINGS,
+  DEFAULT_STUDY,
   EXAM_REMINDER_DAYS,
   LANGUAGES,
   OVERDUE_REPEAT_HOURS,
   PRIORITIES,
+  STUDY_LIMITS,
   SUBJECT_COLORS,
   THEMES,
   type AgendaItem,
@@ -15,6 +17,7 @@ import {
   type NotificationSettings,
   type ScheduleSlot,
   type Settings,
+  type StudySettings,
   type Subject
 } from './types'
 
@@ -49,11 +52,28 @@ export function sanitizeSettings(value: unknown, fallback: Settings = DEFAULT_SE
     theme,
     language,
     notifications: sanitizeNotifications(input.notifications, fallback.notifications),
+    study: sanitizeStudy(input.study, fallback.study),
     startWithWindows:
       typeof input.startWithWindows === 'boolean'
         ? input.startWithWindows
         : fallback.startWithWindows
   }
+}
+
+/** Whole minutes within the limits, or the current value. */
+function sanitizeStudy(value: unknown, fallback: StudySettings = DEFAULT_STUDY): StudySettings {
+  const input = isRecord(value) ? value : {}
+  const minutes = (key: keyof StudySettings): number => {
+    const candidate = input[key]
+    const { min, max } = STUDY_LIMITS[key]
+    return typeof candidate === 'number' &&
+      Number.isInteger(candidate) &&
+      candidate >= min &&
+      candidate <= max
+      ? candidate
+      : fallback[key]
+  }
+  return { focusMinutes: minutes('focusMinutes'), breakMinutes: minutes('breakMinutes') }
 }
 
 /** Same idea as sanitizeSettings, for the notification options. */

@@ -8,11 +8,13 @@ import TasksPage from './features/tasks/TasksPage'
 import TodayPage from './features/today/TodayPage'
 import { useApplySettings } from './hooks/useApplySettings'
 import { useNotificationNavigation } from './hooks/useNotificationNavigation'
+import { playChime } from './lib/chime'
 import { platform } from './platform'
 import type { SectionId } from './sections'
 import { useAgendaStore } from './store/agendaStore'
 import { useNavigationStore } from './store/navigationStore'
 import { useSettingsStore } from './store/settingsStore'
+import { useStudyStore } from './store/studyStore'
 
 const PAGES: Record<SectionId, ComponentType> = {
   today: TodayPage,
@@ -26,22 +28,29 @@ export default function App(): JSX.Element | null {
   const settings = useSettingsStore((state) => state.settings)
   const loadSettings = useSettingsStore((state) => state.load)
   const loadAgenda = useAgendaStore((state) => state.load)
+  const loadStudy = useStudyStore((state) => state.load)
   const section = useNavigationStore((state) => state.section)
   const goTo = useNavigationStore((state) => state.goTo)
 
   useEffect(() => {
     loadSettings()
     loadAgenda()
+    loadStudy()
     // Changes that do not come from this window's own updates, e.g. importing a backup
     const stopSettings = platform.onSettingsChanged((updated) =>
       useSettingsStore.setState({ settings: updated })
     )
     const stopData = platform.onDataChanged(() => loadAgenda())
+    const stopTimer = platform.onStudyState((timer) => useStudyStore.setState({ timer }))
+    // The chime plays whatever screen is open, even with the window in the tray
+    const stopChime = platform.onStudyPhase(playChime)
     return () => {
       stopSettings()
       stopData()
+      stopTimer()
+      stopChime()
     }
-  }, [loadSettings, loadAgenda])
+  }, [loadSettings, loadAgenda, loadStudy])
 
   useApplySettings(settings)
   useNotificationNavigation()

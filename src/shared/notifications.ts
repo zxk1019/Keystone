@@ -45,16 +45,20 @@ export function overdueKey(item: AgendaItem): string {
  * - Exams: on each of the chosen days before the exam, at the same time as the summary.
  * - Overdue homework and projects: as soon as they are late, then every `overdueRepeatHours`
  *   until they are done. Several late items go in a single notification.
- * - Nothing during quiet hours.
+ * - Nothing during quiet hours or while studying. Nothing is recorded either, so whatever
+ *   was due goes out at the first check after the study block (at the break).
  */
 export function planNotifications(
   now: Date,
   agenda: AgendaData,
   settings: NotificationSettings,
-  log: SentLog
+  log: SentLog,
+  studying = false
 ): NotificationPlan {
   const plan: NotificationPlan = { notifications: [], sentKeys: [] }
-  if (!settings.enabled || isQuietTime(now, settings.quietStart, settings.quietEnd)) return plan
+  if (!settings.enabled || studying || isQuietTime(now, settings.quietStart, settings.quietEnd)) {
+    return plan
+  }
 
   const todayKey = toDateKey(now)
   const afterSummaryTime = minutesOfDay(now) >= timeToMinutes(settings.summaryTime)

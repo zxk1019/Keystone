@@ -82,3 +82,8 @@ export function showMainWindow(): BrowserWindow {
   mainWindow.focus()
   return mainWindow
 }
+
+/** Whether the user is looking at the app right now. */
+export function isMainWindowInFront(): boolean {
+  return Boolean(mainWindow && mainWindow.isVisible() && mainWindow.isFocused())
+}
