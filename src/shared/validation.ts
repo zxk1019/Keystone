@@ -3,8 +3,10 @@ import {
   AGENDA_ITEM_TYPES,
   DATA_VERSION,
   DEFAULT_NOTIFICATIONS,
+  DEFAULT_EYE_BREAK,
   DEFAULT_SETTINGS,
   DEFAULT_STUDY,
+  EYE_BREAK_LIMITS,
   EXAM_REMINDER_DAYS,
   LANGUAGES,
   OVERDUE_REPEAT_HOURS,
@@ -14,6 +16,7 @@ import {
   THEMES,
   type AgendaItem,
   type AppData,
+  type EyeBreakSettings,
   type NotificationSettings,
   type ScheduleSlot,
   type Settings,
@@ -53,10 +56,36 @@ export function sanitizeSettings(value: unknown, fallback: Settings = DEFAULT_SE
     language,
     notifications: sanitizeNotifications(input.notifications, fallback.notifications),
     study: sanitizeStudy(input.study, fallback.study),
+    eyeBreak: sanitizeEyeBreak(input.eyeBreak, fallback.eyeBreak),
     startWithWindows:
       typeof input.startWithWindows === 'boolean'
         ? input.startWithWindows
         : fallback.startWithWindows
+  }
+}
+
+/** A whole number within the limits, or undefined. */
+function wholeNumber(value: unknown, limits: { min: number; max: number }): number | undefined {
+  return typeof value === 'number' &&
+    Number.isInteger(value) &&
+    value >= limits.min &&
+    value <= limits.max
+    ? value
+    : undefined
+}
+
+function sanitizeEyeBreak(
+  value: unknown,
+  fallback: EyeBreakSettings = DEFAULT_EYE_BREAK
+): EyeBreakSettings {
+  const input = isRecord(value) ? value : {}
+  const number = (key: keyof typeof EYE_BREAK_LIMITS): number =>
+    wholeNumber(input[key], EYE_BREAK_LIMITS[key]) ?? fallback[key]
+  return {
+    enabled: typeof input.enabled === 'boolean' ? input.enabled : fallback.enabled,
+    intervalMinutes: number('intervalMinutes'),
+    durationSeconds: number('durationSeconds'),
+    idleResetMinutes: number('idleResetMinutes')
   }
 }
 

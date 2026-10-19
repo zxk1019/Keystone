@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer, type IpcRendererEvent } from 'electron'
 import { IPC, type DesktopApi } from '@shared/api'
+import type { EyeBreakStatus } from '@shared/eyeBreak'
 import type { PhaseEvent, TimerState } from '@shared/studyTimer'
 import type { Settings } from '@shared/types'
 
@@ -36,7 +37,11 @@ const api: DesktopApi = {
   getStudyState: () => ipcRenderer.invoke(IPC.getStudyState),
   studyCommand: (command) => ipcRenderer.invoke(IPC.studyCommand, command),
   onStudyState: (callback) => listen<TimerState>(IPC.studyState, callback),
-  onStudyPhase: (callback) => listen<PhaseEvent>(IPC.studyPhase, callback)
+  onStudyPhase: (callback) => listen<PhaseEvent>(IPC.studyPhase, callback),
+
+  getEyeBreakStatus: () => ipcRenderer.invoke(IPC.getEyeBreakStatus),
+  eyeBreakCommand: (command) => ipcRenderer.invoke(IPC.eyeBreakCommand, command),
+  onEyeBreakStatus: (callback) => listen<EyeBreakStatus>(IPC.eyeBreakStatus, callback)
 }
 
 contextBridge.exposeInMainWorld('api', api)

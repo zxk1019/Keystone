@@ -12,6 +12,7 @@ import { playChime } from './lib/chime'
 import { platform } from './platform'
 import type { SectionId } from './sections'
 import { useAgendaStore } from './store/agendaStore'
+import { useEyeBreakStore } from './store/eyeBreakStore'
 import { useNavigationStore } from './store/navigationStore'
 import { useSettingsStore } from './store/settingsStore'
 import { useStudyStore } from './store/studyStore'
@@ -29,6 +30,7 @@ export default function App(): JSX.Element | null {
   const loadSettings = useSettingsStore((state) => state.load)
   const loadAgenda = useAgendaStore((state) => state.load)
   const loadStudy = useStudyStore((state) => state.load)
+  const loadEyeBreak = useEyeBreakStore((state) => state.load)
   const section = useNavigationStore((state) => state.section)
   const goTo = useNavigationStore((state) => state.goTo)
 
@@ -36,6 +38,7 @@ export default function App(): JSX.Element | null {
     loadSettings()
     loadAgenda()
     loadStudy()
+    loadEyeBreak()
     // Changes that do not come from this window's own updates, e.g. importing a backup
     const stopSettings = platform.onSettingsChanged((updated) =>
       useSettingsStore.setState({ settings: updated })
@@ -44,13 +47,17 @@ export default function App(): JSX.Element | null {
     const stopTimer = platform.onStudyState((timer) => useStudyStore.setState({ timer }))
     // The chime plays whatever screen is open, even with the window in the tray
     const stopChime = platform.onStudyPhase(playChime)
+    const stopEyeBreak = platform.onEyeBreakStatus((status) =>
+      useEyeBreakStore.setState({ status })
+    )
     return () => {
       stopSettings()
       stopData()
       stopTimer()
       stopChime()
+      stopEyeBreak()
     }
-  }, [loadSettings, loadAgenda, loadStudy])
+  }, [loadSettings, loadAgenda, loadStudy, loadEyeBreak])
 
   useApplySettings(settings)
   useNotificationNavigation()

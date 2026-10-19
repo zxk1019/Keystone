@@ -7,8 +7,7 @@ App de estudio de escritorio (Electron + React + TypeScript). Más adelante habr
   1. explica qué has hecho y cómo probarlo,
   2. actualiza la línea "Fase actual" de este archivo,
   3. espera a que te confirme antes de seguir.
-- **Fase actual: 5 — Estudio** (hecha, pendiente de que la confirme). La siguiente es la 6 — 20-20-20.
-- Para la fase 6: el descanso del temporizador reinicia el contador del 20-20-20, y si faltan menos de 2 min para el descanso el 20-20-20 no salta. Usa `StudyTimer` en main. La pantalla de Estudio tiene que mostrar «Próximo 20-20-20 en X min».
+- **Fase actual: 6 — 20-20-20** (hecha, pendiente de que la confirme). La siguiente es la 7 — Spotify.
 - Para la fase 7: el panel de Spotify va en la pantalla de Estudio, debajo del consejo, y la música se pausa en los descansos (escucha `onPhaseEvent`).
 - Pendiente para la fase 8 (app instalada): el botón «Hecho» dentro del aviso (`toastXml` + protocolo `miestudio://`) y comprobar «Arrancar con Windows». En desarrollo no se registra nada en Windows a propósito.
 
@@ -25,6 +24,7 @@ App de estudio de escritorio (Electron + React + TypeScript). Más adelante habr
 - `src/shared/schedule.ts`: horas y solapes del horario, y la clase actual y la siguiente. Los repos de main lo usan para no guardar clases solapadas.
 - `src/shared/items.ts`: qué va con retraso (solo deberes y trabajos; los exámenes y eventos pasados no), qué vence hoy o mañana y los próximos exámenes.
 - Temporizador de estudio: la lógica pura está en `src/shared/studyTimer.ts` (con tests) y vive en main (`src/main/studyTimer.ts`), porque Chromium frena los relojes de las ventanas escondidas. La pantalla recibe el estado por IPC (`onStudyState`) y la campanita suena con `onStudyPhase` (`lib/chime.ts`, Web Audio, sin archivos de sonido). Mientras se estudia, `planNotifications` recibe `studying = true` y no envía nada.
+- 20-20-20: la lógica pura está en `src/shared/eyeBreak.ts` (con tests): suma el tiempo de uso, lo reinicia por inactividad o en un descanso de estudio, y gestiona las pausas. `src/main/eyeBreak.ts` la ejecuta cada 10 s y abre una ventana oscura por monitor, que carga la misma app React con `#eye-break` (`features/eyeBreak/EyeBreakOverlay.tsx`). `src/main/fullscreen.ts` pregunta a Windows con PowerShell (`SHQueryUserNotificationState`) si hay un juego o una presentación a pantalla completa; si la hay, lo intenta a los 2 min.
 - Contenido de Estudio: los consejos (`study.tips`, 20) y las técnicas (`study.techniques.items`) están en `src/shared/locales/`. Si cambias el número de consejos, actualiza `TIP_COUNT` en `store/studyStore.ts`.
 - Avisos: `src/shared/notifications.ts` (`planNotifications`) decide qué toca enviar. Es una función pura con tests. `src/main/notifier.ts` la ejecuta cada minuto y muestra los avisos, `src/main/notificationText.ts` escribe sus textos y `src/main/navigation.ts` lleva a la pantalla correcta al hacer clic. Lo que ya se ha enviado se guarda en `%APPDATA%\Mi Estudio\mi-estudio-avisos.json`, fuera de las copias de seguridad.
 - `src/preload/index.ts`: lo único que ve el renderer del proceso main (`window.api`).

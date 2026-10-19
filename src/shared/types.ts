@@ -30,11 +30,28 @@ export const STUDY_LIMITS = {
   breakMinutes: { min: 1, max: 60 }
 } as const
 
+/** The 20-20-20 rule: every so often, look at something far away for a few seconds. */
+export interface EyeBreakSettings {
+  enabled: boolean
+  /** Minutes of computer use between eye breaks */
+  intervalMinutes: number
+  durationSeconds: number
+  /** Minutes without mouse or keyboard after which the count starts again */
+  idleResetMinutes: number
+}
+
+export const EYE_BREAK_LIMITS = {
+  intervalMinutes: { min: 1, max: 120 },
+  durationSeconds: { min: 5, max: 120 },
+  idleResetMinutes: { min: 1, max: 30 }
+} as const
+
 export interface Settings {
   theme: ThemeSetting
   language: Language
   notifications: NotificationSettings
   study: StudySettings
+  eyeBreak: EyeBreakSettings
   /** Only has an effect in the installed app */
   startWithWindows: boolean
 }
@@ -126,11 +143,19 @@ export const DEFAULT_NOTIFICATIONS: NotificationSettings = {
 
 export const DEFAULT_STUDY: StudySettings = { focusMinutes: 45, breakMinutes: 5 }
 
+export const DEFAULT_EYE_BREAK: EyeBreakSettings = {
+  enabled: true,
+  intervalMinutes: 20,
+  durationSeconds: 20,
+  idleResetMinutes: 5
+}
+
 export const DEFAULT_SETTINGS: Settings = {
   theme: 'system',
   language: 'es',
   notifications: DEFAULT_NOTIFICATIONS,
   study: DEFAULT_STUDY,
+  eyeBreak: DEFAULT_EYE_BREAK,
   startWithWindows: false
 }
 

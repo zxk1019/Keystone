@@ -2,12 +2,15 @@ import { app, nativeTheme } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer } from '@electron-toolkit/utils'
 import { IPC } from '@shared/api'
+import type { EyeBreakStatus } from '@shared/eyeBreak'
 import { isStudying } from '@shared/studyTimer'
 import type { Settings } from '@shared/types'
 import { ItemsRepo, ScheduleRepo, SubjectsRepo } from './data/agendaRepos'
 import { DataStore } from './data/dataStore'
 import { NotificationLog } from './data/notificationLog'
 import { SettingsRepo } from './data/settingsRepo'
+import { EyeBreakService } from './eyeBreak'
+import { isUserBusy } from './fullscreen'
 import { createTranslator } from './i18n'
 import { broadcast, broadcastSettings, registerIpc } from './ipc'
 import { createMainWindow, isMainWindowInFront, showMainWindow } from './mainWindow'
@@ -71,14 +74,35 @@ function start(): void {
     },
     onPhaseEvent: (event, state) => {
       broadcast(IPC.studyPhase, event)
+      // A study break rests the eyes too
+      if (event === 'breakStarted') eyeBreak.restart()
       if (!isMainWindowInFront()) notifier.show(phaseNotification(event, state, translator()))
+    }
+  })
+
+  // The tray menu only changes when the 20-20-20 is turned on/off or paused/resumed
+  let trayMenuKey = ''
+  const refreshTrayMenu = (status: EyeBreakStatus, force = false): void => {
+    const key = `${settings.get().language}|${status.enabled}|${status.pause ? 'paused' : 'on'}`
+    if (!force && key === trayMenuKey) return
+    trayMenuKey = key
+    updateTrayMenu(translator(), status)
+  }
+
+  const eyeBreak = new EyeBreakService({
+    settings: () => settings.get().eyeBreak,
+    study: () => studyTimer.get(),
+    isBusy: isUserBusy,
+    onStatus: (status) => {
+      broadcast(IPC.eyeBreakStatus, status)
+      refreshTrayMenu(status)
     }
   })
 
   const applySettings = (current: Settings): void => {
     // Also drives prefers-color-scheme in the renderer and the color of the title bar
     nativeTheme.themeSource = current.theme
-    updateTrayMenu(createTranslator(current.language))
+    refreshTrayMenu(eyeBreak.status(), true)
     applyStartWithWindows(current.startWithWindows)
   }
 
@@ -90,20 +114,23 @@ function start(): void {
     items: new ItemsRepo(store),
     notifier,
     studyTimer,
+    eyeBreak,
     onSettingsChanged: (current) => {
       applySettings(current)
       broadcastSettings(current)
       studyTimer.durationsChanged()
+      eyeBreak.settingsChanged()
       refreshTrayStatus()
       // E.g. notifications were just turned on, or the summary time moved to now
       notifier.check()
     }
   })
 
-  createTray(createTranslator(settings.get().language))
+  createTray((command) => eyeBreak.command(command))
   applySettings(settings.get())
   createMainWindow({ show: !startsHidden() })
   notifier.start()
+  eyeBreak.start()
   // Keeps the minutes in the tray tooltip up to date
   setInterval(refreshTrayStatus, 15_000)
 }

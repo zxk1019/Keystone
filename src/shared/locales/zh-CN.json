@@ -196,6 +196,14 @@
       }
     }
   },
+  "eyeBreak": {
+    "lookAway": "看看远处的东西（大约 6 米外）",
+    "hint": "放松眼睛，眨眨眼。",
+    "skip": "跳过",
+    "next": "{{count}} 分钟后护眼休息",
+    "pausedUntil": "护眼休息已暂停，到 {{time}} 恢复",
+    "pausedRestart": "护眼休息已暂停，重启应用后恢复"
+  },
   "agenda": {
     "week": "周",
     "month": "月",
@@ -290,6 +298,18 @@
       "focusMinutes": "学习时长（分钟）",
       "breakMinutes": "休息时长（分钟）"
     },
+    "eyeBreak": {
+      "title": "护眼休息（20-20-20）",
+      "description": "每使用电脑一段时间，就看看远处几秒钟。",
+      "enabled": "开启",
+      "interval": "间隔",
+      "duration": "时长",
+      "idle": "电脑闲置多久后重新计时",
+      "minutes": "{{count}} 分钟",
+      "seconds": "{{count}} 秒",
+      "test": "立即试试",
+      "resume": "恢复"
+    },
     "notifications": {
       "title": "通知",
       "description": "即使窗口已关闭，也会提醒你待完成的事情。",
@@ -328,7 +348,12 @@
     "quit": "退出",
     "studying": "学习中 · 剩余 {{minutes}} 分钟",
     "onBreak": "休息中 · 剩余 {{minutes}} 分钟",
-    "paused": "学习已暂停"
+    "paused": "学习已暂停",
+    "eyePause": "暂停 20-20-20",
+    "eyePause30": "30 分钟",
+    "eyePause60": "1 小时",
+    "eyePauseRestart": "直到重启应用",
+    "eyeResume": "恢复 20-20-20"
   },
   "notify": {
     "summaryTitle": "今日概览",

@@ -1,3 +1,4 @@
+import type { EyeBreakStatus } from './eyeBreak'
 import type { PhaseEvent, TimerCommand, TimerState } from './studyTimer'
 import type { AgendaData, AgendaItem, Draft, ScheduleSlot, Settings, Subject } from './types'
 
@@ -24,7 +25,10 @@ export const IPC = {
   getStudyState: 'study:get',
   studyCommand: 'study:command',
   studyState: 'study:state',
-  studyPhase: 'study:phase'
+  studyPhase: 'study:phase',
+  getEyeBreakStatus: 'eye-break:get',
+  eyeBreakCommand: 'eye-break:command',
+  eyeBreakStatus: 'eye-break:status'
 } as const
 
 export type ExportResult = { status: 'saved'; path: string } | { status: 'canceled' }
@@ -39,6 +43,20 @@ export interface NavigationTarget {
   /** Show this filter on the Tasks screen */
   tasksStatus?: 'overdue'
 }
+
+/** finish/skip close the dark screen; test shows it now; the rest pause or resume the 20-20-20 */
+export type EyeBreakCommand =
+  'finish' | 'skip' | 'test' | 'resume' | 'pause30' | 'pause60' | 'pauseRestart'
+
+export const EYE_BREAK_COMMANDS: EyeBreakCommand[] = [
+  'finish',
+  'skip',
+  'test',
+  'resume',
+  'pause30',
+  'pause60',
+  'pauseRestart'
+]
 
 export interface AppInfo {
   /** False when running with `npm run dev` */
@@ -81,4 +99,8 @@ export interface DesktopApi {
   onStudyState(callback: (state: TimerState) => void): () => void
   /** Fires when a break starts or ends, to play the chime */
   onStudyPhase(callback: (event: PhaseEvent) => void): () => void
+
+  getEyeBreakStatus(): Promise<EyeBreakStatus>
+  eyeBreakCommand(command: EyeBreakCommand): Promise<EyeBreakStatus>
+  onEyeBreakStatus(callback: (status: EyeBreakStatus) => void): () => void
 }
