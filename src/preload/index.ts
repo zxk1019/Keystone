@@ -25,7 +25,12 @@ const api: DesktopApi = {
   deleteScheduleSlot: (id) => ipcRenderer.invoke(IPC.deleteScheduleSlot, id),
   saveItem: (item) => ipcRenderer.invoke(IPC.saveItem, item),
   setItemDone: (id, done) => ipcRenderer.invoke(IPC.setItemDone, id, done),
-  deleteItem: (id) => ipcRenderer.invoke(IPC.deleteItem, id)
+  deleteItem: (id) => ipcRenderer.invoke(IPC.deleteItem, id),
+
+  getAppInfo: () => ipcRenderer.invoke(IPC.getAppInfo),
+  sendTestNotification: () => ipcRenderer.invoke(IPC.sendTestNotification),
+  onNavigate: (callback) => listen(IPC.navigate, () => callback()),
+  takeNavigation: () => ipcRenderer.invoke(IPC.takeNavigation)
 }
 
 contextBridge.exposeInMainWorld('api', api)

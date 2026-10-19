@@ -15,12 +15,30 @@ export const IPC = {
   deleteScheduleSlot: 'schedule:delete',
   saveItem: 'items:save',
   setItemDone: 'items:set-done',
-  deleteItem: 'items:delete'
+  deleteItem: 'items:delete',
+  getAppInfo: 'app:info',
+  sendTestNotification: 'notifications:test',
+  navigate: 'app:navigate',
+  takeNavigation: 'app:take-navigation'
 } as const
 
 export type ExportResult = { status: 'saved'; path: string } | { status: 'canceled' }
 
 export type ImportResult = { status: 'imported' } | { status: 'canceled' } | { status: 'invalid' }
+
+/** Where to take the user, e.g. after clicking a notification */
+export interface NavigationTarget {
+  section: 'today' | 'tasks' | 'agenda'
+  /** Open this item's dialog */
+  itemId?: string
+  /** Show this filter on the Tasks screen */
+  tasksStatus?: 'overdue'
+}
+
+export interface AppInfo {
+  /** False when running with `npm run dev` */
+  packaged: boolean
+}
 
 export type SaveSlotResult =
   { status: 'saved'; agenda: AgendaData } | { status: 'overlap'; conflict: ScheduleSlot }
@@ -45,4 +63,11 @@ export interface DesktopApi {
   saveItem(item: Draft<AgendaItem>): Promise<AgendaData>
   setItemDone(id: string, done: boolean): Promise<AgendaData>
   deleteItem(id: string): Promise<AgendaData>
+
+  getAppInfo(): Promise<AppInfo>
+  sendTestNotification(): Promise<void>
+  /** Fires when the main process wants to show something (a notification was clicked). */
+  onNavigate(callback: () => void): () => void
+  /** Returns the pending place to go, if any, and forgets it. */
+  takeNavigation(): Promise<NavigationTarget | null>
 }

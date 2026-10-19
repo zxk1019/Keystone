@@ -1,4 +1,4 @@
-import { useState, type JSX, type ReactNode } from 'react'
+import { useState, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Download, Monitor, Moon, Pencil, Sun, Upload, type LucideIcon } from 'lucide-react'
 import { LANGUAGES, THEMES, type Language, type ThemeSetting } from '@shared/types'
@@ -8,6 +8,8 @@ import { inputClass, segmentClass, segmentedClass } from '../../components/style
 import { platform } from '../../platform'
 import { useNavigationStore } from '../../store/navigationStore'
 import { useSettingsStore } from '../../store/settingsStore'
+import NotificationsSection from './NotificationsSection'
+import { SettingsRow, SettingsSection } from './SettingsLayout'
 
 const THEME_ICONS: Record<ThemeSetting, LucideIcon> = {
   light: Sun,
@@ -108,6 +110,8 @@ export default function SettingsPage(): JSX.Element | null {
         </Button>
       </SettingsSection>
 
+      <NotificationsSection settings={settings} update={update} />
+
       <SettingsSection
         title={t('settings.data.title')}
         description={t('settings.data.description')}
@@ -133,33 +137,6 @@ export default function SettingsPage(): JSX.Element | null {
           </p>
         )}
       </SettingsSection>
-    </div>
-  )
-}
-
-function SettingsSection(props: {
-  title: string
-  description?: string
-  children: ReactNode
-}): JSX.Element {
-  return (
-    <section className="flex flex-col gap-4 rounded-xl border border-zinc-200 p-5 dark:border-zinc-800">
-      <div>
-        <h2 className="font-semibold">{props.title}</h2>
-        {props.description && (
-          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{props.description}</p>
-        )}
-      </div>
-      {props.children}
-    </section>
-  )
-}
-
-function SettingsRow({ label, children }: { label: string; children: ReactNode }): JSX.Element {
-  return (
-    <div className="flex flex-wrap items-center justify-between gap-3">
-      <span className="text-sm text-zinc-700 dark:text-zinc-300">{label}</span>
-      {children}
     </div>
   )
 }

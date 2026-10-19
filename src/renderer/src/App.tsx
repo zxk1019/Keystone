@@ -7,6 +7,7 @@ import ItemDialog from './features/tasks/ItemDialog'
 import TasksPage from './features/tasks/TasksPage'
 import TodayPage from './features/today/TodayPage'
 import { useApplySettings } from './hooks/useApplySettings'
+import { useNotificationNavigation } from './hooks/useNotificationNavigation'
 import { platform } from './platform'
 import type { SectionId } from './sections'
 import { useAgendaStore } from './store/agendaStore'
@@ -43,6 +44,7 @@ export default function App(): JSX.Element | null {
   }, [loadSettings, loadAgenda])
 
   useApplySettings(settings)
+  useNotificationNavigation()
 
   if (!settings) return null
 

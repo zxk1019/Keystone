@@ -185,6 +185,28 @@
       "description": "Create your subjects and set up your weekly timetable.",
       "open": "Edit timetable"
     },
+    "notifications": {
+      "title": "Notifications",
+      "description": "Reminds you of what you have to do, even with the window closed.",
+      "enabled": "Turn on notifications",
+      "summaryTime": "Daily summary",
+      "overdueRepeat": "Repeat overdue reminders",
+      "repeatEvery_one": "Every hour",
+      "repeatEvery_other": "Every {{count}} hours",
+      "repeatNever": "Don't repeat",
+      "examDays": "Exam reminders",
+      "examDay_one": "{{count}} day before",
+      "examDay_other": "{{count}} days before",
+      "quietHours": "Quiet hours",
+      "quietTo": "to",
+      "test": "Send a test",
+      "testSent": "Test sent. If you do not see it, check that Windows “Do not disturb” is off."
+    },
+    "startup": {
+      "title": "Start with Windows",
+      "description": "Opens hidden in the tray when you turn on the computer, so reminders always arrive.",
+      "onlyInstalled": "Only works in the installed app."
+    },
     "data": {
       "title": "Data",
       "description": "Your data is stored only on this computer. Make a backup from time to time.",
@@ -199,6 +221,20 @@
   "tray": {
     "open": "Open Mi Estudio",
     "quit": "Quit"
+  },
+  "notify": {
+    "summaryTitle": "Today's summary",
+    "countOverdue": "Overdue: {{count}}",
+    "countToday": "Today: {{count}}",
+    "countTomorrow": "Tomorrow: {{count}}",
+    "more": "and {{count}} more",
+    "overdueOne": "Overdue: {{title}}",
+    "overdueMany": "You have {{count}} overdue tasks",
+    "wasDue": "It was due on {{date}}",
+    "examTomorrow": "Exam tomorrow: {{title}}",
+    "examIn": "Exam in {{count}} days: {{title}}",
+    "testTitle": "Notifications work",
+    "testBody": "This is how Mi Estudio will remind you of what you have to do."
   },
   "dialog": {
     "exportTitle": "Export backup",

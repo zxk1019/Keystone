@@ -140,7 +140,7 @@ Un **planificador en el proceso main** revisa cada minuto qué avisos tocan. Fun
 - **Exámenes**: avisos **7, 3 y 1 días antes** (configurable) para empezar a estudiar con tiempo.
 - **Silencio al estudiar**: durante el tiempo de estudio no sale ningún aviso de tareas. Se guardan y se muestran juntos en el siguiente descanso o al terminar la sesión.
 - **Horas de silencio** configurables (por defecto de 22:00 a 8:00), en las que no se repite nada.
-- Al hacer clic en la notificación se abre la app en ese elemento. Si en Windows es viable con `toastXml`, añade también un botón "Marcar como hecho".
+- Al hacer clic en la notificación se abre la app en ese elemento. Si en Windows es viable con `toastXml`, añade también un botón "Marcar como hecho". Solo funcionará en la app instalada, porque necesita registrar el protocolo `miestudio://`; se hace en la fase 8.
 - Guarda qué avisos ya se han enviado para no repetirlos al reiniciar la app.
 
 ---

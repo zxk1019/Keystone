@@ -17,7 +17,8 @@ function backgroundColor(): string {
   return nativeTheme.shouldUseDarkColors ? BACKGROUND.dark : BACKGROUND.light
 }
 
-export function createMainWindow(): BrowserWindow {
+/** `show: false` keeps the window hidden, e.g. when the app starts with Windows. */
+export function createMainWindow({ show = true }: { show?: boolean } = {}): BrowserWindow {
   const window = new BrowserWindow({
     width: 1100,
     height: 720,
@@ -37,7 +38,9 @@ export function createMainWindow(): BrowserWindow {
   })
   mainWindow = window
 
-  window.on('ready-to-show', () => window.show())
+  window.on('ready-to-show', () => {
+    if (show) window.show()
+  })
 
   // Closing the window only hides it: the app keeps running in the tray (needed for reminders)
   window.on('close', (event) => {
@@ -71,13 +74,11 @@ export function createMainWindow(): BrowserWindow {
   return window
 }
 
-export function showMainWindow(): void {
+export function showMainWindow(): BrowserWindow {
   // The window can be destroyed without the app quitting (e.g. the page called window.close())
-  if (!mainWindow) {
-    createMainWindow()
-    return
-  }
+  if (!mainWindow) return createMainWindow()
   if (mainWindow.isMinimized()) mainWindow.restore()
   mainWindow.show()
   mainWindow.focus()
+  return mainWindow
 }

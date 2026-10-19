@@ -185,6 +185,28 @@
       "description": "Crea tus asignaturas y monta tu horario semanal.",
       "open": "Editar horario"
     },
+    "notifications": {
+      "title": "Avisos",
+      "description": "Te avisa de lo que tienes pendiente, aunque la ventana esté cerrada.",
+      "enabled": "Activar avisos",
+      "summaryTime": "Resumen diario",
+      "overdueRepeat": "Repetir los retrasos",
+      "repeatEvery_one": "Cada hora",
+      "repeatEvery_other": "Cada {{count}} horas",
+      "repeatNever": "No repetir",
+      "examDays": "Avisar de los exámenes",
+      "examDay_one": "{{count}} día antes",
+      "examDay_other": "{{count}} días antes",
+      "quietHours": "Horas de silencio",
+      "quietTo": "a",
+      "test": "Probar aviso",
+      "testSent": "Aviso enviado. Si no lo ves, revisa que el modo «No molestar» de Windows esté desactivado."
+    },
+    "startup": {
+      "title": "Arrancar con Windows",
+      "description": "Se abre escondida en la bandeja al encender el ordenador, para que los avisos lleguen siempre.",
+      "onlyInstalled": "Solo funciona con la app instalada."
+    },
     "data": {
       "title": "Datos",
       "description": "Tus datos se guardan solo en este ordenador. Haz una copia de seguridad de vez en cuando.",
@@ -199,6 +221,20 @@
   "tray": {
     "open": "Abrir Mi Estudio",
     "quit": "Salir"
+  },
+  "notify": {
+    "summaryTitle": "Resumen de hoy",
+    "countOverdue": "Con retraso: {{count}}",
+    "countToday": "Hoy: {{count}}",
+    "countTomorrow": "Mañana: {{count}}",
+    "more": "y {{count}} más",
+    "overdueOne": "Va con retraso: {{title}}",
+    "overdueMany": "Tienes {{count}} tareas con retraso",
+    "wasDue": "Era para el {{date}}",
+    "examTomorrow": "Examen mañana: {{title}}",
+    "examIn": "Examen dentro de {{count}} días: {{title}}",
+    "testTitle": "Los avisos funcionan",
+    "testBody": "Así te avisará Mi Estudio de lo que tienes pendiente."
   },
   "dialog": {
     "exportTitle": "Exportar copia de seguridad",
