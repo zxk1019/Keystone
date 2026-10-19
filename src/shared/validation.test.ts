@@ -119,3 +119,32 @@ describe('parseAppData', () => {
     expect(data?.items).toEqual([])
   })
 })
+
+describe('parseAgendaItem for events and exams', () => {
+  const base = { id: 'i', title: 'x', date: '2026-10-20', time: '17:00' }
+
+  it('keeps an end time only for events and only after the start', () => {
+    expect(parseAgendaItem({ ...base, type: 'event', endTime: '18:30' }, new Set())?.endTime).toBe(
+      '18:30'
+    )
+    expect(
+      parseAgendaItem({ ...base, type: 'event', endTime: '16:00' }, new Set())?.endTime
+    ).toBeUndefined()
+    expect(
+      parseAgendaItem({ ...base, type: 'homework', endTime: '18:30' }, new Set())?.endTime
+    ).toBeUndefined()
+  })
+
+  it('keeps topics only for exams and the completion date only when done', () => {
+    expect(parseAgendaItem({ ...base, type: 'exam', topics: ' Tema 3 ' }, new Set())?.topics).toBe(
+      'Tema 3'
+    )
+    expect(
+      parseAgendaItem({ ...base, type: 'homework', topics: 'Tema 3' }, new Set())?.topics
+    ).toBeUndefined()
+    expect(
+      parseAgendaItem({ ...base, type: 'homework', completedAt: '2026-10-20T10:00:00Z' }, new Set())
+        ?.completedAt
+    ).toBeUndefined()
+  })
+})

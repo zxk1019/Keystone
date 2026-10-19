@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { findOverlap, minutesToTime, sortSlots, timeToMinutes } from './schedule'
+import {
+  currentAndNextSlot,
+  findOverlap,
+  minutesToTime,
+  sortSlots,
+  timeToMinutes
+} from './schedule'
 import type { ScheduleSlot } from './types'
 
 const slot = (id: string, weekday: number, start: string, end: string): ScheduleSlot => ({
@@ -56,5 +62,31 @@ describe('sortSlots', () => {
       slot('a', 1, '08:00', '09:00')
     ])
     expect(sorted.map((s) => s.id)).toEqual(['a', 'b', 'c'])
+  })
+})
+
+describe('currentAndNextSlot', () => {
+  const day = [
+    { id: 'maths', subjectId: 'm', weekday: 1, start: '09:00', end: '10:00' },
+    { id: 'recess', label: 'Recreo', weekday: 1, start: '10:00', end: '10:30' },
+    { id: 'english', subjectId: 'e', weekday: 1, start: '10:30', end: '11:30' }
+  ]
+
+  it('finds the class in progress and the next one', () => {
+    const { current, next } = currentAndNextSlot(day, timeToMinutes('09:15'))
+    expect(current?.id).toBe('maths')
+    expect(next?.id).toBe('english')
+  })
+
+  it('treats a break as current but skips it as next', () => {
+    expect(currentAndNextSlot(day, timeToMinutes('10:10')).current?.id).toBe('recess')
+    expect(currentAndNextSlot(day, timeToMinutes('08:00')).next?.id).toBe('maths')
+  })
+
+  it('has nothing after the last class', () => {
+    expect(currentAndNextSlot(day, timeToMinutes('12:00'))).toEqual({
+      current: undefined,
+      next: undefined
+    })
   })
 })

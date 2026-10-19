@@ -15,6 +15,7 @@ import {
 } from '../../lib/dates'
 import { WEEKEND, itemsByDate, visibleHours, visibleWeekdays } from '../../lib/scheduleLayout'
 import { useAgendaStore } from '../../store/agendaStore'
+import { useItemDialogStore } from '../../store/itemDialogStore'
 import { useNavigationStore } from '../../store/navigationStore'
 import MonthView from './MonthView'
 import ScheduleEditor from './ScheduleEditor'
@@ -27,6 +28,8 @@ export default function AgendaPage(): JSX.Element | null {
   const agenda = useAgendaStore((state) => state.agenda)
   const editing = useNavigationStore((state) => state.editingSchedule)
   const openEditor = useNavigationStore((state) => state.openScheduleEditor)
+  const openNewItem = useItemDialogStore((state) => state.openNew)
+  const openItem = useItemDialogStore((state) => state.openEdit)
   const [view, setView] = useState<View>('week')
   // Any date inside the week or month being shown
   const [anchor, setAnchor] = useState(() => new Date())
@@ -108,12 +111,28 @@ export default function AgendaPage(): JSX.Element | null {
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800">
         {view === 'week' ? (
           <WeekGrid
-            columns={weekdays.map((weekday, index) => ({ weekday, date: dates[index] }))}
+            columns={weekdays.map((weekday, index) => ({
+              weekday,
+              date: dates[index],
+              narrow:
+                WEEKEND.includes(weekday) &&
+                !agenda.schedule.some((slot) => slot.weekday === weekday)
+            }))}
             slots={agenda.schedule}
             subjects={agenda.subjects}
             hours={visibleHours(agenda.schedule, false)}
             items={items}
             now={now}
+            onDayClick={(date) => openNewItem({ date: toDateKey(date) })}
+            onItemClick={openItem}
+            // Clicking a class is the quickest way to note homework for that subject on that day
+            onSlotClick={(slot, column) =>
+              column.date &&
+              openNewItem({
+                date: toDateKey(column.date),
+                ...(slot.subjectId ? { subjectId: slot.subjectId } : {})
+              })
+            }
           />
         ) : (
           <MonthView

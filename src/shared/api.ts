@@ -1,4 +1,4 @@
-import type { AgendaData, Draft, ScheduleSlot, Settings, Subject } from './types'
+import type { AgendaData, AgendaItem, Draft, ScheduleSlot, Settings, Subject } from './types'
 
 /** IPC channel names used between the preload script and the main process. */
 export const IPC = {
@@ -12,7 +12,10 @@ export const IPC = {
   saveSubject: 'subjects:save',
   deleteSubject: 'subjects:delete',
   saveScheduleSlot: 'schedule:save',
-  deleteScheduleSlot: 'schedule:delete'
+  deleteScheduleSlot: 'schedule:delete',
+  saveItem: 'items:save',
+  setItemDone: 'items:set-done',
+  deleteItem: 'items:delete'
 } as const
 
 export type ExportResult = { status: 'saved'; path: string } | { status: 'canceled' }
@@ -39,4 +42,7 @@ export interface DesktopApi {
   deleteSubject(id: string): Promise<AgendaData>
   saveScheduleSlot(slot: Draft<ScheduleSlot>): Promise<SaveSlotResult>
   deleteScheduleSlot(id: string): Promise<AgendaData>
+  saveItem(item: Draft<AgendaItem>): Promise<AgendaData>
+  setItemDone(id: string, done: boolean): Promise<AgendaData>
+  deleteItem(id: string): Promise<AgendaData>
 }

@@ -2,7 +2,7 @@ import { app, nativeTheme } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer } from '@electron-toolkit/utils'
 import type { Settings } from '@shared/types'
-import { ScheduleRepo, SubjectsRepo } from './data/agendaRepos'
+import { ItemsRepo, ScheduleRepo, SubjectsRepo } from './data/agendaRepos'
 import { DataStore } from './data/dataStore'
 import { SettingsRepo } from './data/settingsRepo'
 import { createTranslator } from './i18n'
@@ -11,6 +11,11 @@ import { createMainWindow, showMainWindow } from './mainWindow'
 import { createTray, updateTrayMenu } from './tray'
 
 const APP_ID = 'com.miestudio.app'
+
+// A separate data folder for tests and experiments, so they never touch the real data:
+// MI_ESTUDIO_DATA_DIR=C:\temp\pruebas npm run dev
+const customDataDir = process.env['MI_ESTUDIO_DATA_DIR']
+if (customDataDir) app.setPath('userData', customDataDir)
 
 // Only one copy of the app can run; opening it again just shows the existing window
 if (!app.requestSingleInstanceLock()) {
@@ -43,6 +48,7 @@ function start(): void {
     settings,
     subjects: new SubjectsRepo(store),
     schedule: new ScheduleRepo(store),
+    items: new ItemsRepo(store),
     onSettingsChanged: (current) => {
       applySettings(current)
       broadcastSettings(current)

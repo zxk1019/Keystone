@@ -18,6 +18,85 @@
   "placeholder": {
     "comingInPhase": "Esta sección llegará en la fase {{phase}}."
   },
+  "item": {
+    "new": {
+      "homework": "Nuevos deberes",
+      "exam": "Nuevo examen",
+      "project": "Nuevo trabajo",
+      "event": "Nuevo evento"
+    },
+    "edit": {
+      "homework": "Editar deberes",
+      "exam": "Editar examen",
+      "project": "Editar trabajo",
+      "event": "Editar evento"
+    },
+    "type": "Tipo",
+    "title": "Título",
+    "titlePlaceholder": {
+      "homework": "Ejercicios de la página 45",
+      "exam": "Examen del tema 3",
+      "project": "Práctica final",
+      "event": "Partido de baloncesto"
+    },
+    "subject": "Asignatura",
+    "noSubject": "Sin asignatura",
+    "date": "Fecha",
+    "time": "Hora (opcional)",
+    "startTime": "Empieza (opcional)",
+    "endTime": "Termina (opcional)",
+    "priority": "Prioridad",
+    "topics": "Temas que entran (opcional)",
+    "topicsPlaceholder": "Temas 3 y 4, ejercicios de repaso",
+    "done": "Hecho",
+    "errorTitle": "Escribe un título.",
+    "errorDate": "Elige una fecha.",
+    "errorEndTime": "La hora de fin tiene que ser después de la de inicio.",
+    "deleteConfirm": "¿Borrar «{{title}}»?"
+  },
+  "priority": {
+    "high": "Alta",
+    "medium": "Media",
+    "low": "Baja"
+  },
+  "tasks": {
+    "new": "Nueva tarea",
+    "status": {
+      "label": "Estado",
+      "pending": "Pendientes",
+      "overdue": "Con retraso",
+      "done": "Hechas",
+      "all": "Todas"
+    },
+    "allTypes": "Todos los tipos",
+    "allSubjects": "Todas las asignaturas",
+    "noSubject": "Sin asignatura",
+    "group": {
+      "overdue": "Con retraso",
+      "today": "Hoy",
+      "tomorrow": "Mañana",
+      "thisWeek": "Esta semana",
+      "later": "Más adelante",
+      "past": "Pasados",
+      "done": "Hechas"
+    },
+    "empty": "No hay nada que mostrar con estos filtros.",
+    "markDone": "Marcar como hecho",
+    "markPending": "Marcar como pendiente",
+    "newFor": "Nueva tarea: {{date}}"
+  },
+  "today": {
+    "classes": "Clases de hoy",
+    "now": "Ahora",
+    "next": "Siguiente",
+    "weekend": "Hoy no hay clase. ¡Disfruta del fin de semana!",
+    "noClasses": "Hoy no tienes clases.",
+    "noSchedule": "Aún no has puesto tu horario.",
+    "pending": "Pendientes",
+    "nothingPending": "No tienes nada pendiente para hoy ni para mañana.",
+    "exams": "Próximos exámenes",
+    "noExams": "No tienes exámenes en los próximos 30 días."
+  },
   "agenda": {
     "week": "Semana",
     "month": "Mes",

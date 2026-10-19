@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import {
   datesOfWeek,
+  formatCountdown,
   formatDateRange,
+  formatDueDate,
   formatMonth,
   isoWeekday,
   monthGrid,
@@ -65,5 +67,26 @@ describe('names in each language', () => {
   it('names months', () => {
     expect(formatMonth(new Date(2026, 9, 1), 'en')).toBe('October 2026')
     expect(formatMonth(new Date(2026, 9, 1), 'zh-CN')).toBe('2026年10月')
+  })
+})
+
+describe('due dates', () => {
+  const today = new Date(2026, 9, 21)
+
+  it('says yesterday, today and tomorrow in words', () => {
+    expect(formatDueDate('2026-10-20', today, 'es')).toBe('Ayer')
+    expect(formatDueDate('2026-10-21', today, 'es')).toBe('Hoy')
+    expect(formatDueDate('2026-10-22', today, 'en')).toBe('Tomorrow')
+    expect(formatDueDate('2026-10-22', today, 'zh-CN')).toBe('明天')
+  })
+
+  it('shows other dates with the weekday, and the year only if it is not this one', () => {
+    expect(formatDueDate('2026-10-16', today, 'en')).toBe('Fri, Oct 16')
+    expect(formatDueDate('2027-01-08', today, 'en')).toBe('Fri, Jan 8, 2027')
+  })
+
+  it('counts down the days', () => {
+    expect(formatCountdown('2026-10-24', today, 'es')).toBe('Dentro de 3 días')
+    expect(formatCountdown('2026-10-24', today, 'en')).toBe('In 3 days')
   })
 })

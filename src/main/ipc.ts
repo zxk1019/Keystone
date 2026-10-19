@@ -1,7 +1,7 @@
 import { BrowserWindow, ipcMain, type IpcMainInvokeEvent } from 'electron'
 import { IPC } from '@shared/api'
 import type { Settings } from '@shared/types'
-import { agendaOf, type ScheduleRepo, type SubjectsRepo } from './data/agendaRepos'
+import { agendaOf, type ItemsRepo, type ScheduleRepo, type SubjectsRepo } from './data/agendaRepos'
 import { exportBackup, importBackup } from './data/backup'
 import type { DataStore } from './data/dataStore'
 import type { SettingsRepo } from './data/settingsRepo'
@@ -12,6 +12,7 @@ interface IpcDeps {
   settings: SettingsRepo
   subjects: SubjectsRepo
   schedule: ScheduleRepo
+  items: ItemsRepo
   /** Called whenever the settings change, from the UI or from an imported backup. */
   onSettingsChanged: (settings: Settings) => void
 }
@@ -38,6 +39,7 @@ export function registerIpc({
   settings,
   subjects,
   schedule,
+  items,
   onSettingsChanged
 }: IpcDeps): void {
   const translator = (): ReturnType<typeof createTranslator> =>
@@ -67,4 +69,7 @@ export function registerIpc({
   ipcMain.handle(IPC.deleteSubject, (_event, id: unknown) => subjects.delete(id))
   ipcMain.handle(IPC.saveScheduleSlot, (_event, draft: unknown) => schedule.save(draft))
   ipcMain.handle(IPC.deleteScheduleSlot, (_event, id: unknown) => schedule.delete(id))
+  ipcMain.handle(IPC.saveItem, (_event, draft: unknown) => items.save(draft))
+  ipcMain.handle(IPC.setItemDone, (_event, id: unknown, done: unknown) => items.setDone(id, done))
+  ipcMain.handle(IPC.deleteItem, (_event, id: unknown) => items.delete(id))
 }

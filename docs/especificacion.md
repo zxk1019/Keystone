@@ -96,7 +96,7 @@ Las traducciones están en `shared/` y no en `renderer/` porque el proceso main 
 
 ### 4.1 Hoy (pantalla inicial)
 - **Clases de hoy**, en orden, marcando la que está en curso y la siguiente. Los fines de semana, un mensaje de que no hay clase.
-- **Pendientes urgentes**: lo que vence hoy o mañana y lo que **va con retraso** (fecha pasada y sin marcar), ordenado por fecha y prioridad. Se pueden marcar como hechos desde aquí.
+- **Pendientes urgentes**: lo que vence hoy o mañana y lo que **va con retraso** (deberes y trabajos con la fecha pasada y sin marcar; los exámenes y eventos pasados simplemente quedan atrás), ordenado por fecha y prioridad. Se pueden marcar como hechos desde aquí.
 - **Próximos exámenes**, con una cuenta atrás ("faltan 5 días").
 
 ### 4.2 Agenda
@@ -136,7 +136,7 @@ Las traducciones están en `shared/` y no en `renderer/` porque el proceso main 
 Un **planificador en el proceso main** revisa cada minuto qué avisos tocan. Funciona aunque la ventana esté cerrada, siempre que la app esté en la bandeja.
 
 - **Resumen diario** a una hora configurable (por defecto **17:00**) con lo que tengo pendiente para hoy y mañana y lo que va con retraso.
-- **Tareas con retraso**: si pasa la fecha y no está marcada como hecha, **avisa y repite cada 2 horas** (configurable) **hasta que la marque como hecha**.
+- **Tareas con retraso** (deberes y trabajos): si pasa la fecha y no está marcada como hecha, **avisa y repite cada 2 horas** (configurable) **hasta que la marque como hecha**.
 - **Exámenes**: avisos **7, 3 y 1 días antes** (configurable) para empezar a estudiar con tiempo.
 - **Silencio al estudiar**: durante el tiempo de estudio no sale ningún aviso de tareas. Se guardan y se muestran juntos en el siguiente descanso o al terminar la sesión.
 - **Horas de silencio** configurables (por defecto de 22:00 a 8:00), en las que no se repite nada.
