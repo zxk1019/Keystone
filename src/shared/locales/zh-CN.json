@@ -9,8 +9,86 @@
     "study": "学习",
     "settings": "设置"
   },
+  "common": {
+    "save": "保存",
+    "cancel": "取消",
+    "delete": "删除",
+    "confirmDelete": "确认删除"
+  },
   "placeholder": {
     "comingInPhase": "此部分将在第 {{phase}} 阶段推出。"
+  },
+  "agenda": {
+    "week": "周",
+    "month": "月",
+    "today": "今天",
+    "previous": "上一页",
+    "next": "下一页",
+    "view": "视图",
+    "editSchedule": "编辑课表",
+    "done": "完成",
+    "addClass": "添加课程",
+    "emptySchedule": "你还没有设置课表。",
+    "editHint": "点击空白处添加课程，点击已有课程可以修改。",
+    "moreItems": "还有 {{count}} 项",
+    "itemType": {
+      "homework": "作业",
+      "exam": "考试",
+      "project": "项目",
+      "event": "活动"
+    }
+  },
+  "subjects": {
+    "title": "科目",
+    "add": "新建科目",
+    "edit": "编辑科目",
+    "empty": "你还没有科目。先创建一个，开始设置课表吧。",
+    "name": "名称",
+    "namePlaceholder": "数学",
+    "color": "颜色",
+    "nameRequired": "请输入名称。",
+    "classCount_zero": "没有课程",
+    "classCount_one": "{{count}} 节课",
+    "classCount_other": "{{count}} 节课",
+    "deleteConfirm_zero": "删除{{name}}？",
+    "deleteConfirm_one": "删除{{name}}？它在课表中的 {{count}} 节课也会被删除。",
+    "deleteConfirm_other": "删除{{name}}？它在课表中的 {{count}} 节课也会被删除。"
+  },
+  "slot": {
+    "newClass": "新课程",
+    "newBreak": "新休息时间",
+    "editClass": "编辑课程",
+    "editBreak": "编辑休息时间",
+    "kindClass": "课程",
+    "kindBreak": "休息",
+    "subject": "科目",
+    "chooseSubject": "选择科目",
+    "noSubjects": "请先在“科目”面板中创建一个科目。",
+    "breakName": "名称",
+    "breakPlaceholder": "课间休息",
+    "day": "星期",
+    "start": "开始",
+    "end": "结束",
+    "room": "教室（可选）",
+    "errorEndBeforeStart": "结束时间必须晚于开始时间。",
+    "errorSubject": "请选择一个科目。",
+    "errorBreakName": "请为休息时间输入名称。",
+    "errorOverlap": "与{{name}}（{{start}}–{{end}}）时间重叠。",
+    "deleteConfirm": "确定要从课表中删除这一项吗？"
+  },
+  "colors": {
+    "red": "红色",
+    "orange": "橙色",
+    "amber": "琥珀色",
+    "lime": "青柠色",
+    "emerald": "翠绿色",
+    "teal": "蓝绿色",
+    "cyan": "青色",
+    "sky": "天蓝色",
+    "blue": "蓝色",
+    "indigo": "靛蓝色",
+    "violet": "紫罗兰色",
+    "pink": "粉色"
   },
   "settings": {
     "appearance": "外观",
@@ -22,6 +100,11 @@
     },
     "language": {
       "label": "语言"
+    },
+    "schedule": {
+      "title": "课表和科目",
+      "description": "创建科目并设置每周课表。",
+      "open": "编辑课表"
     },
     "data": {
       "title": "数据",

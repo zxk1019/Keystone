@@ -1,0 +1,440 @@
+{
+  "version": 1,
+  "settings": {
+    "theme": "system",
+    "language": "es"
+  },
+  "subjects": [
+    {
+      "id": "mat",
+      "name": "Matemáticas",
+      "color": "blue"
+    },
+    {
+      "id": "len",
+      "name": "Lengua",
+      "color": "red"
+    },
+    {
+      "id": "ing",
+      "name": "Inglés",
+      "color": "violet"
+    },
+    {
+      "id": "his",
+      "name": "Historia",
+      "color": "amber"
+    },
+    {
+      "id": "fyq",
+      "name": "Física y Química",
+      "color": "emerald"
+    },
+    {
+      "id": "bio",
+      "name": "Biología",
+      "color": "lime"
+    },
+    {
+      "id": "ef",
+      "name": "Educación Física",
+      "color": "orange"
+    },
+    {
+      "id": "tec",
+      "name": "Tecnología",
+      "color": "cyan"
+    },
+    {
+      "id": "cat",
+      "name": "Catalán",
+      "color": "pink"
+    }
+  ],
+  "schedule": [
+    {
+      "id": "1-08:00",
+      "subjectId": "mat",
+      "weekday": 1,
+      "start": "08:00",
+      "end": "09:00",
+      "room": "2.º B"
+    },
+    {
+      "id": "1-09:00",
+      "subjectId": "len",
+      "weekday": 1,
+      "start": "09:00",
+      "end": "10:00",
+      "room": "2.º B"
+    },
+    {
+      "id": "1-10:00",
+      "subjectId": "ing",
+      "weekday": 1,
+      "start": "10:00",
+      "end": "11:00",
+      "room": "2.º B"
+    },
+    {
+      "id": "1-11:30",
+      "subjectId": "his",
+      "weekday": 1,
+      "start": "11:30",
+      "end": "12:30",
+      "room": "2.º B"
+    },
+    {
+      "id": "1-12:30",
+      "subjectId": "fyq",
+      "weekday": 1,
+      "start": "12:30",
+      "end": "13:30",
+      "room": "Lab 1"
+    },
+    {
+      "id": "1-13:30",
+      "subjectId": "cat",
+      "weekday": 1,
+      "start": "13:30",
+      "end": "14:30",
+      "room": "2.º B"
+    },
+    {
+      "id": "1-patio",
+      "label": "Patio",
+      "weekday": 1,
+      "start": "11:00",
+      "end": "11:30"
+    },
+    {
+      "id": "2-08:00",
+      "subjectId": "len",
+      "weekday": 2,
+      "start": "08:00",
+      "end": "09:00",
+      "room": "2.º B"
+    },
+    {
+      "id": "2-09:00",
+      "subjectId": "mat",
+      "weekday": 2,
+      "start": "09:00",
+      "end": "10:00",
+      "room": "2.º B"
+    },
+    {
+      "id": "2-10:00",
+      "subjectId": "bio",
+      "weekday": 2,
+      "start": "10:00",
+      "end": "11:00",
+      "room": "2.º B"
+    },
+    {
+      "id": "2-11:30",
+      "subjectId": "tec",
+      "weekday": 2,
+      "start": "11:30",
+      "end": "12:30",
+      "room": "Taller"
+    },
+    {
+      "id": "2-12:30",
+      "subjectId": "ing",
+      "weekday": 2,
+      "start": "12:30",
+      "end": "13:30",
+      "room": "2.º B"
+    },
+    {
+      "id": "2-13:30",
+      "subjectId": "ef",
+      "weekday": 2,
+      "start": "13:30",
+      "end": "14:30",
+      "room": "Gimnasio"
+    },
+    {
+      "id": "2-patio",
+      "label": "Patio",
+      "weekday": 2,
+      "start": "11:00",
+      "end": "11:30"
+    },
+    {
+      "id": "3-08:00",
+      "subjectId": "fyq",
+      "weekday": 3,
+      "start": "08:00",
+      "end": "09:00",
+      "room": "Lab 1"
+    },
+    {
+      "id": "3-09:00",
+      "subjectId": "his",
+      "weekday": 3,
+      "start": "09:00",
+      "end": "10:00",
+      "room": "2.º B"
+    },
+    {
+      "id": "3-10:00",
+      "subjectId": "mat",
+      "weekday": 3,
+      "start": "10:00",
+      "end": "11:00",
+      "room": "2.º B"
+    },
+    {
+      "id": "3-11:30",
+      "subjectId": "cat",
+      "weekday": 3,
+      "start": "11:30",
+      "end": "12:30",
+      "room": "2.º B"
+    },
+    {
+      "id": "3-12:30",
+      "subjectId": "len",
+      "weekday": 3,
+      "start": "12:30",
+      "end": "13:30",
+      "room": "2.º B"
+    },
+    {
+      "id": "3-13:30",
+      "subjectId": "bio",
+      "weekday": 3,
+      "start": "13:30",
+      "end": "14:30",
+      "room": "2.º B"
+    },
+    {
+      "id": "3-patio",
+      "label": "Patio",
+      "weekday": 3,
+      "start": "11:00",
+      "end": "11:30"
+    },
+    {
+      "id": "4-08:00",
+      "subjectId": "ing",
+      "weekday": 4,
+      "start": "08:00",
+      "end": "09:00",
+      "room": "2.º B"
+    },
+    {
+      "id": "4-09:00",
+      "subjectId": "tec",
+      "weekday": 4,
+      "start": "09:00",
+      "end": "10:00",
+      "room": "Taller"
+    },
+    {
+      "id": "4-10:00",
+      "subjectId": "len",
+      "weekday": 4,
+      "start": "10:00",
+      "end": "11:00",
+      "room": "2.º B"
+    },
+    {
+      "id": "4-11:30",
+      "subjectId": "mat",
+      "weekday": 4,
+      "start": "11:30",
+      "end": "12:30",
+      "room": "2.º B"
+    },
+    {
+      "id": "4-12:30",
+      "subjectId": "ef",
+      "weekday": 4,
+      "start": "12:30",
+      "end": "13:30",
+      "room": "Gimnasio"
+    },
+    {
+      "id": "4-13:30",
+      "subjectId": "his",
+      "weekday": 4,
+      "start": "13:30",
+      "end": "14:30",
+      "room": "2.º B"
+    },
+    {
+      "id": "4-patio",
+      "label": "Patio",
+      "weekday": 4,
+      "start": "11:00",
+      "end": "11:30"
+    },
+    {
+      "id": "5-08:00",
+      "subjectId": "bio",
+      "weekday": 5,
+      "start": "08:00",
+      "end": "09:00",
+      "room": "2.º B"
+    },
+    {
+      "id": "5-09:00",
+      "subjectId": "cat",
+      "weekday": 5,
+      "start": "09:00",
+      "end": "10:00",
+      "room": "2.º B"
+    },
+    {
+      "id": "5-10:00",
+      "subjectId": "fyq",
+      "weekday": 5,
+      "start": "10:00",
+      "end": "11:00",
+      "room": "Lab 1"
+    },
+    {
+      "id": "5-11:30",
+      "subjectId": "ing",
+      "weekday": 5,
+      "start": "11:30",
+      "end": "12:30",
+      "room": "2.º B"
+    },
+    {
+      "id": "5-12:30",
+      "subjectId": "mat",
+      "weekday": 5,
+      "start": "12:30",
+      "end": "13:30",
+      "room": "2.º B"
+    },
+    {
+      "id": "5-13:30",
+      "subjectId": "tec",
+      "weekday": 5,
+      "start": "13:30",
+      "end": "14:30",
+      "room": "Taller"
+    },
+    {
+      "id": "5-patio",
+      "label": "Patio",
+      "weekday": 5,
+      "start": "11:00",
+      "end": "11:30"
+    }
+  ],
+  "items": [
+    {
+      "id": "i1",
+      "type": "homework",
+      "title": "Ejercicios pág. 45",
+      "date": "2026-10-19",
+      "priority": "medium",
+      "done": false,
+      "subjectId": "mat"
+    },
+    {
+      "id": "i0",
+      "type": "homework",
+      "title": "Leer capítulo 2",
+      "date": "2026-10-15",
+      "priority": "medium",
+      "done": true,
+      "subjectId": "len"
+    },
+    {
+      "id": "i2",
+      "type": "exam",
+      "title": "Examen tema 3",
+      "date": "2026-10-21",
+      "priority": "medium",
+      "done": false,
+      "subjectId": "his"
+    },
+    {
+      "id": "i3",
+      "type": "homework",
+      "title": "Redacción: my weekend",
+      "date": "2026-10-21",
+      "priority": "medium",
+      "done": false,
+      "subjectId": "ing"
+    },
+    {
+      "id": "i4",
+      "type": "project",
+      "title": "Proyecto Arduino",
+      "date": "2026-10-22",
+      "priority": "medium",
+      "done": false,
+      "subjectId": "tec"
+    },
+    {
+      "id": "i5",
+      "type": "homework",
+      "title": "Problemas de dinámica",
+      "date": "2026-10-22",
+      "priority": "medium",
+      "done": false,
+      "subjectId": "fyq"
+    },
+    {
+      "id": "i6",
+      "type": "homework",
+      "title": "Mapa conceptual",
+      "date": "2026-10-22",
+      "priority": "medium",
+      "done": false,
+      "subjectId": "bio"
+    },
+    {
+      "id": "i7",
+      "type": "homework",
+      "title": "Comentario de texto",
+      "date": "2026-10-22",
+      "priority": "medium",
+      "done": false,
+      "subjectId": "cat"
+    },
+    {
+      "id": "i8",
+      "type": "exam",
+      "title": "Examen de funciones",
+      "date": "2026-10-27",
+      "priority": "medium",
+      "done": false,
+      "subjectId": "mat"
+    },
+    {
+      "id": "i9",
+      "type": "homework",
+      "title": "Análisis sintáctico",
+      "date": "2026-10-30",
+      "priority": "medium",
+      "done": false,
+      "subjectId": "len"
+    },
+    {
+      "id": "i10",
+      "type": "exam",
+      "title": "Listening test",
+      "date": "2026-11-05",
+      "priority": "medium",
+      "done": false,
+      "subjectId": "ing"
+    },
+    {
+      "id": "i11",
+      "type": "event",
+      "title": "Partido de baloncesto",
+      "date": "2026-10-28",
+      "priority": "medium",
+      "done": false
+    }
+  ]
+}

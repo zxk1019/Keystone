@@ -9,8 +9,86 @@
     "study": "Study",
     "settings": "Settings"
   },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "confirmDelete": "Yes, delete"
+  },
   "placeholder": {
     "comingInPhase": "This section is coming in phase {{phase}}."
+  },
+  "agenda": {
+    "week": "Week",
+    "month": "Month",
+    "today": "Today",
+    "previous": "Previous",
+    "next": "Next",
+    "view": "View",
+    "editSchedule": "Edit timetable",
+    "done": "Done",
+    "addClass": "Add class",
+    "emptySchedule": "You haven't added your class timetable yet.",
+    "editHint": "Click an empty space to add a class, or click a class to change it.",
+    "moreItems": "+{{count}} more",
+    "itemType": {
+      "homework": "Homework",
+      "exam": "Exam",
+      "project": "Project",
+      "event": "Event"
+    }
+  },
+  "subjects": {
+    "title": "Subjects",
+    "add": "New subject",
+    "edit": "Edit subject",
+    "empty": "You don't have any subjects yet. Create the first one to start your timetable.",
+    "name": "Name",
+    "namePlaceholder": "Maths",
+    "color": "Color",
+    "nameRequired": "Enter a name.",
+    "classCount_zero": "No classes",
+    "classCount_one": "{{count}} class",
+    "classCount_other": "{{count}} classes",
+    "deleteConfirm_zero": "Delete {{name}}?",
+    "deleteConfirm_one": "Delete {{name}}? Its class in the timetable will be deleted too.",
+    "deleteConfirm_other": "Delete {{name}}? Its {{count}} classes in the timetable will be deleted too."
+  },
+  "slot": {
+    "newClass": "New class",
+    "newBreak": "New break",
+    "editClass": "Edit class",
+    "editBreak": "Edit break",
+    "kindClass": "Class",
+    "kindBreak": "Break",
+    "subject": "Subject",
+    "chooseSubject": "Choose a subject",
+    "noSubjects": "First create a subject in the Subjects panel.",
+    "breakName": "Name",
+    "breakPlaceholder": "Recess",
+    "day": "Day",
+    "start": "Start",
+    "end": "End",
+    "room": "Room (optional)",
+    "errorEndBeforeStart": "The end time must be after the start time.",
+    "errorSubject": "Choose a subject.",
+    "errorBreakName": "Enter a name for the break.",
+    "errorOverlap": "Overlaps with {{name}} ({{start}}–{{end}}).",
+    "deleteConfirm": "Delete this from the timetable?"
+  },
+  "colors": {
+    "red": "Red",
+    "orange": "Orange",
+    "amber": "Amber",
+    "lime": "Lime",
+    "emerald": "Emerald",
+    "teal": "Teal",
+    "cyan": "Cyan",
+    "sky": "Sky blue",
+    "blue": "Blue",
+    "indigo": "Indigo",
+    "violet": "Violet",
+    "pink": "Pink"
   },
   "settings": {
     "appearance": "Appearance",
@@ -22,6 +100,11 @@
     },
     "language": {
       "label": "Language"
+    },
+    "schedule": {
+      "title": "Timetable and subjects",
+      "description": "Create your subjects and set up your weekly timetable.",
+      "open": "Edit timetable"
     },
     "data": {
       "title": "Data",

@@ -9,8 +9,86 @@
     "study": "Estudio",
     "settings": "Ajustes"
   },
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Borrar",
+    "confirmDelete": "Sí, borrar"
+  },
   "placeholder": {
     "comingInPhase": "Esta sección llegará en la fase {{phase}}."
+  },
+  "agenda": {
+    "week": "Semana",
+    "month": "Mes",
+    "today": "Hoy",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "view": "Vista",
+    "editSchedule": "Editar horario",
+    "done": "Listo",
+    "addClass": "Añadir clase",
+    "emptySchedule": "Aún no has puesto tu horario de clases.",
+    "editHint": "Haz clic en un hueco para añadir una clase, o en una clase para cambiarla.",
+    "moreItems": "+{{count}} más",
+    "itemType": {
+      "homework": "Deberes",
+      "exam": "Examen",
+      "project": "Trabajo",
+      "event": "Evento"
+    }
+  },
+  "subjects": {
+    "title": "Asignaturas",
+    "add": "Nueva asignatura",
+    "edit": "Editar asignatura",
+    "empty": "Aún no tienes asignaturas. Crea la primera para empezar tu horario.",
+    "name": "Nombre",
+    "namePlaceholder": "Matemáticas",
+    "color": "Color",
+    "nameRequired": "Escribe un nombre.",
+    "classCount_zero": "Sin clases",
+    "classCount_one": "{{count}} clase",
+    "classCount_other": "{{count}} clases",
+    "deleteConfirm_zero": "¿Borrar {{name}}?",
+    "deleteConfirm_one": "¿Borrar {{name}}? También se borrará su clase del horario.",
+    "deleteConfirm_other": "¿Borrar {{name}}? También se borrarán sus {{count}} clases del horario."
+  },
+  "slot": {
+    "newClass": "Nueva clase",
+    "newBreak": "Nuevo descanso",
+    "editClass": "Editar clase",
+    "editBreak": "Editar descanso",
+    "kindClass": "Clase",
+    "kindBreak": "Descanso",
+    "subject": "Asignatura",
+    "chooseSubject": "Elige una asignatura",
+    "noSubjects": "Primero crea una asignatura en el panel «Asignaturas».",
+    "breakName": "Nombre",
+    "breakPlaceholder": "Patio",
+    "day": "Día",
+    "start": "Inicio",
+    "end": "Fin",
+    "room": "Aula (opcional)",
+    "errorEndBeforeStart": "La hora de fin tiene que ser después de la de inicio.",
+    "errorSubject": "Elige una asignatura.",
+    "errorBreakName": "Escribe un nombre para el descanso.",
+    "errorOverlap": "Se solapa con {{name}} ({{start}}–{{end}}).",
+    "deleteConfirm": "¿Borrar esto del horario?"
+  },
+  "colors": {
+    "red": "Rojo",
+    "orange": "Naranja",
+    "amber": "Ámbar",
+    "lime": "Lima",
+    "emerald": "Esmeralda",
+    "teal": "Verde azulado",
+    "cyan": "Cian",
+    "sky": "Celeste",
+    "blue": "Azul",
+    "indigo": "Índigo",
+    "violet": "Violeta",
+    "pink": "Rosa"
   },
   "settings": {
     "appearance": "Apariencia",
@@ -22,6 +100,11 @@
     },
     "language": {
       "label": "Idioma"
+    },
+    "schedule": {
+      "title": "Horario y asignaturas",
+      "description": "Crea tus asignaturas y monta tu horario semanal.",
+      "open": "Editar horario"
     },
     "data": {
       "title": "Datos",

@@ -5,14 +5,24 @@
 
 html {
   color-scheme: light;
+  /* Thin scrollbars instead of the classic Windows ones with arrows */
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-zinc-300) transparent;
 }
 
 /* Makes scrollbars and native controls (select, dialogs) dark too */
 html[data-theme='dark'] {
   color-scheme: dark;
+  scrollbar-color: var(--color-zinc-700) transparent;
 }
 
 body {
   margin: 0;
   overflow: hidden;
+}
+
+/* The same focus ring everywhere, visible only when using the keyboard */
+:focus-visible {
+  outline: 2px solid var(--color-indigo-500);
+  outline-offset: 2px;
 }
