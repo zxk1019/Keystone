@@ -42,3 +42,19 @@ export function sortSlots(slots: ScheduleSlot[]): ScheduleSlot[] {
     (a, b) => a.weekday - b.weekday || timeToMinutes(a.start) - timeToMinutes(b.start)
   )
 }
+
+/**
+ * The slot happening at `minutes` (a class or a break) and the next class after it.
+ * Breaks are skipped for "next" because what matters is which class comes after.
+ */
+export function currentAndNextSlot(
+  daySlots: ScheduleSlot[],
+  minutes: number
+): { current?: ScheduleSlot; next?: ScheduleSlot } {
+  const sorted = sortSlots(daySlots)
+  const current = sorted.find(
+    (slot) => timeToMinutes(slot.start) <= minutes && minutes < timeToMinutes(slot.end)
+  )
+  const next = sorted.find((slot) => slot.subjectId && timeToMinutes(slot.start) > minutes)
+  return { current, next }
+}

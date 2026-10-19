@@ -3,19 +3,17 @@ import {
   eachDayOfInterval,
   endOfMonth,
   endOfWeek,
-  format,
   getISODay,
+  parseISO,
   startOfMonth,
   startOfWeek
 } from 'date-fns'
+import { daysUntil } from '@shared/dates'
+
+export { toDateKey } from '@shared/dates'
 
 // Weeks start on Monday, as in Spain and China
 const WEEK_OPTIONS = { weekStartsOn: 1 } as const
-
-/** "2026-10-19", the format dates are stored in */
-export function toDateKey(date: Date): string {
-  return format(date, 'yyyy-MM-dd')
-}
 
 export function startOfSchoolWeek(date: Date): Date {
   return startOfWeek(date, WEEK_OPTIONS)
@@ -78,4 +76,37 @@ export function formatDateRange(start: Date, end: Date, language: string): strin
 export function formatMonth(month: Date, language: string): string {
   const formatter = new Intl.DateTimeFormat(language, { month: 'long', year: 'numeric' })
   return capitalize(formatter.format(month), language)
+}
+
+/** "Lunes, 19 de octubre" / "Monday, October 19" / "10月19日星期一" */
+export function formatLongDate(date: Date, language: string): string {
+  const formatter = new Intl.DateTimeFormat(language, {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long'
+  })
+  return capitalize(formatter.format(date), language)
+}
+
+/** "Ayer" / "Hoy" / "Mañana" when close, otherwise "Vie, 16 oct" (with the year if it is not this one). */
+export function formatDueDate(dateKey: string, today: Date, language: string): string {
+  const days = daysUntil(dateKey, today)
+  if (Math.abs(days) <= 1) {
+    const relative = new Intl.RelativeTimeFormat(language, { numeric: 'auto' })
+    return capitalize(relative.format(days, 'day'), language)
+  }
+  const date = parseISO(dateKey)
+  const formatter = new Intl.DateTimeFormat(language, {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+    ...(date.getFullYear() !== today.getFullYear() ? { year: 'numeric' } : {})
+  })
+  return capitalize(formatter.format(date), language)
+}
+
+/** "Hoy" / "Mañana" / "Dentro de 3 días" */
+export function formatCountdown(dateKey: string, today: Date, language: string): string {
+  const relative = new Intl.RelativeTimeFormat(language, { numeric: 'auto' })
+  return capitalize(relative.format(daysUntil(dateKey, today), 'day'), language)
 }

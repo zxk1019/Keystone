@@ -17,6 +17,7 @@ import {
 export const MAX_NAME_LENGTH = 40
 export const MAX_ROOM_LENGTH = 20
 export const MAX_TITLE_LENGTH = 120
+export const MAX_TOPICS_LENGTH = 500
 
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/
 
@@ -98,9 +99,17 @@ export function parseAgendaItem(value: unknown, subjectIds: Set<string>): Agenda
   }
   if (isId(value.subjectId) && subjectIds.has(value.subjectId)) item.subjectId = value.subjectId
   if (isValidTime(value.time)) item.time = value.time
-  if (isValidTime(value.endTime)) item.endTime = value.endTime
-  if (typeof value.completedAt === 'string') item.completedAt = value.completedAt
-  const topics = typeof value.topics === 'string' ? value.topics.trim() : ''
+  // Only events have an end, and it must come after the start
+  if (
+    type === 'event' &&
+    item.time &&
+    isValidTime(value.endTime) &&
+    timeToMinutes(value.endTime) > timeToMinutes(item.time)
+  ) {
+    item.endTime = value.endTime
+  }
+  if (item.done && typeof value.completedAt === 'string') item.completedAt = value.completedAt
+  const topics = cleanText(value.topics, MAX_TOPICS_LENGTH)
   if (type === 'exam' && topics) item.topics = topics
   return item
 }

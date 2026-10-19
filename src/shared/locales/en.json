@@ -18,6 +18,85 @@
   "placeholder": {
     "comingInPhase": "This section is coming in phase {{phase}}."
   },
+  "item": {
+    "new": {
+      "homework": "New homework",
+      "exam": "New exam",
+      "project": "New project",
+      "event": "New event"
+    },
+    "edit": {
+      "homework": "Edit homework",
+      "exam": "Edit exam",
+      "project": "Edit project",
+      "event": "Edit event"
+    },
+    "type": "Type",
+    "title": "Title",
+    "titlePlaceholder": {
+      "homework": "Exercises on page 45",
+      "exam": "Unit 3 exam",
+      "project": "Final project",
+      "event": "Basketball game"
+    },
+    "subject": "Subject",
+    "noSubject": "No subject",
+    "date": "Date",
+    "time": "Time (optional)",
+    "startTime": "Starts (optional)",
+    "endTime": "Ends (optional)",
+    "priority": "Priority",
+    "topics": "Topics covered (optional)",
+    "topicsPlaceholder": "Units 3 and 4, review exercises",
+    "done": "Done",
+    "errorTitle": "Enter a title.",
+    "errorDate": "Choose a date.",
+    "errorEndTime": "The end time must be after the start time.",
+    "deleteConfirm": "Delete “{{title}}”?"
+  },
+  "priority": {
+    "high": "High",
+    "medium": "Medium",
+    "low": "Low"
+  },
+  "tasks": {
+    "new": "New task",
+    "status": {
+      "label": "Status",
+      "pending": "Pending",
+      "overdue": "Overdue",
+      "done": "Done",
+      "all": "All"
+    },
+    "allTypes": "All types",
+    "allSubjects": "All subjects",
+    "noSubject": "No subject",
+    "group": {
+      "overdue": "Overdue",
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "thisWeek": "This week",
+      "later": "Later",
+      "past": "Past",
+      "done": "Done"
+    },
+    "empty": "Nothing to show with these filters.",
+    "markDone": "Mark as done",
+    "markPending": "Mark as pending",
+    "newFor": "New task: {{date}}"
+  },
+  "today": {
+    "classes": "Today's classes",
+    "now": "Now",
+    "next": "Next",
+    "weekend": "No classes today. Enjoy the weekend!",
+    "noClasses": "You have no classes today.",
+    "noSchedule": "You haven't added your timetable yet.",
+    "pending": "To do",
+    "nothingPending": "Nothing due today or tomorrow.",
+    "exams": "Upcoming exams",
+    "noExams": "No exams in the next 30 days."
+  },
   "agenda": {
     "week": "Week",
     "month": "Month",

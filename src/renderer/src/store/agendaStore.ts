@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import type { SaveSlotResult } from '@shared/api'
-import type { AgendaData, Draft, ScheduleSlot, Subject } from '@shared/types'
+import type { AgendaData, AgendaItem, Draft, ScheduleSlot, Subject } from '@shared/types'
 import { platform } from '../platform'
 
 interface AgendaState {
@@ -12,6 +12,9 @@ interface AgendaState {
   /** Resolves with 'overlap' (and saves nothing) if the slot clashes with another one. */
   saveSlot: (slot: Draft<ScheduleSlot>) => Promise<SaveSlotResult>
   deleteSlot: (id: string) => Promise<void>
+  saveItem: (item: Draft<AgendaItem>) => Promise<void>
+  setItemDone: (id: string, done: boolean) => Promise<void>
+  deleteItem: (id: string) => Promise<void>
 }
 
 export const useAgendaStore = create<AgendaState>((set) => ({
@@ -24,5 +27,8 @@ export const useAgendaStore = create<AgendaState>((set) => ({
     if (result.status === 'saved') set({ agenda: result.agenda })
     return result
   },
-  deleteSlot: async (id) => set({ agenda: await platform.deleteScheduleSlot(id) })
+  deleteSlot: async (id) => set({ agenda: await platform.deleteScheduleSlot(id) }),
+  saveItem: async (item) => set({ agenda: await platform.saveItem(item) }),
+  setItemDone: async (id, done) => set({ agenda: await platform.setItemDone(id, done) }),
+  deleteItem: async (id) => set({ agenda: await platform.deleteItem(id) })
 }))

@@ -22,7 +22,10 @@ const api: DesktopApi = {
   saveSubject: (subject) => ipcRenderer.invoke(IPC.saveSubject, subject),
   deleteSubject: (id) => ipcRenderer.invoke(IPC.deleteSubject, id),
   saveScheduleSlot: (slot) => ipcRenderer.invoke(IPC.saveScheduleSlot, slot),
-  deleteScheduleSlot: (id) => ipcRenderer.invoke(IPC.deleteScheduleSlot, id)
+  deleteScheduleSlot: (id) => ipcRenderer.invoke(IPC.deleteScheduleSlot, id),
+  saveItem: (item) => ipcRenderer.invoke(IPC.saveItem, item),
+  setItemDone: (id, done) => ipcRenderer.invoke(IPC.setItemDone, id, done),
+  deleteItem: (id) => ipcRenderer.invoke(IPC.deleteItem, id)
 }
 
 contextBridge.exposeInMainWorld('api', api)

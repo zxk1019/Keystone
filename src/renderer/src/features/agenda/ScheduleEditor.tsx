@@ -72,6 +72,8 @@ export default function ScheduleEditor(): JSX.Element | null {
 
       {slotDraft && (
         <SlotDialog
+          // A new form for each slot opened, even if the last one has not finished closing
+          key={`${slotDraft.id ?? 'new'}-${slotDraft.weekday}-${slotDraft.start}`}
           initial={slotDraft}
           subjects={subjects}
           schedule={schedule}
@@ -80,6 +82,7 @@ export default function ScheduleEditor(): JSX.Element | null {
       )}
       {subjectDraft && (
         <SubjectDialog
+          key={subjectDraft.subject?.id ?? 'new'}
           subject={subjectDraft.subject}
           subjects={subjects}
           classCount={

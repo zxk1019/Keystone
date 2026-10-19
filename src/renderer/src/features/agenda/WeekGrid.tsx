@@ -19,6 +19,8 @@ export interface GridColumn {
   weekday: number
   /** The real date; missing in the timetable editor, which shows a generic week */
   date?: Date
+  /** Half width, for weekend days that only show up because of an item (they have no classes) */
+  narrow?: boolean
 }
 
 interface WeekGridProps {
@@ -31,7 +33,11 @@ interface WeekGridProps {
   /** When given, today is highlighted and a line marks the current time */
   now?: Date
   onEmptyClick?: (weekday: number, hour: number) => void
-  onSlotClick?: (slot: ScheduleSlot) => void
+  /** The column tells on which date the class was clicked (in a real week) */
+  onSlotClick?: (slot: ScheduleSlot, column: GridColumn) => void
+  /** Click on the free space of a day in the items row */
+  onDayClick?: (date: Date) => void
+  onItemClick?: (item: AgendaItem) => void
 }
 
 export default function WeekGrid({
@@ -42,7 +48,9 @@ export default function WeekGrid({
   items,
   now,
   onEmptyClick,
-  onSlotClick
+  onSlotClick,
+  onDayClick,
+  onItemClick
 }: WeekGridProps): JSX.Element {
   const { t, i18n } = useTranslation()
   const subjectById = useMemo(() => new Map(subjects.map((s) => [s.id, s])), [subjects])
@@ -51,7 +59,11 @@ export default function WeekGrid({
   const bodyHeight = hourList.length * HOUR_HEIGHT
   // The header and the body use the same columns; the stable gutter keeps them aligned
   // even though only the body has a scrollbar
-  const gridStyle = { gridTemplateColumns: `3rem repeat(${columns.length}, minmax(0, 1fr))` }
+  const gridStyle = {
+    gridTemplateColumns: `3rem ${columns
+      .map((column) => `minmax(0, ${column.narrow ? 0.5 : 1}fr)`)
+      .join(' ')}`
+  }
   const isToday = (column: GridColumn): boolean =>
     Boolean(now && column.date && isSameDay(column.date, now))
 
@@ -85,21 +97,34 @@ export default function WeekGrid({
         {items && <div className="border-t border-zinc-200 dark:border-zinc-800" />}
         {items &&
           columns.map((column) => {
-            const dayItems = column.date ? (items.get(toDateKey(column.date)) ?? []) : []
+            const date = column.date
+            const dayItems = date ? (items.get(toDateKey(date)) ?? []) : []
             return (
               <div
                 key={column.weekday}
-                className="flex min-h-9 flex-col gap-1 border-t border-l border-zinc-200 p-1 dark:border-zinc-800"
+                className="group relative flex min-h-9 flex-col gap-1 border-t border-l border-zinc-200 p-1 dark:border-zinc-800"
               >
+                {/* The free space behind the chips adds a new item on that date */}
+                {date && onDayClick && (
+                  <button
+                    type="button"
+                    onClick={() => onDayClick(date)}
+                    aria-label={t('tasks.newFor', { date: date.toLocaleDateString(i18n.language) })}
+                    className="absolute inset-0 flex items-end justify-center pb-1 hover:bg-indigo-50 dark:hover:bg-indigo-500/10"
+                  >
+                    <Plus className="size-3.5 text-indigo-500 opacity-0 group-hover:opacity-70" />
+                  </button>
+                )}
                 {dayItems.slice(0, MAX_ITEMS_PER_DAY).map((item) => (
                   <ItemChip
                     key={item.id}
                     item={item}
                     subject={item.subjectId ? subjectById.get(item.subjectId) : undefined}
+                    onClick={onItemClick}
                   />
                 ))}
                 {dayItems.length > MAX_ITEMS_PER_DAY && (
-                  <span className="px-1 text-xs text-zinc-500 dark:text-zinc-400">
+                  <span className="pointer-events-none relative z-10 px-1 text-xs text-zinc-500 dark:text-zinc-400">
                     {t('agenda.moreItems', { count: dayItems.length - MAX_ITEMS_PER_DAY })}
                   </span>
                 )}
@@ -160,7 +185,7 @@ export default function WeekGrid({
                     title={slotTitle(slot, subjectById)}
                     subject={slot.subjectId ? subjectById.get(slot.subjectId) : undefined}
                     firstHour={hours.start}
-                    onClick={onSlotClick}
+                    onClick={onSlotClick && ((clicked) => onSlotClick(clicked, column))}
                   />
                 ))}
 

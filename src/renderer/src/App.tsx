@@ -3,6 +3,7 @@ import Sidebar from './components/Sidebar'
 import AgendaPage from './features/agenda/AgendaPage'
 import SettingsPage from './features/settings/SettingsPage'
 import StudyPage from './features/study/StudyPage'
+import ItemDialog from './features/tasks/ItemDialog'
 import TasksPage from './features/tasks/TasksPage'
 import TodayPage from './features/today/TodayPage'
 import { useApplySettings } from './hooks/useApplySettings'
@@ -53,6 +54,7 @@ export default function App(): JSX.Element | null {
       <main className="min-w-0 flex-1 overflow-y-auto">
         <Page />
       </main>
+      <ItemDialog />
     </div>
   )
 }

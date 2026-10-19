@@ -18,6 +18,85 @@
   "placeholder": {
     "comingInPhase": "此部分将在第 {{phase}} 阶段推出。"
   },
+  "item": {
+    "new": {
+      "homework": "新作业",
+      "exam": "新考试",
+      "project": "新项目",
+      "event": "新活动"
+    },
+    "edit": {
+      "homework": "编辑作业",
+      "exam": "编辑考试",
+      "project": "编辑项目",
+      "event": "编辑活动"
+    },
+    "type": "类型",
+    "title": "标题",
+    "titlePlaceholder": {
+      "homework": "第45页练习",
+      "exam": "第3单元考试",
+      "project": "期末项目",
+      "event": "篮球比赛"
+    },
+    "subject": "科目",
+    "noSubject": "无科目",
+    "date": "日期",
+    "time": "时间（可选）",
+    "startTime": "开始（可选）",
+    "endTime": "结束（可选）",
+    "priority": "优先级",
+    "topics": "考试范围（可选）",
+    "topicsPlaceholder": "第3和第4单元，复习题",
+    "done": "已完成",
+    "errorTitle": "请输入标题。",
+    "errorDate": "请选择日期。",
+    "errorEndTime": "结束时间必须晚于开始时间。",
+    "deleteConfirm": "删除“{{title}}”？"
+  },
+  "priority": {
+    "high": "高",
+    "medium": "中",
+    "low": "低"
+  },
+  "tasks": {
+    "new": "新任务",
+    "status": {
+      "label": "状态",
+      "pending": "待完成",
+      "overdue": "已逾期",
+      "done": "已完成",
+      "all": "全部"
+    },
+    "allTypes": "所有类型",
+    "allSubjects": "所有科目",
+    "noSubject": "无科目",
+    "group": {
+      "overdue": "已逾期",
+      "today": "今天",
+      "tomorrow": "明天",
+      "thisWeek": "本周",
+      "later": "以后",
+      "past": "已过去",
+      "done": "已完成"
+    },
+    "empty": "没有符合筛选条件的内容。",
+    "markDone": "标记为已完成",
+    "markPending": "标记为待完成",
+    "newFor": "新任务：{{date}}"
+  },
+  "today": {
+    "classes": "今天的课程",
+    "now": "现在",
+    "next": "下一节",
+    "weekend": "今天没有课。周末愉快！",
+    "noClasses": "今天没有课。",
+    "noSchedule": "你还没有设置课表。",
+    "pending": "待完成",
+    "nothingPending": "今天和明天都没有待完成的任务。",
+    "exams": "即将到来的考试",
+    "noExams": "未来 30 天内没有考试。"
+  },
   "agenda": {
     "week": "周",
     "month": "月",

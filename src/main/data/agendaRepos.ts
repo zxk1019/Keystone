@@ -1,8 +1,9 @@
 import { randomUUID } from 'crypto'
 import type { SaveSlotResult } from '@shared/api'
+import { compareItems } from '@shared/items'
 import { findOverlap, sortSlots } from '@shared/schedule'
-import type { AgendaData } from '@shared/types'
-import { isRecord, parseScheduleSlot, parseSubject } from '@shared/validation'
+import type { AgendaData, AgendaItem } from '@shared/types'
+import { isRecord, parseAgendaItem, parseScheduleSlot, parseSubject } from '@shared/validation'
 import type { DataStore } from './dataStore'
 
 /** Replaces the entry with the same id, or adds it at the end. */
@@ -70,6 +71,52 @@ export class ScheduleRepo {
       ...data,
       schedule: data.schedule.filter((slot) => slot.id !== id)
     }))
+    return agendaOf(this.store)
+  }
+}
+
+/** Keeps the moment an item was first marked as done, and clears it when it goes back to pending. */
+function withCompletion(item: AgendaItem, previous: AgendaItem | undefined): AgendaItem {
+  const result = { ...item }
+  delete result.completedAt
+  if (!item.done) return result
+  result.completedAt =
+    previous?.done && previous.completedAt ? previous.completedAt : new Date().toISOString()
+  return result
+}
+
+/** Homework, exams, projects and events. */
+export class ItemsRepo {
+  constructor(private readonly store: DataStore) {}
+
+  save(draft: unknown): AgendaData {
+    const { subjects, items } = this.store.get()
+    const parsed = parseAgendaItem(withId(draft), new Set(subjects.map((subject) => subject.id)))
+    if (!parsed) throw new Error('Invalid agenda item')
+
+    const item = withCompletion(
+      parsed,
+      items.find((existing) => existing.id === parsed.id)
+    )
+    this.store.update((data) => ({
+      ...data,
+      items: upsert(data.items, item).sort(compareItems)
+    }))
+    return agendaOf(this.store)
+  }
+
+  setDone(id: unknown, done: unknown): AgendaData {
+    this.store.update((data) => ({
+      ...data,
+      items: data.items.map((item) =>
+        item.id === id ? withCompletion({ ...item, done: done === true }, item) : item
+      )
+    }))
+    return agendaOf(this.store)
+  }
+
+  delete(id: unknown): AgendaData {
+    this.store.update((data) => ({ ...data, items: data.items.filter((item) => item.id !== id) }))
     return agendaOf(this.store)
   }
 }
