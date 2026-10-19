@@ -1,0 +1,50 @@
+{
+  "app": {
+    "name": "Mi Estudio"
+  },
+  "nav": {
+    "today": "Hoy",
+    "agenda": "Agenda",
+    "tasks": "Tareas",
+    "study": "Estudio",
+    "settings": "Ajustes"
+  },
+  "placeholder": {
+    "comingInPhase": "Esta sección llegará en la fase {{phase}}."
+  },
+  "settings": {
+    "appearance": "Apariencia",
+    "theme": {
+      "label": "Tema",
+      "light": "Claro",
+      "dark": "Oscuro",
+      "system": "Sistema"
+    },
+    "language": {
+      "label": "Idioma"
+    },
+    "data": {
+      "title": "Datos",
+      "description": "Tus datos se guardan solo en este ordenador. Haz una copia de seguridad de vez en cuando.",
+      "export": "Exportar copia",
+      "import": "Importar copia",
+      "exported": "Copia guardada en {{path}}",
+      "imported": "Copia importada correctamente.",
+      "invalid": "Ese archivo no es una copia válida de Mi Estudio.",
+      "error": "No se ha podido completar: {{message}}"
+    }
+  },
+  "tray": {
+    "open": "Abrir Mi Estudio",
+    "quit": "Salir"
+  },
+  "dialog": {
+    "exportTitle": "Exportar copia de seguridad",
+    "importTitle": "Importar copia de seguridad",
+    "backupFileType": "Copia de Mi Estudio",
+    "backupFileName": "mi-estudio-copia-{{date}}.json",
+    "importConfirm": "Se reemplazarán todos tus datos actuales por los de la copia. ¿Quieres continuar?",
+    "importButton": "Importar",
+    "cancelButton": "Cancelar"
+  }
+}

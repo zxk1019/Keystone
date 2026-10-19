@@ -1,0 +1,50 @@
+{
+  "app": {
+    "name": "Mi Estudio"
+  },
+  "nav": {
+    "today": "Today",
+    "agenda": "Calendar",
+    "tasks": "Tasks",
+    "study": "Study",
+    "settings": "Settings"
+  },
+  "placeholder": {
+    "comingInPhase": "This section is coming in phase {{phase}}."
+  },
+  "settings": {
+    "appearance": "Appearance",
+    "theme": {
+      "label": "Theme",
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    },
+    "language": {
+      "label": "Language"
+    },
+    "data": {
+      "title": "Data",
+      "description": "Your data is stored only on this computer. Make a backup from time to time.",
+      "export": "Export backup",
+      "import": "Import backup",
+      "exported": "Backup saved to {{path}}",
+      "imported": "Backup imported successfully.",
+      "invalid": "That file is not a valid Mi Estudio backup.",
+      "error": "Could not complete: {{message}}"
+    }
+  },
+  "tray": {
+    "open": "Open Mi Estudio",
+    "quit": "Quit"
+  },
+  "dialog": {
+    "exportTitle": "Export backup",
+    "importTitle": "Import backup",
+    "backupFileType": "Mi Estudio backup",
+    "backupFileName": "mi-estudio-backup-{{date}}.json",
+    "importConfirm": "All your current data will be replaced with the data in the backup. Do you want to continue?",
+    "importButton": "Import",
+    "cancelButton": "Cancel"
+  }
+}
