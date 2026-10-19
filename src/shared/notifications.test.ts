@@ -48,6 +48,13 @@ describe('planNotifications', () => {
     expect(kinds(planNotifications(at('23:00'), late, settings, {}))).toEqual([])
   })
 
+  it('holds everything while studying, and sends it once the study block is over', () => {
+    const agenda = agendaWith(item('late', 'homework', '2026-10-19'), homeworkToday)
+    const whileStudying = planNotifications(at('17:30'), agenda, settings, {}, true)
+    expect(whileStudying).toEqual({ notifications: [], sentKeys: [] })
+    expect(kinds(planNotifications(at('18:15'), agenda, settings, {}, false))).toEqual(['summary'])
+  })
+
   it('sends the summary from the chosen time on, once a day', () => {
     const agenda = agendaWith(homeworkToday)
     expect(kinds(planNotifications(at('16:59'), agenda, settings, {}))).toEqual([])

@@ -97,6 +97,105 @@
     "exams": "Upcoming exams",
     "noExams": "No exams in the next 30 days."
   },
+  "study": {
+    "phase": {
+      "focus": "Study",
+      "break": "Break"
+    },
+    "block": "Block {{count}}",
+    "start": "Start",
+    "resume": "Resume",
+    "pause": "Pause",
+    "skip": "Skip",
+    "reset": "Reset",
+    "ready": "Ready to start",
+    "paused": "Paused",
+    "breakAt": "Break at {{time}}",
+    "backAt": "Back at {{time}}",
+    "silenced": "While you study, reminders wait for the break.",
+    "tip": "Tip",
+    "anotherTip": "Another tip",
+    "close": "Close",
+    "tips": [
+      "Before rereading, try writing down from memory what you remember about the topic.",
+      "Leave your phone in another room, or at least out of sight.",
+      "Start with the task you find hardest, while you have the most energy.",
+      "Set a concrete goal for this block: \"do exercises 1 to 5\", not \"study maths\".",
+      "Explain the topic out loud as if you were teaching it to someone.",
+      "Today, review a bit of what you studied a week ago.",
+      "Mix different kinds of exercises instead of doing twenty of the same in a row.",
+      "Drink some water and have everything you need at hand before you start.",
+      "If an idea distracts you, jot it down on paper and carry on; look at it during the break.",
+      "Highlighting is not studying: after reading, close the book and summarise in your own words.",
+      "Ask yourself exam-style questions and answer them without looking at your notes.",
+      "During the break, get up and move; do not spend it on your phone.",
+      "Sleeping well is part of studying: what you learn settles while you sleep.",
+      "When something does not work out, find a solved example and redo it on your own.",
+      "Split long assignments into small steps and tick each one off when you finish it.",
+      "Study in the same place and at the same time: your mind gets used to focusing sooner.",
+      "Connect new ideas to something you already know: an example from your life, another subject...",
+      "When you finish, write one line about what you learned today.",
+      "If you have been stuck for a long time, switch tasks and come back later with a fresh mind.",
+      "Draw diagrams or sketches: seeing information in another way helps you remember it."
+    ],
+    "techniques": {
+      "title": "Study techniques",
+      "what": "What it is",
+      "how": "How to do it",
+      "when": "When to use it",
+      "items": {
+        "activeRecall": {
+          "name": "Active recall",
+          "summary": "Pulling information out of your memory instead of rereading it.",
+          "what": "It means trying to remember what you have studied without looking at your notes. Every time your brain makes the effort to remember something, that memory gets stronger.",
+          "how": "Read part of the topic, close the book and write down or say out loud everything you remember. Then compare with your notes and review what you forgot. Asking yourself questions or using question-and-answer cards also works.",
+          "when": "Whenever you need to remember something for an exam. It is one of the techniques that work best, especially combined with spaced repetition."
+        },
+        "spacedRepetition": {
+          "name": "Spaced repetition",
+          "summary": "Reviewing several times, leaving more days between each review.",
+          "what": "Instead of studying everything the day before, you spread your reviews over time. Forgetting a little between reviews makes your memory work harder, and that makes you remember for longer.",
+          "how": "Review a topic on the day you learn it, then after 2 or 3 days, then after a week and again after two weeks. If a review is very hard, make the next gap shorter.",
+          "when": "To prepare for exams in advance and for anything you need to remember during the year: vocabulary, formulas, commands, concepts..."
+        },
+        "feynman": {
+          "name": "Feynman technique",
+          "summary": "Explaining the topic in simple words to find out what you do not understand.",
+          "what": "It is named after the physicist Richard Feynman. The idea is that if you cannot explain something simply, you do not fully understand it yet.",
+          "how": "Pick a concept and explain it in writing or out loud as if you were telling someone who knows nothing about it. When you get stuck or need complicated words, go back to your notes, clear up that part and explain it again.",
+          "when": "With topics you need to understand, not just memorise: how something works, why something happens, how two ideas are related."
+        },
+        "interleaving": {
+          "name": "Interleaved practice",
+          "summary": "Mixing different kinds of exercises instead of doing them in blocks.",
+          "what": "People usually practise one kind of exercise many times in a row. When you interleave, you mix different kinds, so you also learn to recognise which method to use in each case, which is exactly what an exam asks for.",
+          "how": "When you review, alternate exercises from several topics or of several kinds (for example, different SQL queries, or problems from several units) instead of doing ten of the same in a row.",
+          "when": "In subjects with problems and practical exercises, once you know the methods and want to get ready for the exam."
+        },
+        "selfExplanation": {
+          "name": "Self-explanation",
+          "summary": "Asking yourself why each step happens while you study.",
+          "what": "While you read or solve something, you explain to yourself why it is so and how it connects to what you already know. That way you understand it better and notice sooner what does not add up.",
+          "how": "After each step of a worked example or each paragraph, ask yourself: why is this done? What would happen if I changed this value? What else is it related to? Answer in your own words.",
+          "when": "When studying worked examples, code or proofs, and when reading texts with new ideas."
+        },
+        "mindMaps": {
+          "name": "Mind maps",
+          "summary": "Drawing the topic as a diagram that branches out from a central idea.",
+          "what": "A mind map puts the main idea in the centre and related ideas on branches around it. It helps you see the structure of the topic and how its parts connect.",
+          "how": "Write the topic in the middle of a page. Draw branches with the main ideas and, from each one, smaller branches with the details. Use keywords, colours and drawings, not long sentences. It works even better if you draw it from memory first and then complete it with your notes.",
+          "when": "To get an overview of a long topic, to organise ideas before a project or for a quick review before an exam."
+        },
+        "pomodoro": {
+          "name": "Pomodoro",
+          "summary": "Studying in fixed blocks of time with short breaks in between.",
+          "what": "It is the technique behind this app's timer: you work with full focus for a set time and then take a short break. Knowing the break is coming makes it easier to start and to avoid distractions.",
+          "how": "Choose one task, start the timer (here, 45 minutes) and work only on that until it rings. Rest for 5 minutes away from the screen and start again. If a distraction comes to mind, write it down and carry on.",
+          "when": "When it is hard to get started, when you have many tasks or when you study for many hours in a row."
+        }
+      }
+    }
+  },
   "agenda": {
     "week": "Week",
     "month": "Month",
@@ -185,6 +284,12 @@
       "description": "Create your subjects and set up your weekly timetable.",
       "open": "Edit timetable"
     },
+    "study": {
+      "title": "Study",
+      "description": "Length of the timer blocks.",
+      "focusMinutes": "Study minutes",
+      "breakMinutes": "Break minutes"
+    },
     "notifications": {
       "title": "Notifications",
       "description": "Reminds you of what you have to do, even with the window closed.",
@@ -220,7 +325,10 @@
   },
   "tray": {
     "open": "Open Mi Estudio",
-    "quit": "Quit"
+    "quit": "Quit",
+    "studying": "Studying · {{minutes}} min left",
+    "onBreak": "On a break · {{minutes}} min left",
+    "paused": "Study paused"
   },
   "notify": {
     "summaryTitle": "Today's summary",
@@ -234,7 +342,11 @@
     "examTomorrow": "Exam tomorrow: {{title}}",
     "examIn": "Exam in {{count}} days: {{title}}",
     "testTitle": "Notifications work",
-    "testBody": "This is how Mi Estudio will remind you of what you have to do."
+    "testBody": "This is how Mi Estudio will remind you of what you have to do.",
+    "breakStartTitle": "Break time!",
+    "breakStartBody": "Get up and take {{count}} minutes off.",
+    "breakEndTitle": "Break over",
+    "breakEndBody": "Start block {{count}} whenever you are ready."
   },
   "dialog": {
     "exportTitle": "Export backup",

@@ -8,6 +8,7 @@ import type { SettingsRepo } from './data/settingsRepo'
 import { createTranslator } from './i18n'
 import { takeNavigation } from './navigation'
 import type { Notifier } from './notifier'
+import type { StudyTimer } from './studyTimer'
 
 interface IpcDeps {
   store: DataStore
@@ -16,6 +17,7 @@ interface IpcDeps {
   schedule: ScheduleRepo
   items: ItemsRepo
   notifier: Notifier
+  studyTimer: StudyTimer
   /** Called whenever the settings change, from the UI or from an imported backup. */
   onSettingsChanged: (settings: Settings) => void
 }
@@ -27,7 +29,7 @@ function senderWindow(event: IpcMainInvokeEvent): BrowserWindow {
 }
 
 /** Sends a message to every open window. */
-function broadcast(channel: string, payload?: unknown): void {
+export function broadcast(channel: string, payload?: unknown): void {
   for (const window of BrowserWindow.getAllWindows()) {
     window.webContents.send(channel, payload)
   }
@@ -44,6 +46,7 @@ export function registerIpc({
   schedule,
   items,
   notifier,
+  studyTimer,
   onSettingsChanged
 }: IpcDeps): void {
   const translator = (): ReturnType<typeof createTranslator> =>
@@ -80,4 +83,12 @@ export function registerIpc({
   ipcMain.handle(IPC.getAppInfo, () => ({ packaged: app.isPackaged }))
   ipcMain.handle(IPC.sendTestNotification, () => notifier.sendTest())
   ipcMain.handle(IPC.takeNavigation, () => takeNavigation())
+
+  ipcMain.handle(IPC.getStudyState, () => studyTimer.get())
+  ipcMain.handle(IPC.studyCommand, (_event, command: unknown) => {
+    if (command !== 'start' && command !== 'pause' && command !== 'skip' && command !== 'reset') {
+      throw new Error('Unknown timer command')
+    }
+    return studyTimer.command(command)
+  })
 }

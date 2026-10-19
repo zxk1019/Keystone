@@ -9,6 +9,7 @@ import { platform } from '../../platform'
 import { useNavigationStore } from '../../store/navigationStore'
 import { useSettingsStore } from '../../store/settingsStore'
 import NotificationsSection from './NotificationsSection'
+import StudySection from './StudySection'
 import { SettingsRow, SettingsSection } from './SettingsLayout'
 
 const THEME_ICONS: Record<ThemeSetting, LucideIcon> = {
@@ -109,6 +110,8 @@ export default function SettingsPage(): JSX.Element | null {
           {t('settings.schedule.open')}
         </Button>
       </SettingsSection>
+
+      <StudySection settings={settings} update={update} />
 
       <NotificationsSection settings={settings} update={update} />
 

@@ -1,6 +1,10 @@
 import type { JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 import { GraduationCap } from 'lucide-react'
+import { remainingMs } from '@shared/studyTimer'
+import { useNow } from '../hooks/useNow'
+import { formatCountdown } from '../lib/time'
+import { useStudyStore } from '../store/studyStore'
 import { MAIN_SECTIONS, SECTION_ICONS, type SectionId } from '../sections'
 
 interface SidebarProps {
@@ -64,6 +68,32 @@ function NavButton({ section, active, onClick }: NavButtonProps): JSX.Element {
     >
       <Icon className="size-5" />
       {t(`nav.${section}`)}
+      {section === 'study' && <StudyCountdown />}
     </button>
+  )
+}
+
+/** Time left next to "Study" while the timer is in use, to see it from any screen. */
+function StudyCountdown(): JSX.Element | null {
+  const timer = useStudyStore((state) => state.timer)
+  if (!timer || timer.status === 'idle') return null
+  return <Countdown />
+}
+
+// Separate so the every-second refresh only runs while the timer is in use
+function Countdown(): JSX.Element | null {
+  const timer = useStudyStore((state) => state.timer)
+  const now = useNow(1000)
+  if (!timer) return null
+  return (
+    <span
+      className={`ml-auto rounded-full px-2 py-0.5 text-xs tabular-nums ${
+        timer.phase === 'break'
+          ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300'
+          : 'bg-indigo-100 text-indigo-800 dark:bg-indigo-500/15 dark:text-indigo-300'
+      } ${timer.status === 'paused' ? 'opacity-60' : ''}`}
+    >
+      {formatCountdown(remainingMs(timer, now.getTime()))}
+    </span>
   )
 }

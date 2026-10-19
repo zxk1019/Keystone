@@ -1,3 +1,4 @@
+import type { PhaseEvent, TimerCommand, TimerState } from './studyTimer'
 import type { AgendaData, AgendaItem, Draft, ScheduleSlot, Settings, Subject } from './types'
 
 /** IPC channel names used between the preload script and the main process. */
@@ -19,7 +20,11 @@ export const IPC = {
   getAppInfo: 'app:info',
   sendTestNotification: 'notifications:test',
   navigate: 'app:navigate',
-  takeNavigation: 'app:take-navigation'
+  takeNavigation: 'app:take-navigation',
+  getStudyState: 'study:get',
+  studyCommand: 'study:command',
+  studyState: 'study:state',
+  studyPhase: 'study:phase'
 } as const
 
 export type ExportResult = { status: 'saved'; path: string } | { status: 'canceled' }
@@ -28,7 +33,7 @@ export type ImportResult = { status: 'imported' } | { status: 'canceled' } | { s
 
 /** Where to take the user, e.g. after clicking a notification */
 export interface NavigationTarget {
-  section: 'today' | 'tasks' | 'agenda'
+  section: 'today' | 'tasks' | 'agenda' | 'study'
   /** Open this item's dialog */
   itemId?: string
   /** Show this filter on the Tasks screen */
@@ -70,4 +75,10 @@ export interface DesktopApi {
   onNavigate(callback: () => void): () => void
   /** Returns the pending place to go, if any, and forgets it. */
   takeNavigation(): Promise<NavigationTarget | null>
+
+  getStudyState(): Promise<TimerState>
+  studyCommand(command: TimerCommand): Promise<TimerState>
+  onStudyState(callback: (state: TimerState) => void): () => void
+  /** Fires when a break starts or ends, to play the chime */
+  onStudyPhase(callback: (event: PhaseEvent) => void): () => void
 }
