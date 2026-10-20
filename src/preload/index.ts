@@ -1,6 +1,7 @@
 import { contextBridge, ipcRenderer, type IpcRendererEvent } from 'electron'
 import { IPC, type DesktopApi } from '@shared/api'
 import type { EyeBreakStatus } from '@shared/eyeBreak'
+import type { SpotifyStatus } from '@shared/spotify'
 import type { PhaseEvent, TimerState } from '@shared/studyTimer'
 import type { Settings } from '@shared/types'
 
@@ -41,7 +42,16 @@ const api: DesktopApi = {
 
   getEyeBreakStatus: () => ipcRenderer.invoke(IPC.getEyeBreakStatus),
   eyeBreakCommand: (command) => ipcRenderer.invoke(IPC.eyeBreakCommand, command),
-  onEyeBreakStatus: (callback) => listen<EyeBreakStatus>(IPC.eyeBreakStatus, callback)
+  onEyeBreakStatus: (callback) => listen<EyeBreakStatus>(IPC.eyeBreakStatus, callback),
+
+  getSpotifyStatus: () => ipcRenderer.invoke(IPC.spotifyStatus),
+  spotifyConnect: () => ipcRenderer.invoke(IPC.spotifyConnect),
+  spotifyDisconnect: () => ipcRenderer.invoke(IPC.spotifyDisconnect),
+  spotifyPlayback: () => ipcRenderer.invoke(IPC.spotifyPlayback),
+  spotifyDevices: () => ipcRenderer.invoke(IPC.spotifyDevices),
+  spotifyPlaylists: () => ipcRenderer.invoke(IPC.spotifyPlaylists),
+  spotifyCommand: (command) => ipcRenderer.invoke(IPC.spotifyCommand, command),
+  onSpotifyStatus: (callback) => listen<SpotifyStatus>(IPC.spotifyStatusChanged, callback)
 }
 
 contextBridge.exposeInMainWorld('api', api)

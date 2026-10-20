@@ -1,9 +1,11 @@
 import { app, BrowserWindow, ipcMain, type IpcMainInvokeEvent } from 'electron'
 import { EYE_BREAK_COMMANDS, IPC, type EyeBreakCommand } from '@shared/api'
+import { parseSpotifyCommand } from '@shared/spotify'
 import type { Settings } from '@shared/types'
 import { agendaOf, type ItemsRepo, type ScheduleRepo, type SubjectsRepo } from './data/agendaRepos'
 import { exportBackup, importBackup } from './data/backup'
 import type { EyeBreakService } from './eyeBreak'
+import type { SpotifyService } from './spotify/service'
 import type { DataStore } from './data/dataStore'
 import type { SettingsRepo } from './data/settingsRepo'
 import { createTranslator } from './i18n'
@@ -20,6 +22,7 @@ interface IpcDeps {
   notifier: Notifier
   studyTimer: StudyTimer
   eyeBreak: EyeBreakService
+  spotify: SpotifyService
   /** Called whenever the settings change, from the UI or from an imported backup. */
   onSettingsChanged: (settings: Settings) => void
 }
@@ -50,6 +53,7 @@ export function registerIpc({
   notifier,
   studyTimer,
   eyeBreak,
+  spotify,
   onSettingsChanged
 }: IpcDeps): void {
   const translator = (): ReturnType<typeof createTranslator> =>
@@ -101,5 +105,17 @@ export function registerIpc({
       throw new Error('Unknown eye break command')
     }
     return eyeBreak.command(command as EyeBreakCommand)
+  })
+
+  ipcMain.handle(IPC.spotifyStatus, () => spotify.status())
+  ipcMain.handle(IPC.spotifyConnect, () => spotify.connect())
+  ipcMain.handle(IPC.spotifyDisconnect, () => spotify.disconnect())
+  ipcMain.handle(IPC.spotifyPlayback, () => spotify.playback())
+  ipcMain.handle(IPC.spotifyDevices, () => spotify.devices())
+  ipcMain.handle(IPC.spotifyPlaylists, () => spotify.playlists())
+  ipcMain.handle(IPC.spotifyCommand, (_event, value: unknown) => {
+    const command = parseSpotifyCommand(value)
+    if (!command) throw new Error('Unknown Spotify command')
+    return spotify.command(command)
   })
 }

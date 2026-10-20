@@ -46,12 +46,24 @@ export const EYE_BREAK_LIMITS = {
   idleResetMinutes: { min: 1, max: 30 }
 } as const
 
+export interface SpotifySettings {
+  /** From the Spotify developer dashboard; empty until it is set up */
+  clientId: string
+  /** "spotify:playlist:..." to play while studying; empty if none chosen */
+  studyPlaylistUri: string
+  /** Kept so the name shows without asking Spotify */
+  studyPlaylistName: string
+  pauseOnBreak: boolean
+  playOnStudyStart: boolean
+}
+
 export interface Settings {
   theme: ThemeSetting
   language: Language
   notifications: NotificationSettings
   study: StudySettings
   eyeBreak: EyeBreakSettings
+  spotify: SpotifySettings
   /** Only has an effect in the installed app */
   startWithWindows: boolean
 }
@@ -150,12 +162,21 @@ export const DEFAULT_EYE_BREAK: EyeBreakSettings = {
   idleResetMinutes: 5
 }
 
+export const DEFAULT_SPOTIFY: SpotifySettings = {
+  clientId: '',
+  studyPlaylistUri: '',
+  studyPlaylistName: '',
+  pauseOnBreak: true,
+  playOnStudyStart: true
+}
+
 export const DEFAULT_SETTINGS: Settings = {
   theme: 'system',
   language: 'es',
   notifications: DEFAULT_NOTIFICATIONS,
   study: DEFAULT_STUDY,
   eyeBreak: DEFAULT_EYE_BREAK,
+  spotify: DEFAULT_SPOTIFY,
   startWithWindows: false
 }
 
