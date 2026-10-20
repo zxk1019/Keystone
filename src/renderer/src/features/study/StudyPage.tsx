@@ -5,6 +5,7 @@ import Button from '../../components/Button'
 import Dialog from '../../components/Dialog'
 import PageHeader from '../../components/PageHeader'
 import { useStudyStore } from '../../store/studyStore'
+import SpotifyPanel from './SpotifyPanel'
 import TimerCard from './TimerCard'
 
 const TECHNIQUES = [
@@ -32,7 +33,10 @@ export default function StudyPage(): JSX.Element | null {
 
       <div className="grid items-start gap-6 lg:grid-cols-[1fr_20rem]">
         <TimerCard timer={timer} />
-        <TipCard />
+        <div className="flex flex-col gap-6">
+          <TipCard />
+          <SpotifyPanel />
+        </div>
       </div>
 
       <section className="flex flex-col gap-3">

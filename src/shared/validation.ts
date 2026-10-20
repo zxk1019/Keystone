@@ -5,6 +5,7 @@ import {
   DEFAULT_NOTIFICATIONS,
   DEFAULT_EYE_BREAK,
   DEFAULT_SETTINGS,
+  DEFAULT_SPOTIFY,
   DEFAULT_STUDY,
   EYE_BREAK_LIMITS,
   EXAM_REMINDER_DAYS,
@@ -20,6 +21,7 @@ import {
   type NotificationSettings,
   type ScheduleSlot,
   type Settings,
+  type SpotifySettings,
   type StudySettings,
   type Subject
 } from './types'
@@ -57,6 +59,7 @@ export function sanitizeSettings(value: unknown, fallback: Settings = DEFAULT_SE
     notifications: sanitizeNotifications(input.notifications, fallback.notifications),
     study: sanitizeStudy(input.study, fallback.study),
     eyeBreak: sanitizeEyeBreak(input.eyeBreak, fallback.eyeBreak),
+    spotify: sanitizeSpotify(input.spotify, fallback.spotify),
     startWithWindows:
       typeof input.startWithWindows === 'boolean'
         ? input.startWithWindows
@@ -72,6 +75,39 @@ function wholeNumber(value: unknown, limits: { min: number; max: number }): numb
     value <= limits.max
     ? value
     : undefined
+}
+
+/** Spotify client IDs are 32 hexadecimal characters */
+export const SPOTIFY_CLIENT_ID_PATTERN = /^[0-9a-f]{32}$/i
+const SPOTIFY_PLAYLIST_PATTERN = /^spotify:playlist:[A-Za-z0-9]+$/
+
+function sanitizeSpotify(
+  value: unknown,
+  fallback: SpotifySettings = DEFAULT_SPOTIFY
+): SpotifySettings {
+  const input = isRecord(value) ? value : {}
+  const clientId = typeof input.clientId === 'string' ? input.clientId.trim() : null
+  const playlistUri = typeof input.studyPlaylistUri === 'string' ? input.studyPlaylistUri : null
+  const validPlaylist =
+    playlistUri !== null && (playlistUri === '' || SPOTIFY_PLAYLIST_PATTERN.test(playlistUri))
+  return {
+    clientId:
+      clientId !== null && (clientId === '' || SPOTIFY_CLIENT_ID_PATTERN.test(clientId))
+        ? clientId
+        : fallback.clientId,
+    studyPlaylistUri: validPlaylist ? playlistUri : fallback.studyPlaylistUri,
+    studyPlaylistName: validPlaylist
+      ? playlistUri === ''
+        ? ''
+        : (cleanText(input.studyPlaylistName, 200) ?? '')
+      : fallback.studyPlaylistName,
+    pauseOnBreak:
+      typeof input.pauseOnBreak === 'boolean' ? input.pauseOnBreak : fallback.pauseOnBreak,
+    playOnStudyStart:
+      typeof input.playOnStudyStart === 'boolean'
+        ? input.playOnStudyStart
+        : fallback.playOnStudyStart
+  }
 }
 
 function sanitizeEyeBreak(

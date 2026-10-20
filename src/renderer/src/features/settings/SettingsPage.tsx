@@ -10,6 +10,7 @@ import { useNavigationStore } from '../../store/navigationStore'
 import { useSettingsStore } from '../../store/settingsStore'
 import EyeBreakSection from './EyeBreakSection'
 import NotificationsSection from './NotificationsSection'
+import SpotifySection from './SpotifySection'
 import StudySection from './StudySection'
 import { SettingsRow, SettingsSection } from './SettingsLayout'
 
@@ -115,6 +116,8 @@ export default function SettingsPage(): JSX.Element | null {
       <StudySection settings={settings} update={update} />
 
       <EyeBreakSection settings={settings} update={update} />
+
+      <SpotifySection settings={settings} update={update} />
 
       <NotificationsSection settings={settings} update={update} />
 

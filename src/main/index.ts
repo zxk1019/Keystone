@@ -3,7 +3,7 @@ import { join } from 'path'
 import { electronApp, optimizer } from '@electron-toolkit/utils'
 import { IPC } from '@shared/api'
 import type { EyeBreakStatus } from '@shared/eyeBreak'
-import { isStudying } from '@shared/studyTimer'
+import { isStudying, type TimerState } from '@shared/studyTimer'
 import type { Settings } from '@shared/types'
 import { ItemsRepo, ScheduleRepo, SubjectsRepo } from './data/agendaRepos'
 import { DataStore } from './data/dataStore'
@@ -16,6 +16,8 @@ import { broadcast, broadcastSettings, registerIpc } from './ipc'
 import { createMainWindow, isMainWindowInFront, showMainWindow } from './mainWindow'
 import { openTarget } from './navigation'
 import { Notifier } from './notifier'
+import { SpotifyService } from './spotify/service'
+import { TokenStore } from './spotify/tokenStore'
 import { applyStartWithWindows, startsHidden } from './startup'
 import { StudyTimer } from './studyTimer'
 import { phaseNotification, trayStatus } from './studyText'
@@ -61,7 +63,23 @@ function start(): void {
   const refreshTrayStatus = (): void =>
     setTrayStatus(trayStatus(studyTimer.get(), Date.now(), translator()))
 
+  const spotify = new SpotifyService({
+    settings: () => settings.get().spotify,
+    store: new TokenStore(join(userData, 'mi-estudio-spotify.bin')),
+    // Development tests can point the app at a fake Spotify; the installed app never can
+    urls: {
+      accounts:
+        (!app.isPackaged && process.env['MI_ESTUDIO_SPOTIFY_ACCOUNTS']) ||
+        'https://accounts.spotify.com',
+      api:
+        (!app.isPackaged && process.env['MI_ESTUDIO_SPOTIFY_API']) || 'https://api.spotify.com/v1'
+    },
+    translate: translator,
+    onStatus: (status) => broadcast(IPC.spotifyStatusChanged, status)
+  })
+
   let wasStudying = false
+  let previousTimer: TimerState | null = null
   const studyTimer = new StudyTimer({
     durations: () => settings.get().study,
     onChange: (state) => {
@@ -71,14 +89,22 @@ function start(): void {
       const studying = isStudying(state)
       if (wasStudying && !studying) notifier.check()
       wasStudying = studying
+      // A new study block (not resuming from a pause) brings the music back
+      if (previousTimer?.status === 'idle' && studying) spotify.onStudyEvent('blockStarted')
+      previousTimer = state
     },
     onPhaseEvent: (event, state) => {
       broadcast(IPC.studyPhase, event)
       // A study break rests the eyes too
-      if (event === 'breakStarted') eyeBreak.restart()
+      if (event === 'breakStarted') {
+        eyeBreak.restart()
+        spotify.onStudyEvent('breakStarted')
+      }
       if (!isMainWindowInFront()) notifier.show(phaseNotification(event, state, translator()))
     }
   })
+
+  previousTimer = studyTimer.get()
 
   // The tray menu only changes when the 20-20-20 is turned on/off or paused/resumed
   let trayMenuKey = ''
@@ -115,11 +141,13 @@ function start(): void {
     notifier,
     studyTimer,
     eyeBreak,
+    spotify,
     onSettingsChanged: (current) => {
       applySettings(current)
       broadcastSettings(current)
       studyTimer.durationsChanged()
       eyeBreak.settingsChanged()
+      spotify.settingsChanged()
       refreshTrayStatus()
       // E.g. notifications were just turned on, or the summary time moved to now
       notifier.check()

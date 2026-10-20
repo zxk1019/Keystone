@@ -1,4 +1,12 @@
 import type { EyeBreakStatus } from './eyeBreak'
+import type {
+  SpotifyCommand,
+  SpotifyDevice,
+  SpotifyPlayback,
+  SpotifyPlaylist,
+  SpotifyResult,
+  SpotifyStatus
+} from './spotify'
 import type { PhaseEvent, TimerCommand, TimerState } from './studyTimer'
 import type { AgendaData, AgendaItem, Draft, ScheduleSlot, Settings, Subject } from './types'
 
@@ -28,7 +36,15 @@ export const IPC = {
   studyPhase: 'study:phase',
   getEyeBreakStatus: 'eye-break:get',
   eyeBreakCommand: 'eye-break:command',
-  eyeBreakStatus: 'eye-break:status'
+  eyeBreakStatus: 'eye-break:status',
+  spotifyStatus: 'spotify:status',
+  spotifyConnect: 'spotify:connect',
+  spotifyDisconnect: 'spotify:disconnect',
+  spotifyPlayback: 'spotify:playback',
+  spotifyDevices: 'spotify:devices',
+  spotifyPlaylists: 'spotify:playlists',
+  spotifyCommand: 'spotify:command',
+  spotifyStatusChanged: 'spotify:status-changed'
 } as const
 
 export type ExportResult = { status: 'saved'; path: string } | { status: 'canceled' }
@@ -103,4 +119,14 @@ export interface DesktopApi {
   getEyeBreakStatus(): Promise<EyeBreakStatus>
   eyeBreakCommand(command: EyeBreakCommand): Promise<EyeBreakStatus>
   onEyeBreakStatus(callback: (status: EyeBreakStatus) => void): () => void
+
+  getSpotifyStatus(): Promise<SpotifyStatus>
+  /** Opens the Spotify login in the browser and waits for it to finish */
+  spotifyConnect(): Promise<SpotifyResult<SpotifyStatus>>
+  spotifyDisconnect(): Promise<void>
+  spotifyPlayback(): Promise<SpotifyResult<SpotifyPlayback | null>>
+  spotifyDevices(): Promise<SpotifyResult<SpotifyDevice[]>>
+  spotifyPlaylists(): Promise<SpotifyResult<SpotifyPlaylist[]>>
+  spotifyCommand(command: SpotifyCommand): Promise<SpotifyResult<null>>
+  onSpotifyStatus(callback: (status: SpotifyStatus) => void): () => void
 }
