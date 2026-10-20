@@ -2,6 +2,7 @@ import { app, nativeTheme } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer } from '@electron-toolkit/utils'
 import { IPC } from '@shared/api'
+import { findAppUrl, parseAppUrl } from '@shared/appUrl'
 import type { EyeBreakStatus } from '@shared/eyeBreak'
 import { isStudying, type TimerState } from '@shared/studyTimer'
 import type { Settings } from '@shared/types'
@@ -18,7 +19,12 @@ import { openTarget } from './navigation'
 import { Notifier } from './notifier'
 import { SpotifyService } from './spotify/service'
 import { TokenStore } from './spotify/tokenStore'
-import { applyStartWithWindows, startsHidden } from './startup'
+import {
+  applyStartWithWindows,
+  canUseRichToasts,
+  registerAppProtocol,
+  startsHidden
+} from './startup'
 import { StudyTimer } from './studyTimer'
 import { phaseNotification, trayStatus } from './studyText'
 import { createTray, setTrayStatus, updateTrayMenu } from './tray'
@@ -34,7 +40,6 @@ if (customDataDir) app.setPath('userData', customDataDir)
 if (!app.requestSingleInstanceLock()) {
   app.quit()
 } else {
-  app.on('second-instance', showMainWindow)
   // Without a window the app keeps running in the tray; it only quits from the tray menu
   app.on('window-all-closed', () => {})
   app.whenReady().then(start)
@@ -50,12 +55,14 @@ function start(): void {
   const userData = app.getPath('userData')
   const store = new DataStore(join(userData, 'mi-estudio-data.json'))
   const settings = new SettingsRepo(store)
+  const items = new ItemsRepo(store)
   const notifier = new Notifier({
     store,
     settings,
     log: new NotificationLog(join(userData, 'mi-estudio-avisos.json')),
     isStudying: () => isStudying(studyTimer.get()),
-    open: openTarget
+    open: openTarget,
+    richToasts: canUseRichToasts()
   })
 
   const translator = (): ReturnType<typeof createTranslator> =>
@@ -137,7 +144,7 @@ function start(): void {
     settings,
     subjects: new SubjectsRepo(store),
     schedule: new ScheduleRepo(store),
-    items: new ItemsRepo(store),
+    items,
     notifier,
     studyTimer,
     eyeBreak,
@@ -154,9 +161,31 @@ function start(): void {
     }
   })
 
+  /** A miestudio:// link from a notification: mark a task done or open a screen. */
+  const handleAppUrl = (url: string | undefined): boolean => {
+    const parsed = url ? parseAppUrl(url) : null
+    if (!parsed) return false
+    if (parsed.action === 'done') {
+      items.setDone(parsed.itemId, true)
+      broadcast(IPC.dataChanged)
+    } else {
+      openTarget(parsed.target)
+    }
+    return true
+  }
+  // Opening the app again (or a link while it runs) reaches the copy that is already open
+  app.on('second-instance', (_event, argv) => {
+    if (!handleAppUrl(findAppUrl(argv))) showMainWindow()
+  })
+
+  registerAppProtocol()
   createTray((command) => eyeBreak.command(command))
   applySettings(settings.get())
-  createMainWindow({ show: !startsHidden() })
+  // A "Done" link that starts the app does its job without showing the window
+  const startUrl = findAppUrl(process.argv)
+  const startsWithDone = parseAppUrl(startUrl ?? '')?.action === 'done'
+  createMainWindow({ show: !startsHidden() && !startsWithDone })
+  handleAppUrl(startUrl)
   notifier.start()
   eyeBreak.start()
   // Keeps the minutes in the tray tooltip up to date

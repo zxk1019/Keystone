@@ -12,6 +12,8 @@ export interface NotificationContent {
   body: string
   /** What to open when the notification is clicked */
   target: NavigationTarget
+  /** Shows a "Done" button for this item (installed app only) */
+  doneItemId?: string
 }
 
 function bulletList(items: AgendaItem[], t: Translate): string[] {
@@ -62,7 +64,8 @@ export function describeNotification(
         return {
           title: t('notify.overdueOne', { title: item.title }),
           body: [subjectName(item), t('notify.wasDue', { date })].filter(Boolean).join(' · '),
-          target: { section: 'tasks', itemId: item.id }
+          target: { section: 'tasks', itemId: item.id },
+          doneItemId: item.id
         }
       }
       return {

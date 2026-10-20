@@ -81,6 +81,7 @@
       "done": "Done"
     },
     "empty": "Nothing to show with these filters.",
+    "noTasks": "You have no tasks yet. Click \"New task\" to add the first one.",
     "markDone": "Mark as done",
     "markPending": "Mark as pending",
     "newFor": "New task: {{date}}"
@@ -426,7 +427,8 @@
     "breakStartTitle": "Break time!",
     "breakStartBody": "Get up and take {{count}} minutes off.",
     "breakEndTitle": "Break over",
-    "breakEndBody": "Start block {{count}} whenever you are ready."
+    "breakEndBody": "Start block {{count}} whenever you are ready.",
+    "markDone": "Done"
   },
   "dialog": {
     "exportTitle": "Export backup",
