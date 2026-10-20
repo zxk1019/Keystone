@@ -81,6 +81,7 @@
       "done": "Hechas"
     },
     "empty": "No hay nada que mostrar con estos filtros.",
+    "noTasks": "Aún no tienes tareas. Pulsa «Nueva tarea» para apuntar la primera.",
     "markDone": "Marcar como hecho",
     "markPending": "Marcar como pendiente",
     "newFor": "Nueva tarea: {{date}}"
@@ -426,7 +427,8 @@
     "breakStartTitle": "¡Descanso!",
     "breakStartBody": "Levántate y despéjate {{count}} minutos.",
     "breakEndTitle": "Fin del descanso",
-    "breakEndBody": "Cuando quieras, empieza el bloque {{count}}."
+    "breakEndBody": "Cuando quieras, empieza el bloque {{count}}.",
+    "markDone": "Hecho"
   },
   "dialog": {
     "exportTitle": "Exportar copia de seguridad",

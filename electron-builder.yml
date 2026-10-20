@@ -6,18 +6,28 @@ files:
   - '!**/.vscode/*'
   - '!src/*'
   - '!docs/*'
+  - '!scripts/*'
   - '!CLAUDE.md'
   - '!electron.vite.config.{js,ts,mjs,cjs}'
+  - '!vitest.config.*'
   - '!{.eslintcache,eslint.config.mjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
   - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
   - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
 asarUnpack:
+  # The icons must be real files: Windows reads them for the tray and the notifications
   - resources/**
 win:
   executableName: mi-estudio
 nsis:
+  # One click, only for the current user: no administrator permission needed
+  oneClick: true
+  perMachine: false
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
+  # Uninstalling keeps the user's data (%APPDATA%\Mi Estudio)
+  deleteAppDataOnUninstall: false
+  # Removes what the app registers with Windows (miestudio:// links, start with Windows)
+  include: build/installer.nsh
 npmRebuild: false

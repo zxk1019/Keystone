@@ -95,7 +95,8 @@ export default function TasksPage(): JSX.Element | null {
 
       {sections.length === 0 ? (
         <p className="rounded-xl border border-dashed border-zinc-300 p-8 text-center text-sm text-zinc-500 dark:border-zinc-700 dark:text-zinc-400">
-          {t('tasks.empty')}
+          {/* No tasks at all is not the same as filters that hide them all */}
+          {agenda.items.length === 0 ? t('tasks.noTasks') : t('tasks.empty')}
         </p>
       ) : (
         sections.map((section) => (

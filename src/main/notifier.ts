@@ -1,4 +1,5 @@
 import { Notification } from 'electron'
+import { pathToFileURL } from 'url'
 import type { NavigationTarget } from '@shared/api'
 import { planNotifications } from '@shared/notifications'
 import icon from '../../resources/icon.png?asset'
@@ -8,6 +9,7 @@ import type { NotificationLog } from './data/notificationLog'
 import type { SettingsRepo } from './data/settingsRepo'
 import { createTranslator } from './i18n'
 import { describeNotification, type NotificationContent } from './notificationText'
+import { toastXml } from './toastXml'
 
 const CHECK_EVERY_MS = 60_000
 
@@ -19,6 +21,11 @@ interface NotifierDeps {
   isStudying: () => boolean
   /** Opens the app on what the notification is about */
   open: (target: NavigationTarget) => void
+  /**
+   * Windows toasts written in XML, with a "Done" button. Their clicks arrive as miestudio://
+   * links, which only work in the installed app (it registers the link with Windows).
+   */
+  richToasts: boolean
 }
 
 /** Every minute, asks the planner what is due and shows it as Windows notifications. */
@@ -66,12 +73,21 @@ export class Notifier {
   }
 
   /** Shows a notification right away, outside the reminder planning (e.g. the study timer). */
-  show({ title, body, target }: NotificationContent): void {
-    const notification = new Notification({ title, body, icon })
+  show(content: NotificationContent): void {
+    const { title, body, target } = content
+    const notification = this.deps.richToasts
+      ? new Notification({
+          toastXml: toastXml(content, {
+            iconUrl: pathToFileURL(icon).href,
+            doneLabel: createTranslator(this.deps.settings.get().language)('notify.markDone')
+          })
+        })
+      : new Notification({ title, body, icon })
     this.shown.add(notification)
     notification.on('click', () => {
       this.shown.delete(notification)
-      this.deps.open(target)
+      // Rich toasts open their miestudio:// link instead
+      if (!this.deps.richToasts) this.deps.open(target)
     })
     notification.on('close', () => this.shown.delete(notification))
     notification.show()

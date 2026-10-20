@@ -17,7 +17,8 @@
     "build": "npm run typecheck && electron-vite build",
     "postinstall": "install-electron && electron-builder install-app-deps",
     "build:unpack": "npm run build && electron-builder --dir",
-    "build:win": "npm run build && electron-builder --win"
+    "build:win": "npm run build && electron-builder --win",
+    "icons": "electron scripts/make-icons.cjs"
   },
   "dependencies": {
     "@electron-toolkit/utils": "^4.0.0",
