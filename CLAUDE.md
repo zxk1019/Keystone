@@ -9,7 +9,9 @@ El proyecto vive en esta carpeta (`Mi Estudio`, con el repositorio git). Al lado
   1. explica qué has hecho y cómo probarlo,
   2. actualiza la línea "Fase actual" de este archivo,
   3. espera a que te confirme antes de seguir.
-- **Fase actual: 8 — Pulido y paquete** (hecha, pendiente de que la confirme). Es la última fase de la especificación.
+- **Fase actual: 9 — Sincronización** (hecha, pendiente de que la confirme). La siguiente es la 10 — App Android con Capacitor.
+- Sincronización: solo se ha probado contra el emulador de Firebase. Falta que el usuario cree su proyecto de Firebase (la guía está en Ajustes → Sincronización), ponga el ID del proyecto y la clave de API web, y cree su cuenta. La contraseña la escribe siempre él.
+- Para la fase 10: el móvil necesita Android Studio, y hay que decidir qué avisos salen en el móvil y cuáles en el PC para que no lleguen dos veces.
 - Pendiente de probar con la app instalada (solo ella se registra en Windows), juntos:
   - el botón «Hecho» de un aviso de tarea con retraso;
   - «Arrancar con Windows» (arranca escondida en la bandeja);
@@ -22,6 +24,10 @@ El proyecto vive en esta carpeta (`Mi Estudio`, con el repositorio git). Al lado
 - `npm run build:win`: genera el instalador de Windows en `dist/mi-estudio-<versión>-setup.exe` y la app sin instalar en `dist/win-unpacked/mi-estudio.exe`. No está firmado, así que SmartScreen avisa al instalarlo. Después, copia el instalador nuevo a `..\exe` (y borra el de la versión anterior si cambia el número).
 - `npm run icons`: vuelve a dibujar los iconos (`build/` y `resources/`) a partir del SVG de `scripts/make-icons.cjs`.
 - Para probar sin tocar los datos reales, lanza la app con otra carpeta de datos: `MI_ESTUDIO_DATA_DIR=<carpeta>`. Usa una ruta corta: si la ruta es larga, Windows no deja crear los archivos de Chromium y la app se cierra al arrancar. Una ejecución con esta variable cuenta como prueba (`isTestRun`) y no registra nada en Windows, ni siquiera desde `dist/win-unpacked`.
+- `npm run test:emulator`: arranca el emulador de Firebase, pasa `src/shared/firebase.emulator.test.ts` (cuentas, subir y bajar, y las reglas de `firebase/firestore.rules`) y lo cierra. `npm run emulators` lo deja abierto para probar la app: lánzala con `MI_ESTUDIO_FIREBASE_EMULATOR=127.0.0.1` (solo en desarrollo; la app instalada lo ignora) y en Ajustes pon el ID de proyecto `demo-mi-estudio` y cualquier clave que empiece por `AIza` y tenga 39 caracteres.
+  - El emulador usa los puertos 9099 y 8085 (el 8080 lo ocupa Oracle). Si al cerrarlo el 8085 se queda ocupado, ciérralo con `curl -X POST http://127.0.0.1:8085/shutdown`.
+  - `firebase-tools` está fijado en la 14.18.0 porque las versiones nuevas piden Java 21 y en este PC hay Java 17.
+  - Para probar dos dispositivos a la vez, abre dos copias con carpetas de datos distintas (`MI_ESTUDIO_DATA_DIR`).
 - Para probar Spotify sin una cuenta real: `MI_ESTUDIO_SPOTIFY_ACCOUNTS` y `MI_ESTUDIO_SPOTIFY_API` apuntan la app a un Spotify falso. Solo funcionan en desarrollo; la app instalada los ignora.
 
 ## Dónde está cada cosa
@@ -36,12 +42,15 @@ El proyecto vive en esta carpeta (`Mi Estudio`, con el repositorio git). Al lado
 - Avisos: `src/shared/notifications.ts` (`planNotifications`) decide qué toca enviar. Es una función pura con tests. `src/main/notifier.ts` la ejecuta cada minuto y muestra los avisos, `src/main/notificationText.ts` escribe sus textos y `src/main/navigation.ts` lleva a la pantalla correcta al hacer clic. Lo que ya se ha enviado se guarda en `%APPDATA%\Mi Estudio\mi-estudio-avisos.json`, fuera de las copias de seguridad.
 - Avisos con botón «Hecho»: en la app instalada, `src/main/toastXml.ts` escribe el aviso de Windows con enlaces `miestudio://` (`src/shared/appUrl.ts` los crea y los lee). Windows abre el enlace con la app: si ya está abierta, llega por `second-instance`; si no, por `process.argv`. `src/main/startup.ts` decide si se puede registrar algo en Windows (`mayRegister`: app instalada y no es prueba). En desarrollo los avisos son los simples (título y texto) y el clic navega con `navigation.ts`.
 - Instalador: `electron-builder.yml` (NSIS de un clic, solo para el usuario, sin permisos de administrador). Al desinstalar se conservan los datos y `build/installer.nsh` borra el protocolo y el arranque con Windows.
+- Sincronización: la lógica pura está en `src/shared/sync.ts` (con tests): las claves de cada registro (`items/<id>`, `settings/shared`...), qué cambió (`trackChanges`), qué subir (`pendingRecords`) y cómo aplicar lo que llega (`applyRemote`, gana el último cambio). `DataStore.update` apunta cada cambio solo; lo que llega de la nube entra con `replaceFromSync`, que no lo apunta como cambio propio. La API REST de Firebase (cuentas y Firestore) está en `src/shared/firebase.ts`, y `src/main/sync/service.ts` decide cuándo sincronizar. La sesión se guarda cifrada en `mi-estudio-sync.bin` (`secureFile.ts`, igual que la de Spotify).
+  - Si añades un campo sincronizado a un registro, los dispositivos con la versión vieja lo perderán al editar ese registro. Si añades un tipo de registro nuevo, la versión vieja lo ignora.
+  - Las asignaturas se guardan en orden alfabético (`sortSubjects`), para que el PC y el móvil las muestren igual.
 - `src/preload/index.ts`: lo único que ve el renderer del proceso main (`window.api`).
 - `src/renderer/src/`: React. Las pantallas van en `features/`, el estado en `store/` (zustand), la lógica pura en `lib/` y los componentes comunes (botón, diálogo, campo) en `components/`.
 - Agenda: `features/agenda/WeekGrid.tsx` es la cuadrícula semanal que usan tanto la vista como el editor del horario. Los colores de las asignaturas están en `subjectStyles.ts`.
 - Tareas: `features/tasks/ItemDialog.tsx` es el único formulario de elementos. Se abre desde cualquier pantalla con `useItemDialogStore` (`openNew` / `openEdit`).
 - `docs/ejemplo-horario.json`: un horario de ejemplo para probar. Se carga con Ajustes → Importar copia, que reemplaza los datos.
-- Los datos se guardan en `%APPDATA%\Mi Estudio\mi-estudio-data.json`.
+- Los datos se guardan en `%APPDATA%\Mi Estudio\mi-estudio-data.json` (versión 2 desde la fase 9; el archivo de la versión 1 se convierte solo y se guarda una copia en `mi-estudio-data.v1.json`). Las copias de seguridad exportadas no llevan el registro de la sincronización.
 
 ## Convenciones
 - Háblame en castellano.

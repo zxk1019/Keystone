@@ -1,4 +1,4 @@
-import type { ScheduleSlot } from './types'
+import type { ScheduleSlot, Subject } from './types'
 
 const TIME_PATTERN = /^([01]\d|2[0-3]):[0-5]\d$/
 
@@ -37,6 +37,17 @@ export function findOverlap(
 }
 
 /** Monday first, then by start time. */
+/**
+ * Subjects in alphabetical order. Every device sorts them the same way, so the lists look the
+ * same on the PC and on the phone whatever order they were created or synced in.
+ */
+export function sortSubjects(subjects: Subject[]): Subject[] {
+  return [...subjects].sort(
+    (a, b) =>
+      a.name.localeCompare(b.name, 'es', { sensitivity: 'base' }) || a.id.localeCompare(b.id)
+  )
+}
+
 export function sortSlots(slots: ScheduleSlot[]): ScheduleSlot[] {
   return [...slots].sort(
     (a, b) => a.weekday - b.weekday || timeToMinutes(a.start) - timeToMinutes(b.start)

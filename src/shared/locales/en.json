@@ -243,6 +243,23 @@
       "unknown": "Spotify returned an error. Try again."
     }
   },
+  "sync": {
+    "errors": {
+      "offline": "Cannot reach Firebase.",
+      "unavailable": "Firebase is not answering right now.",
+      "invalidCredentials": "The email or the password is not correct.",
+      "emailExists": "There is already an account with that email. Click \"Sign in\".",
+      "weakPassword": "The password needs at least 6 characters.",
+      "invalidEmail": "That email is not valid.",
+      "tooManyAttempts": "Too many attempts. Wait a little and try again.",
+      "sessionExpired": "Your session has expired. Please sign in again.",
+      "badConfig": "The web API key is not correct. Check it in the Firebase project settings.",
+      "authNotEnabled": "Enable \"Email/Password\" in Authentication (step 2 of the guide).",
+      "databaseMissing": "The database cannot be found. Check that you created Firestore (step 3) and that the project ID is correct.",
+      "permissionDenied": "Firestore does not allow saving the data. Publish the rules from step 4 of the guide.",
+      "unknown": "Something went wrong. Please try again."
+    }
+  },
   "agenda": {
     "week": "Week",
     "month": "Month",
@@ -383,6 +400,44 @@
       "test": "Send a test",
       "testSent": "Test sent. If you do not see it, check that Windows “Do not disturb” is off."
     },
+    "sync": {
+      "title": "Sync",
+      "description": "Use the same data on your PC and your phone. It is stored in your own Firebase project, which is free.",
+      "apiKey": "Web API key",
+      "apiKeyPlaceholder": "Starts with AIza",
+      "apiKeyInvalid": "The web API key starts with \"AIza\" and is 39 characters long.",
+      "projectId": "Project ID",
+      "projectIdPlaceholder": "mi-estudio-1a2b3",
+      "projectIdInvalid": "The project ID has 6 to 30 lowercase letters, numbers and hyphens.",
+      "email": "Email",
+      "password": "Password",
+      "passwordHint": "At least 6 characters. Use the same account on your PC and your phone.",
+      "signIn": "Sign in",
+      "signUp": "Create account",
+      "forgot": "I forgot my password",
+      "resetSent": "If there is an account with that email, you will get a link to choose a new password.",
+      "resetNeedsEmail": "Type your email and click \"I forgot my password\" again.",
+      "signedInAs": "Syncing with {{email}}",
+      "syncing": "Syncing…",
+      "lastSync": "Last sync: {{time}}",
+      "notYet": "Not synced yet.",
+      "pending_one": "{{count}} change waiting to upload",
+      "pending_other": "{{count}} changes waiting to upload",
+      "retrying": "It will try again by itself in a minute.",
+      "syncNow": "Sync now",
+      "signOut": "Sign out",
+      "expired": "Your session has expired. Please sign in again.",
+      "howTo": "How to set up your Firebase project",
+      "step1": "Open the Firebase console with your Google account and create a project. Google Analytics is not needed.",
+      "openConsole": "Open the Firebase console",
+      "step2": "In \"Authentication\", click \"Get started\" and enable the \"Email/Password\" provider.",
+      "step3": "In \"Firestore Database\", click \"Create database\". Choose a location in Europe and production mode.",
+      "step4": "In the \"Rules\" tab of Firestore, delete what is there, paste these rules and click \"Publish\":",
+      "copyRules": "Copy the rules",
+      "copied": "Copied",
+      "step5": "In \"Project settings\" (the gear icon) → \"General\", copy the \"Project ID\" and the \"Web API Key\" and paste them above.",
+      "step6": "Create your account below. On your phone, sign in with the same email and password."
+    },
     "startup": {
       "title": "Start with Windows",
       "description": "Opens hidden in the tray when you turn on the computer, so reminders always arrive.",
@@ -390,7 +445,7 @@
     },
     "data": {
       "title": "Data",
-      "description": "Your data is stored only on this computer. Make a backup from time to time.",
+      "description": "Your data is stored on this computer and, if you turn on sync, in your Firebase project. Make a backup from time to time.",
       "export": "Export backup",
       "import": "Import backup",
       "exported": "Backup saved to {{path}}",
@@ -435,7 +490,7 @@
     "importTitle": "Import backup",
     "backupFileType": "Mi Estudio backup",
     "backupFileName": "mi-estudio-backup-{{date}}.json",
-    "importConfirm": "All your current data will be replaced with the data in the backup. Do you want to continue?",
+    "importConfirm": "All your current data will be replaced with the data in the backup. If sync is on, it will also be replaced on your other devices. Do you want to continue?",
     "importButton": "Import",
     "cancelButton": "Cancel"
   }

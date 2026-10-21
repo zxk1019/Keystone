@@ -4,9 +4,10 @@ import {
   findOverlap,
   minutesToTime,
   sortSlots,
+  sortSubjects,
   timeToMinutes
 } from './schedule'
-import type { ScheduleSlot } from './types'
+import type { ScheduleSlot, Subject } from './types'
 
 const slot = (id: string, weekday: number, start: string, end: string): ScheduleSlot => ({
   id,
@@ -88,5 +89,18 @@ describe('currentAndNextSlot', () => {
       current: undefined,
       next: undefined
     })
+  })
+})
+
+describe('sortSubjects', () => {
+  it('sorts by name the Spanish way, ignoring case and accents', () => {
+    const subject = (id: string, name: string): Subject => ({ id, name, color: 'blue' })
+    const sorted = sortSubjects([
+      subject('1', 'tutoria'),
+      subject('2', 'Árabe'),
+      subject('3', 'Disseny'),
+      subject('4', 'Base de dades')
+    ])
+    expect(sorted.map((s) => s.name)).toEqual(['Árabe', 'Base de dades', 'Disseny', 'tutoria'])
   })
 })

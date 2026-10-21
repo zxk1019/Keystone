@@ -3,6 +3,7 @@ import { IPC, type DesktopApi } from '@shared/api'
 import type { EyeBreakStatus } from '@shared/eyeBreak'
 import type { SpotifyStatus } from '@shared/spotify'
 import type { PhaseEvent, TimerState } from '@shared/studyTimer'
+import type { SyncStatus } from '@shared/sync'
 import type { Settings } from '@shared/types'
 
 /** Subscribes to a channel and returns the function that unsubscribes. */
@@ -51,7 +52,15 @@ const api: DesktopApi = {
   spotifyDevices: () => ipcRenderer.invoke(IPC.spotifyDevices),
   spotifyPlaylists: () => ipcRenderer.invoke(IPC.spotifyPlaylists),
   spotifyCommand: (command) => ipcRenderer.invoke(IPC.spotifyCommand, command),
-  onSpotifyStatus: (callback) => listen<SpotifyStatus>(IPC.spotifyStatusChanged, callback)
+  onSpotifyStatus: (callback) => listen<SpotifyStatus>(IPC.spotifyStatusChanged, callback),
+
+  getSyncStatus: () => ipcRenderer.invoke(IPC.syncStatus),
+  syncSignIn: (email, password, create) =>
+    ipcRenderer.invoke(IPC.syncSignIn, email, password, create),
+  syncSignOut: () => ipcRenderer.invoke(IPC.syncSignOut),
+  syncResetPassword: (email) => ipcRenderer.invoke(IPC.syncResetPassword, email),
+  syncNow: () => ipcRenderer.invoke(IPC.syncNow),
+  onSyncStatus: (callback) => listen<SyncStatus>(IPC.syncStatusChanged, callback)
 }
 
 contextBridge.exposeInMainWorld('api', api)

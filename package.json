@@ -1,7 +1,7 @@
 {
   "name": "mi-estudio",
   "productName": "Mi Estudio",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Mi Estudio: agenda, avisos y zona de estudio",
   "main": "./out/main/index.js",
   "author": "Xinkai Zheng",
@@ -12,13 +12,15 @@
     "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
     "typecheck": "npm run typecheck:node && npm run typecheck:web",
     "test": "vitest run",
+    "test:emulator": "node scripts/test-emulator.cjs",
     "start": "electron-vite preview",
     "dev": "electron-vite dev",
     "build": "npm run typecheck && electron-vite build",
     "postinstall": "install-electron && electron-builder install-app-deps",
     "build:unpack": "npm run build && electron-builder --dir",
     "build:win": "npm run build && electron-builder --win",
-    "icons": "electron scripts/make-icons.cjs"
+    "icons": "electron scripts/make-icons.cjs",
+    "emulators": "firebase emulators:start --only auth,firestore --project demo-mi-estudio"
   },
   "dependencies": {
     "@electron-toolkit/utils": "^4.0.0",
@@ -44,6 +46,7 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.7",
+    "firebase-tools": "14.18.0",
     "prettier": "^3.9.10",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",

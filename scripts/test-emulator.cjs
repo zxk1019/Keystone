@@ -1,0 +1,25 @@
+// npm run test:emulator: starts the Firebase emulators, runs src/shared/firebase.emulator.test.ts
+// against them and closes them. On Windows the Firestore emulator (Java) stays open after
+// `emulators:exec`, so it is also closed through its own shutdown address.
+const { spawnSync } = require('child_process')
+const firebaseConfig = require('../firebase.json')
+
+const result = spawnSync(
+  'firebase',
+  [
+    'emulators:exec',
+    '--only',
+    'auth,firestore',
+    '--project',
+    'demo-mi-estudio',
+    '"vitest run src/shared/firebase.emulator.test.ts"'
+  ],
+  { stdio: 'inherit', shell: true }
+)
+
+const firestorePort = firebaseConfig.emulators.firestore.port
+fetch(`http://127.0.0.1:${firestorePort}/shutdown`, { method: 'POST' })
+  .catch(() => {
+    // Already closed
+  })
+  .finally(() => process.exit(result.status ?? 1))

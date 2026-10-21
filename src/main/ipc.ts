@@ -6,6 +6,7 @@ import { agendaOf, type ItemsRepo, type ScheduleRepo, type SubjectsRepo } from '
 import { exportBackup, importBackup } from './data/backup'
 import type { EyeBreakService } from './eyeBreak'
 import type { SpotifyService } from './spotify/service'
+import type { SyncService } from './sync/service'
 import type { DataStore } from './data/dataStore'
 import type { SettingsRepo } from './data/settingsRepo'
 import { createTranslator } from './i18n'
@@ -23,6 +24,7 @@ interface IpcDeps {
   studyTimer: StudyTimer
   eyeBreak: EyeBreakService
   spotify: SpotifyService
+  sync: SyncService
   /** Called whenever the settings change, from the UI or from an imported backup. */
   onSettingsChanged: (settings: Settings) => void
 }
@@ -54,6 +56,7 @@ export function registerIpc({
   studyTimer,
   eyeBreak,
   spotify,
+  sync,
   onSettingsChanged
 }: IpcDeps): void {
   const translator = (): ReturnType<typeof createTranslator> =>
@@ -118,4 +121,23 @@ export function registerIpc({
     if (!command) throw new Error('Unknown Spotify command')
     return spotify.command(command)
   })
+
+  ipcMain.handle(IPC.syncStatus, () => sync.status())
+  ipcMain.handle(IPC.syncSignIn, (_event, email: unknown, password: unknown, create: unknown) => {
+    if (!isCredential(email) || !isCredential(password) || typeof create !== 'boolean') {
+      throw new Error('Invalid credentials')
+    }
+    return sync.signIn(create ? 'signUp' : 'signIn', email.trim(), password)
+  })
+  ipcMain.handle(IPC.syncSignOut, () => sync.signOut())
+  ipcMain.handle(IPC.syncResetPassword, (_event, email: unknown) => {
+    if (!isCredential(email)) throw new Error('Invalid email')
+    return sync.resetPassword(email.trim())
+  })
+  ipcMain.handle(IPC.syncNow, () => sync.syncNow())
+}
+
+/** Firebase checks the email and the password itself; here only that they are sensible text. */
+function isCredential(value: unknown): value is string {
+  return typeof value === 'string' && value.length <= 1000
 }

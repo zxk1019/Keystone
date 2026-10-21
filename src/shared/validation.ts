@@ -1,4 +1,4 @@
-import { isValidTime, timeToMinutes } from './schedule'
+import { isValidTime, sortSubjects, timeToMinutes } from './schedule'
 import {
   AGENDA_ITEM_TYPES,
   DATA_VERSION,
@@ -7,6 +7,7 @@ import {
   DEFAULT_SETTINGS,
   DEFAULT_SPOTIFY,
   DEFAULT_STUDY,
+  DEFAULT_SYNC,
   EYE_BREAK_LIMITS,
   EXAM_REMINDER_DAYS,
   LANGUAGES,
@@ -23,7 +24,10 @@ import {
   type Settings,
   type SpotifySettings,
   type StudySettings,
-  type Subject
+  type RecordChange,
+  type Subject,
+  type SyncMeta,
+  type SyncSettings
 } from './types'
 
 export const MAX_NAME_LENGTH = 40
@@ -60,6 +64,7 @@ export function sanitizeSettings(value: unknown, fallback: Settings = DEFAULT_SE
     study: sanitizeStudy(input.study, fallback.study),
     eyeBreak: sanitizeEyeBreak(input.eyeBreak, fallback.eyeBreak),
     spotify: sanitizeSpotify(input.spotify, fallback.spotify),
+    sync: sanitizeSync(input.sync, fallback.sync),
     startWithWindows:
       typeof input.startWithWindows === 'boolean'
         ? input.startWithWindows
@@ -107,6 +112,26 @@ function sanitizeSpotify(
       typeof input.playOnStudyStart === 'boolean'
         ? input.playOnStudyStart
         : fallback.playOnStudyStart
+  }
+}
+
+/** Google API keys: "AIza" and 35 more characters */
+export const FIREBASE_API_KEY_PATTERN = /^AIza[0-9A-Za-z_-]{35}$/
+/** Firebase project IDs: 6 to 30 lowercase letters, digits and hyphens, starting with a letter */
+export const FIREBASE_PROJECT_ID_PATTERN = /^[a-z][a-z0-9-]{4,28}[a-z0-9]$/
+
+function sanitizeSync(value: unknown, fallback: SyncSettings = DEFAULT_SYNC): SyncSettings {
+  const input = isRecord(value) ? value : {}
+  const text = (key: keyof SyncSettings, pattern: RegExp): string => {
+    const raw = input[key]
+    const candidate = typeof raw === 'string' ? raw.trim() : null
+    return candidate !== null && (candidate === '' || pattern.test(candidate))
+      ? candidate
+      : fallback[key]
+  }
+  return {
+    apiKey: text('apiKey', FIREBASE_API_KEY_PATTERN),
+    projectId: text('projectId', FIREBASE_PROJECT_ID_PATTERN)
   }
 }
 
@@ -241,22 +266,50 @@ function parseList<T>(values: unknown[], parse: (value: unknown) => T | null): T
   return values.map(parse).filter((value): value is T => value !== null)
 }
 
+/** "items/<id>", "settings/shared"... (see shared/sync.ts) */
+const SYNC_KEY_PATTERN = /^(subjects|schedule|items|settings)\/.+$/
+
+/** Sync bookkeeping read from the data file; anything that does not fit is dropped. */
+export function parseSyncMeta(value: unknown): SyncMeta {
+  const input = isRecord(value) ? value : {}
+  const changes: Record<string, RecordChange> = {}
+  for (const [key, change] of Object.entries(isRecord(input.changes) ? input.changes : {})) {
+    if (!SYNC_KEY_PATTERN.test(key) || !isRecord(change)) continue
+    if (typeof change.at !== 'number' || !Number.isFinite(change.at)) continue
+    changes[key] = change.deleted === true ? { at: change.at, deleted: true } : { at: change.at }
+  }
+  const pending = Array.isArray(input.pending)
+    ? input.pending.filter(
+        (key): key is string => typeof key === 'string' && Object.hasOwn(changes, key)
+      )
+    : []
+  const meta: SyncMeta = { changes, pending: [...new Set(pending)] }
+  const account = input.account
+  if (isRecord(account) && isId(account.uid) && typeof account.cursor === 'string') {
+    meta.account = { uid: account.uid, cursor: account.cursor }
+  }
+  return meta
+}
+
 /**
  * Returns the data if it looks like a Mi Estudio data file, or null if it does not.
  * Invalid entries inside the lists are dropped instead of rejecting the whole file.
+ * Version 1 files (from before sync) come back with no sync bookkeeping: whoever loads them
+ * decides what to do with it (see DataStore).
  */
 export function parseAppData(value: unknown): AppData | null {
-  if (!isRecord(value) || value.version !== DATA_VERSION) return null
+  if (!isRecord(value) || (value.version !== 1 && value.version !== DATA_VERSION)) return null
   const { subjects, schedule, items } = value
   if (!Array.isArray(subjects) || !Array.isArray(schedule) || !Array.isArray(items)) return null
 
-  const validSubjects = parseList(subjects, parseSubject)
+  const validSubjects = sortSubjects(parseList(subjects, parseSubject))
   const subjectIds = new Set(validSubjects.map((subject) => subject.id))
   return {
     version: DATA_VERSION,
     settings: sanitizeSettings(value.settings),
     subjects: validSubjects,
     schedule: parseList(schedule, (slot) => parseScheduleSlot(slot, subjectIds)),
-    items: parseList(items, (item) => parseAgendaItem(item, subjectIds))
+    items: parseList(items, (item) => parseAgendaItem(item, subjectIds)),
+    sync: parseSyncMeta(value.version === DATA_VERSION ? value.sync : undefined)
   }
 }

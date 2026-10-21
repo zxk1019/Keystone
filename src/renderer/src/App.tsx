@@ -17,6 +17,7 @@ import { useNavigationStore } from './store/navigationStore'
 import { useSettingsStore } from './store/settingsStore'
 import { useSpotifyStore } from './store/spotifyStore'
 import { useStudyStore } from './store/studyStore'
+import { useSyncStore } from './store/syncStore'
 
 const PAGES: Record<SectionId, ComponentType> = {
   today: TodayPage,
@@ -33,6 +34,7 @@ export default function App(): JSX.Element | null {
   const loadStudy = useStudyStore((state) => state.load)
   const loadEyeBreak = useEyeBreakStore((state) => state.load)
   const loadSpotify = useSpotifyStore((state) => state.load)
+  const loadSync = useSyncStore((state) => state.load)
   const section = useNavigationStore((state) => state.section)
   const goTo = useNavigationStore((state) => state.goTo)
 
@@ -42,7 +44,8 @@ export default function App(): JSX.Element | null {
     loadStudy()
     loadEyeBreak()
     loadSpotify()
-    // Changes that do not come from this window's own updates, e.g. importing a backup
+    loadSync()
+    // Changes that do not come from this window's own updates, e.g. a backup or another device
     const stopSettings = platform.onSettingsChanged((updated) =>
       useSettingsStore.setState({ settings: updated })
     )
@@ -54,6 +57,7 @@ export default function App(): JSX.Element | null {
       useEyeBreakStore.setState({ status })
     )
     const stopSpotify = platform.onSpotifyStatus((status) => useSpotifyStore.setState({ status }))
+    const stopSync = platform.onSyncStatus((status) => useSyncStore.setState({ status }))
     return () => {
       stopSettings()
       stopData()
@@ -61,8 +65,9 @@ export default function App(): JSX.Element | null {
       stopChime()
       stopEyeBreak()
       stopSpotify()
+      stopSync()
     }
-  }, [loadSettings, loadAgenda, loadStudy, loadEyeBreak, loadSpotify])
+  }, [loadSettings, loadAgenda, loadStudy, loadEyeBreak, loadSpotify, loadSync])
 
   useApplySettings(settings)
   useNotificationNavigation()

@@ -243,6 +243,23 @@
       "unknown": "Spotify ha dado un error. Inténtalo de nuevo."
     }
   },
+  "sync": {
+    "errors": {
+      "offline": "No hay conexión con Firebase.",
+      "unavailable": "Firebase no responde ahora mismo.",
+      "invalidCredentials": "El correo o la contraseña no son correctos.",
+      "emailExists": "Ya hay una cuenta con ese correo. Pulsa «Iniciar sesión».",
+      "weakPassword": "La contraseña tiene que tener al menos 6 caracteres.",
+      "invalidEmail": "Ese correo no es válido.",
+      "tooManyAttempts": "Demasiados intentos. Espera un poco y vuelve a probar.",
+      "sessionExpired": "La sesión ha caducado. Vuelve a iniciar sesión.",
+      "badConfig": "La clave de API web no es correcta. Revísala en la configuración del proyecto de Firebase.",
+      "authNotEnabled": "Activa «Correo electrónico/contraseña» en Authentication (paso 2 de la guía).",
+      "databaseMissing": "No se encuentra la base de datos. Comprueba que has creado Firestore (paso 3) y que el ID del proyecto es correcto.",
+      "permissionDenied": "Firestore no deja guardar los datos. Publica las reglas del paso 4 de la guía.",
+      "unknown": "Algo ha fallado. Vuelve a intentarlo."
+    }
+  },
   "agenda": {
     "week": "Semana",
     "month": "Mes",
@@ -383,6 +400,44 @@
       "test": "Probar aviso",
       "testSent": "Aviso enviado. Si no lo ves, revisa que el modo «No molestar» de Windows esté desactivado."
     },
+    "sync": {
+      "title": "Sincronización",
+      "description": "Usa los mismos datos en el PC y en el móvil. Se guardan en tu propio proyecto de Firebase, que es gratis.",
+      "apiKey": "Clave de API web",
+      "apiKeyPlaceholder": "Empieza por AIza",
+      "apiKeyInvalid": "La clave de API web empieza por «AIza» y tiene 39 caracteres.",
+      "projectId": "ID del proyecto",
+      "projectIdPlaceholder": "mi-estudio-1a2b3",
+      "projectIdInvalid": "El ID del proyecto tiene de 6 a 30 letras minúsculas, números y guiones.",
+      "email": "Correo",
+      "password": "Contraseña",
+      "passwordHint": "Mínimo 6 caracteres. Usa la misma cuenta en el PC y en el móvil.",
+      "signIn": "Iniciar sesión",
+      "signUp": "Crear cuenta",
+      "forgot": "He olvidado la contraseña",
+      "resetSent": "Si hay una cuenta con ese correo, te llegará un enlace para elegir otra contraseña.",
+      "resetNeedsEmail": "Escribe tu correo y vuelve a pulsar «He olvidado la contraseña».",
+      "signedInAs": "Sincronizando con {{email}}",
+      "syncing": "Sincronizando…",
+      "lastSync": "Última sincronización: {{time}}",
+      "notYet": "Todavía no se ha sincronizado.",
+      "pending_one": "{{count}} cambio pendiente de subir",
+      "pending_other": "{{count}} cambios pendientes de subir",
+      "retrying": "Se volverá a intentar solo en un minuto.",
+      "syncNow": "Sincronizar ahora",
+      "signOut": "Cerrar sesión",
+      "expired": "La sesión ha caducado. Vuelve a iniciar sesión.",
+      "howTo": "Cómo preparar tu proyecto de Firebase",
+      "step1": "Entra en la consola de Firebase con tu cuenta de Google y crea un proyecto. Google Analytics no hace falta.",
+      "openConsole": "Abrir la consola de Firebase",
+      "step2": "En «Authentication», pulsa «Comenzar» y activa el proveedor «Correo electrónico/contraseña».",
+      "step3": "En «Firestore Database», pulsa «Crear base de datos». Elige una ubicación en Europa y el modo de producción.",
+      "step4": "En la pestaña «Reglas» de Firestore, borra lo que hay, pega estas reglas y pulsa «Publicar»:",
+      "copyRules": "Copiar las reglas",
+      "copied": "Copiadas",
+      "step5": "En «Configuración del proyecto» (la rueda dentada) → «General», copia el «ID del proyecto» y la «Clave de API web» y pégalos aquí arriba.",
+      "step6": "Crea tu cuenta aquí abajo. En el móvil, inicia sesión con el mismo correo y la misma contraseña."
+    },
     "startup": {
       "title": "Arrancar con Windows",
       "description": "Se abre escondida en la bandeja al encender el ordenador, para que los avisos lleguen siempre.",
@@ -390,7 +445,7 @@
     },
     "data": {
       "title": "Datos",
-      "description": "Tus datos se guardan solo en este ordenador. Haz una copia de seguridad de vez en cuando.",
+      "description": "Tus datos se guardan en este ordenador y, si activas la sincronización, en tu proyecto de Firebase. Haz una copia de seguridad de vez en cuando.",
       "export": "Exportar copia",
       "import": "Importar copia",
       "exported": "Copia guardada en {{path}}",
@@ -435,7 +490,7 @@
     "importTitle": "Importar copia de seguridad",
     "backupFileType": "Copia de Mi Estudio",
     "backupFileName": "mi-estudio-copia-{{date}}.json",
-    "importConfirm": "Se reemplazarán todos tus datos actuales por los de la copia. ¿Quieres continuar?",
+    "importConfirm": "Se reemplazarán todos tus datos actuales por los de la copia. Si tienes la sincronización activada, también se reemplazarán en tus otros dispositivos. ¿Quieres continuar?",
     "importButton": "Importar",
     "cancelButton": "Cancelar"
   }

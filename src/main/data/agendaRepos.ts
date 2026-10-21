@@ -1,7 +1,7 @@
 import { randomUUID } from 'crypto'
 import type { SaveSlotResult } from '@shared/api'
 import { compareItems } from '@shared/items'
-import { findOverlap, sortSlots } from '@shared/schedule'
+import { findOverlap, sortSlots, sortSubjects } from '@shared/schedule'
 import type { AgendaData, AgendaItem } from '@shared/types'
 import { isRecord, parseAgendaItem, parseScheduleSlot, parseSubject } from '@shared/validation'
 import type { DataStore } from './dataStore'
@@ -30,7 +30,10 @@ export class SubjectsRepo {
   save(draft: unknown): AgendaData {
     const subject = parseSubject(withId(draft))
     if (!subject) throw new Error('Invalid subject')
-    this.store.update((data) => ({ ...data, subjects: upsert(data.subjects, subject) }))
+    this.store.update((data) => ({
+      ...data,
+      subjects: sortSubjects(upsert(data.subjects, subject))
+    }))
     return agendaOf(this.store)
   }
 

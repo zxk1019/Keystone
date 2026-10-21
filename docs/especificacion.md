@@ -43,8 +43,9 @@ Las traducciones están en `shared/` y no en `renderer/` porque el proceso main 
 **Pensando en Capacitor:** todo lo que depende de la plataforma va detrás de una interfaz en `renderer/platform/`. Eso incluye guardar datos, notificaciones, abrir enlaces y la pantalla del 20-20-20. Así, en la versión móvil solo cambio la implementación y no la interfaz de React.
 
 **Datos:**
-- **Solo en local** y sin cuenta, en un archivo JSON gestionado desde el proceso main (`src/main/data/dataStore.ts`, sin dependencias externas). Tiene que estar en main porque los avisos tienen que funcionar con la ventana cerrada.
-- Accede a los datos a través de una capa de repositorio (`TasksRepo`, `ScheduleRepo`...) para poder añadir sincronización en la nube más adelante.
+- **En local**, en un archivo JSON gestionado desde el proceso main (`src/main/data/dataStore.ts`, sin dependencias externas). Tiene que estar en main porque los avisos tienen que funcionar con la ventana cerrada. La app funciona entera sin cuenta y sin internet.
+- Accede a los datos a través de una capa de repositorio (`TasksRepo`, `ScheduleRepo`...).
+- **Sincronización opcional** entre el PC y el móvil con una cuenta en el propio proyecto de Firebase del usuario (ver sección 9).
 - Pon una opción de **exportar e importar** una copia de seguridad en JSON.
 
 **Comportamiento como app de escritorio:**
@@ -88,7 +89,8 @@ Las traducciones están en `shared/` y no en `renderer/` porque el proceso main 
   - `examen`, con un campo opcional "temas que entran"
   - `trabajo`, para trabajos y proyectos
   - `evento`, para eventos personales, con hora de inicio y de fin
-- **Ajustes**: tema, idioma, configuración de avisos, estudio, 20-20-20 y Spotify.
+- **Ajustes**: tema, idioma, configuración de avisos, estudio, 20-20-20, Spotify y el proyecto de Firebase para sincronizar.
+- **Registro de cambios** (para sincronizar): cuándo cambió por última vez cada registro, también los borrados, y qué cambios faltan por subir a la nube.
 
 ---
 
@@ -127,6 +129,7 @@ Las traducciones están en `shared/` y no en `renderer/` porque el proceso main 
 - 20-20-20: activado o no, intervalo (20 min), duración (20 s) y pausa por inactividad.
 - Spotify: conectar o desconectar y playlist por defecto.
 - Arrancar con Windows.
+- Sincronización: proyecto de Firebase, iniciar sesión o crear la cuenta, estado y «Sincronizar ahora» (ver sección 9).
 - Exportar e importar datos.
 
 ---
@@ -194,5 +197,20 @@ Cada 20 minutos de uso del ordenador hay que mirar algo a unos 6 metros durante 
 6. **20-20-20**: contador con inactividad, pantalla completa en todos los monitores, coordinación con el temporizador y pausa desde la bandeja.
 7. **Spotify**: login PKCE, controles, playlists, dispositivos y pausa automática en los descansos.
 8. **Pulido y paquete**: revisar las traducciones, los estados vacíos y los errores, y generar el instalador `.exe` con electron-builder.
+9. **Sincronización**: datos con registro de cambios, cuenta de Firebase, subir y bajar cambios, Ajustes → Sincronización y pruebas con el emulador de Firebase (ver sección 9).
+10. **App Android con Capacitor**: reutiliza el renderer de React y cambia las implementaciones de `platform/` (datos, avisos y sincronización en el móvil). Hay que decidir qué avisos salen en el móvil y cuáles en el PC para que no lleguen dos veces.
 
-Cuando acabe la versión de escritorio, la siguiente fase será la **app móvil con Capacitor**, reutilizando el renderer de React y cambiando las implementaciones de `platform/`.
+---
+
+## 9. Sincronización entre el PC y el móvil
+
+- **Opcional.** Sin cuenta, la app funciona igual que antes. Sin internet también: los cambios se guardan y se suben al volver la conexión.
+- **Dónde:** en el propio proyecto de Firebase del usuario (plan gratuito Spark), que no se pausa aunque no se use. Firebase Auth con **correo y contraseña** y una base de datos Firestore. La API key y el ID del proyecto se ponen en Ajustes; no son secretos.
+- **Sin SDK:** la app habla con Firebase por su API REST con `fetch` (`src/shared/firebase.ts`), para que el mismo código sirva en el móvil.
+- **Qué se sincroniza:** asignaturas, horario, tareas, exámenes, trabajos y eventos, y los ajustes de idioma, avisos y temporizador. **No** se sincronizan el tema, el 20-20-20, Spotify ni «Arrancar con Windows», que son de cada dispositivo.
+- **Conflictos:** cada registro guarda cuándo cambió por última vez y gana el último cambio. Lo que se borra deja una marca de borrado para que no reaparezca. Si un dispositivo deja una clase o una tarea apuntando a una asignatura que el otro borró, se limpia igual que al borrar una asignatura.
+- **Cuándo:** al abrir la app, unos segundos después de cada cambio, al volver a la ventana y cada 5 minutos. Sin conexión lo vuelve a intentar cada minuto.
+- **Primera vez:** al iniciar sesión, la app une lo que tiene el dispositivo con lo que hay en la nube, sin borrar nada. Los ajustes que nunca se han tocado no pisan los de la nube.
+- **Seguridad:** las reglas de Firestore (`firebase/firestore.rules`) solo dejan a cada usuario leer y escribir lo suyo, y no dejan que una versión más vieja pise a una más nueva. La contraseña no se guarda; la sesión se guarda cifrada en `mi-estudio-sync.bin`, fuera de las copias de seguridad.
+- **Importar una copia** reemplaza los datos también en los otros dispositivos.
+- **Datos versión 2:** el archivo de la versión 1 se convierte solo al abrir la app, y antes se guarda una copia en `mi-estudio-data.v1.json`.
