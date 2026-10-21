@@ -4,6 +4,7 @@ import { electronApp, optimizer } from '@electron-toolkit/utils'
 import { IPC } from '@shared/api'
 import { findAppUrl, parseAppUrl } from '@shared/appUrl'
 import type { EyeBreakStatus } from '@shared/eyeBreak'
+import { FIREBASE_URLS, emulatorUrls } from '@shared/firebase'
 import { isStudying, type TimerState } from '@shared/studyTimer'
 import type { Settings } from '@shared/types'
 import { ItemsRepo, ScheduleRepo, SubjectsRepo } from './data/agendaRepos'
@@ -19,6 +20,8 @@ import { openTarget } from './navigation'
 import { Notifier } from './notifier'
 import { SpotifyService } from './spotify/service'
 import { TokenStore } from './spotify/tokenStore'
+import { SyncService } from './sync/service'
+import { SyncSessionStore } from './sync/sessionStore'
 import {
   applyStartWithWindows,
   canUseRichToasts,
@@ -139,6 +142,39 @@ function start(): void {
     applyStartWithWindows(current.startWithWindows)
   }
 
+  /** The settings changed: from the UI, an imported backup or another device. */
+  const onSettingsChanged = (current: Settings): void => {
+    applySettings(current)
+    broadcastSettings(current)
+    studyTimer.durationsChanged()
+    eyeBreak.settingsChanged()
+    spotify.settingsChanged()
+    sync.configChanged()
+    refreshTrayStatus()
+    // E.g. notifications were just turned on, or the summary time moved to now
+    notifier.check()
+  }
+
+  // Development tests can use the local Firebase emulator; the installed app never can
+  const emulatorHost = !app.isPackaged && process.env['MI_ESTUDIO_FIREBASE_EMULATOR']
+  const sync = new SyncService({
+    store,
+    config: () => settings.get().sync,
+    sessions: new SyncSessionStore(join(userData, 'mi-estudio-sync.bin')),
+    urls: emulatorHost ? emulatorUrls(emulatorHost) : FIREBASE_URLS,
+    onStatus: (status) => broadcast(IPC.syncStatusChanged, status),
+    onRemoteChange: (change) => {
+      if (change.settings) onSettingsChanged(settings.get())
+      if (change.agenda) {
+        broadcast(IPC.dataChanged)
+        // E.g. a task marked as done on the phone no longer needs a reminder here
+        notifier.check()
+      }
+    }
+  })
+  // Coming back to the window is a good moment to pick up what changed on the phone
+  app.on('browser-window-focus', () => sync.windowFocused())
+
   registerIpc({
     store,
     settings,
@@ -149,16 +185,8 @@ function start(): void {
     studyTimer,
     eyeBreak,
     spotify,
-    onSettingsChanged: (current) => {
-      applySettings(current)
-      broadcastSettings(current)
-      studyTimer.durationsChanged()
-      eyeBreak.settingsChanged()
-      spotify.settingsChanged()
-      refreshTrayStatus()
-      // E.g. notifications were just turned on, or the summary time moved to now
-      notifier.check()
-    }
+    sync,
+    onSettingsChanged
   })
 
   /** A miestudio:// link from a notification: mark a task done or open a screen. */
@@ -188,6 +216,7 @@ function start(): void {
   handleAppUrl(startUrl)
   notifier.start()
   eyeBreak.start()
+  sync.start()
   // Keeps the minutes in the tray tooltip up to date
   setInterval(refreshTrayStatus, 15_000)
 }

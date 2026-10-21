@@ -57,6 +57,13 @@ export interface SpotifySettings {
   playOnStudyStart: boolean
 }
 
+/** The user's own Firebase project, where the synced data lives. Neither value is secret. */
+export interface SyncSettings {
+  /** "Web API Key" from the Firebase project settings; empty until it is set up */
+  apiKey: string
+  projectId: string
+}
+
 export interface Settings {
   theme: ThemeSetting
   language: Language
@@ -64,6 +71,7 @@ export interface Settings {
   study: StudySettings
   eyeBreak: EyeBreakSettings
   spotify: SpotifySettings
+  sync: SyncSettings
   /** Only has an effect in the installed app */
   startWithWindows: boolean
 }
@@ -131,7 +139,25 @@ export interface AgendaItem {
 /** What is being created or edited: new records have no id yet, the main process assigns it. */
 export type Draft<T extends { id: string }> = Omit<T, 'id'> & { id?: string }
 
-export const DATA_VERSION = 1
+/** 2 added the sync bookkeeping; version 1 files are converted when they are read. */
+export const DATA_VERSION = 2
+
+/** When a synced record last changed; a deleted record keeps its entry so the deletion syncs too. */
+export interface RecordChange {
+  /** Milliseconds since 1970: the latest change wins */
+  at: number
+  deleted?: true
+}
+
+/** Sync bookkeeping, kept next to the data so both are saved together. See shared/sync.ts. */
+export interface SyncMeta {
+  /** By sync key ("items/<id>", "settings/shared"...) */
+  changes: Record<string, RecordChange>
+  /** Keys changed on this device that the cloud does not have yet */
+  pending: string[]
+  /** The account this data syncs with, and how far the downloads have got */
+  account?: { uid: string; cursor: string }
+}
 
 export interface AppData {
   version: typeof DATA_VERSION
@@ -139,6 +165,7 @@ export interface AppData {
   subjects: Subject[]
   schedule: ScheduleSlot[]
   items: AgendaItem[]
+  sync: SyncMeta
 }
 
 /** The part of the data the agenda screens work with. */
@@ -170,6 +197,8 @@ export const DEFAULT_SPOTIFY: SpotifySettings = {
   playOnStudyStart: true
 }
 
+export const DEFAULT_SYNC: SyncSettings = { apiKey: '', projectId: '' }
+
 export const DEFAULT_SETTINGS: Settings = {
   theme: 'system',
   language: 'es',
@@ -177,6 +206,7 @@ export const DEFAULT_SETTINGS: Settings = {
   study: DEFAULT_STUDY,
   eyeBreak: DEFAULT_EYE_BREAK,
   spotify: DEFAULT_SPOTIFY,
+  sync: DEFAULT_SYNC,
   startWithWindows: false
 }
 
@@ -195,6 +225,7 @@ export function createDefaultData(): AppData {
     settings: { ...DEFAULT_SETTINGS, notifications: { ...DEFAULT_NOTIFICATIONS } },
     subjects: [],
     schedule: [],
-    items: []
+    items: [],
+    sync: { changes: {}, pending: [] }
   }
 }

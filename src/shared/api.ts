@@ -8,6 +8,8 @@ import type {
   SpotifyStatus
 } from './spotify'
 import type { PhaseEvent, TimerCommand, TimerState } from './studyTimer'
+import type { SyncResult } from './firebase'
+import type { SyncStatus } from './sync'
 import type { AgendaData, AgendaItem, Draft, ScheduleSlot, Settings, Subject } from './types'
 
 /** IPC channel names used between the preload script and the main process. */
@@ -44,7 +46,13 @@ export const IPC = {
   spotifyDevices: 'spotify:devices',
   spotifyPlaylists: 'spotify:playlists',
   spotifyCommand: 'spotify:command',
-  spotifyStatusChanged: 'spotify:status-changed'
+  spotifyStatusChanged: 'spotify:status-changed',
+  syncStatus: 'sync:status',
+  syncSignIn: 'sync:sign-in',
+  syncSignOut: 'sync:sign-out',
+  syncResetPassword: 'sync:reset-password',
+  syncNow: 'sync:now',
+  syncStatusChanged: 'sync:status-changed'
 } as const
 
 export type ExportResult = { status: 'saved'; path: string } | { status: 'canceled' }
@@ -129,4 +137,13 @@ export interface DesktopApi {
   spotifyPlaylists(): Promise<SpotifyResult<SpotifyPlaylist[]>>
   spotifyCommand(command: SpotifyCommand): Promise<SpotifyResult<null>>
   onSpotifyStatus(callback: (status: SpotifyStatus) => void): () => void
+
+  getSyncStatus(): Promise<SyncStatus>
+  /** Signs in to an existing account, or creates it with `create` */
+  syncSignIn(email: string, password: string, create: boolean): Promise<SyncResult<SyncStatus>>
+  syncSignOut(): Promise<void>
+  /** Firebase emails a link to choose a new password */
+  syncResetPassword(email: string): Promise<SyncResult<null>>
+  syncNow(): Promise<SyncStatus>
+  onSyncStatus(callback: (status: SyncStatus) => void): () => void
 }

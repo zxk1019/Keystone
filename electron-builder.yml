@@ -7,6 +7,8 @@ files:
   - '!src/*'
   - '!docs/*'
   - '!scripts/*'
+  - '!firebase/*'
+  - '!{firebase.json,firebase-debug.log,firestore-debug.log}'
   - '!CLAUDE.md'
   - '!electron.vite.config.{js,ts,mjs,cjs}'
   - '!vitest.config.*'

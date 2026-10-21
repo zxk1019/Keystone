@@ -130,7 +130,38 @@ describe('parseAgendaItem', () => {
 describe('parseAppData', () => {
   it('rejects files that are not Mi Estudio data', () => {
     expect(parseAppData({ foo: 1 })).toBeNull()
-    expect(parseAppData({ version: 2, subjects: [], schedule: [], items: [] })).toBeNull()
+    expect(parseAppData({ version: 3, subjects: [], schedule: [], items: [] })).toBeNull()
+    expect(parseAppData({ version: 2, subjects: [], schedule: {}, items: [] })).toBeNull()
+  })
+
+  it('reads version 1 files (from before sync) as the current version', () => {
+    const data = parseAppData({ version: 1, subjects: [], schedule: [], items: [] })
+    expect(data?.version).toBe(2)
+    expect(data?.sync).toEqual({ changes: {}, pending: [] })
+  })
+
+  it('keeps the valid sync bookkeeping and drops the rest', () => {
+    const data = parseAppData({
+      version: 2,
+      subjects: [],
+      schedule: [],
+      items: [],
+      sync: {
+        changes: {
+          'items/a': { at: 5 },
+          'items/b': { at: 6, deleted: true },
+          'nonsense/c': { at: 7 },
+          'items/d': { at: 'yesterday' }
+        },
+        pending: ['items/a', 'items/a', 'items/x', 'constructor', 3],
+        account: { uid: 'user-1', cursor: '2026-10-21T08:00:00Z' }
+      }
+    })
+    expect(data?.sync).toEqual({
+      changes: { 'items/a': { at: 5 }, 'items/b': { at: 6, deleted: true } },
+      pending: ['items/a'],
+      account: { uid: 'user-1', cursor: '2026-10-21T08:00:00Z' }
+    })
   })
 
   it('drops invalid entries and classes of missing subjects instead of rejecting the file', () => {

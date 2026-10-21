@@ -1,0 +1,30 @@
+rules_version = '2';
+
+// Mi Estudio: each user can only read and write their own synced records.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId}/records/{recordId} {
+      function isOwner() {
+        return request.auth != null && request.auth.uid == userId;
+      }
+
+      function isValidRecord() {
+        let record = request.resource.data;
+        return record.keys().hasOnly(['key', 'changedAt', 'data', 'syncedAt'])
+          && record.keys().hasAll(['key', 'changedAt', 'data', 'syncedAt'])
+          && record.key is string
+          && record.key.size() <= 300
+          && record.key.matches('(subjects|schedule|items|settings)/.+')
+          && record.changedAt is int
+          && (record.data == null || (record.data is string && record.data.size() <= 20000))
+          && record.syncedAt == request.time;
+      }
+
+      allow read: if isOwner();
+      allow create: if isOwner() && isValidRecord();
+      // The latest change wins: an older version never overwrites a newer one
+      allow update: if isOwner() && isValidRecord()
+        && request.resource.data.changedAt >= resource.data.changedAt;
+    }
+  }
+}

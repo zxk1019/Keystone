@@ -24,7 +24,9 @@ export async function exportBackup(
   })
   if (canceled || !filePath) return { status: 'canceled' }
 
-  await writeFile(filePath, JSON.stringify(store.get(), null, 2), 'utf-8')
+  // The sync bookkeeping belongs to this device, not to the copy
+  const backup = { ...store.get(), sync: undefined }
+  await writeFile(filePath, JSON.stringify(backup, null, 2), 'utf-8')
   return { status: 'saved', path: filePath }
 }
 
