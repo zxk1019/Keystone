@@ -58,7 +58,7 @@ export default function AgendaPage(): JSX.Element | null {
     )
 
   return (
-    <div className="flex h-full flex-col gap-4 px-8 py-8">
+    <div className="flex h-full flex-col gap-4 px-4 py-5 md:px-8 md:py-8">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <PageHeader title={t('nav.agenda')} />
         <div className="flex items-center gap-2">

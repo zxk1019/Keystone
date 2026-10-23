@@ -5,6 +5,7 @@ import {
   parsePlayback,
   parsePlaylists,
   parseSpotifyCommand,
+  playlistUriFromLink,
   studyMusicAction
 } from './spotify'
 
@@ -122,5 +123,25 @@ describe('parseSpotifyCommand', () => {
     ).not.toBeNull()
     expect(parseSpotifyCommand({ type: 'playPlaylist', uri: 'https://evil.example' })).toBeNull()
     expect(parseSpotifyCommand({ type: 'deleteEverything' })).toBeNull()
+  })
+})
+
+describe('playlistUriFromLink', () => {
+  it('reads the links Spotify copies, with or without language and tracking', () => {
+    expect(
+      playlistUriFromLink('https://open.spotify.com/playlist/37i9dQZF1DX8NTLI2TtZa6?si=abc')
+    ).toBe('spotify:playlist:37i9dQZF1DX8NTLI2TtZa6')
+    expect(
+      playlistUriFromLink(' https://open.spotify.com/intl-es/playlist/37i9dQZF1DX8NTLI2TtZa6 ')
+    ).toBe('spotify:playlist:37i9dQZF1DX8NTLI2TtZa6')
+    expect(playlistUriFromLink('spotify:playlist:37i9dQZF1DX8NTLI2TtZa6')).toBe(
+      'spotify:playlist:37i9dQZF1DX8NTLI2TtZa6'
+    )
+  })
+
+  it('rejects anything that is not a playlist', () => {
+    expect(playlistUriFromLink('https://open.spotify.com/album/1A2B3C')).toBeNull()
+    expect(playlistUriFromLink('https://example.com/playlist/1A2B3C')).toBeNull()
+    expect(playlistUriFromLink('mi playlist')).toBeNull()
   })
 })

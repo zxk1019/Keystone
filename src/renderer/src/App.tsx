@@ -1,4 +1,5 @@
 import { useEffect, type ComponentType, type JSX } from 'react'
+import BottomNav from './components/BottomNav'
 import Sidebar from './components/Sidebar'
 import AgendaPage from './features/agenda/AgendaPage'
 import SettingsPage from './features/settings/SettingsPage'
@@ -7,6 +8,7 @@ import ItemDialog from './features/tasks/ItemDialog'
 import TasksPage from './features/tasks/TasksPage'
 import TodayPage from './features/today/TodayPage'
 import { useApplySettings } from './hooks/useApplySettings'
+import { useBackButton } from './hooks/useBackButton'
 import { useNotificationNavigation } from './hooks/useNotificationNavigation'
 import { playChime } from './lib/chime'
 import { platform } from './platform'
@@ -71,17 +73,20 @@ export default function App(): JSX.Element | null {
 
   useApplySettings(settings)
   useNotificationNavigation()
+  useBackButton()
 
   if (!settings) return null
 
   const Page = PAGES[section]
 
   return (
-    <div className="flex h-screen bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100">
+    // Phones: content with the navigation at the bottom. Wider screens: sidebar on the left
+    <div className="safe-area flex h-dvh flex-col bg-white text-zinc-900 md:flex-row dark:bg-zinc-950 dark:text-zinc-100">
       <Sidebar current={section} onSelect={goTo} />
-      <main className="min-w-0 flex-1 overflow-y-auto">
+      <main className="min-h-0 min-w-0 flex-1 overflow-y-auto">
         <Page />
       </main>
+      <BottomNav current={section} onSelect={goTo} />
       <ItemDialog />
     </div>
   )

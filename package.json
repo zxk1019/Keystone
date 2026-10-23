@@ -1,7 +1,7 @@
 {
   "name": "mi-estudio",
   "productName": "Mi Estudio",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Mi Estudio: agenda, avisos y zona de estudio",
   "main": "./out/main/index.js",
   "author": "Xinkai Zheng",
@@ -20,6 +20,10 @@
     "build:unpack": "npm run build && electron-builder --dir",
     "build:win": "npm run build && electron-builder --win",
     "icons": "electron scripts/make-icons.cjs",
+    "dev:mobile": "vite --config vite.mobile.config.ts",
+    "build:mobile": "vite build --config vite.mobile.config.ts",
+    "android": "npm run build:mobile && cap sync android",
+    "build:android": "node scripts/android-build.cjs",
     "emulators": "firebase emulators:start --only auth,firestore --project demo-mi-estudio"
   },
   "dependencies": {
@@ -31,6 +35,15 @@
     "zustand": "^5.0.15"
   },
   "devDependencies": {
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/app-launcher": "^8.0.1",
+    "@capacitor/cli": "^8.5.3",
+    "@capacitor/core": "^8.5.3",
+    "@capacitor/filesystem": "^8.1.5",
+    "@capacitor/local-notifications": "^8.3.1",
+    "@capacitor/preferences": "^8.0.1",
+    "@capacitor/share": "^8.0.3",
     "@electron-toolkit/eslint-config-prettier": "^3.0.1",
     "@electron-toolkit/eslint-config-ts": "^4.0.0",
     "@electron-toolkit/tsconfig": "^2.0.0",

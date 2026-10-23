@@ -16,7 +16,7 @@ export default function Sidebar({ current, onSelect }: SidebarProps): JSX.Elemen
   const { t } = useTranslation()
 
   return (
-    <nav className="flex w-56 shrink-0 flex-col border-r border-zinc-200 bg-zinc-50 px-3 py-5 select-none dark:border-zinc-800 dark:bg-zinc-900">
+    <nav className="hidden w-56 shrink-0 flex-col md:flex border-r border-zinc-200 bg-zinc-50 px-3 py-5 select-none dark:border-zinc-800 dark:bg-zinc-900">
       <div className="mb-6 flex items-center gap-2 px-3">
         <GraduationCap className="size-6 text-indigo-600 dark:text-indigo-400" />
         <span className="text-lg font-semibold tracking-tight">{t('app.name')}</span>
@@ -68,26 +68,35 @@ function NavButton({ section, active, onClick }: NavButtonProps): JSX.Element {
     >
       <Icon className="size-5" />
       {t(`nav.${section}`)}
-      {section === 'study' && <StudyCountdown />}
+      {section === 'study' && <StudyCountdown className="ml-auto" />}
     </button>
   )
 }
 
-/** Time left next to "Study" while the timer is in use, to see it from any screen. */
-function StudyCountdown(): JSX.Element | null {
+/**
+ * Time left next to "Study" while the timer is in use, to see it from any screen. Shows
+ * `fallback` (or nothing) when the timer is not in use.
+ */
+export function StudyCountdown({
+  className = '',
+  fallback
+}: {
+  className?: string
+  fallback?: string
+}): JSX.Element | null {
   const timer = useStudyStore((state) => state.timer)
-  if (!timer || timer.status === 'idle') return null
-  return <Countdown />
+  if (!timer || timer.status === 'idle') return fallback ? <span>{fallback}</span> : null
+  return <Countdown className={className} />
 }
 
 // Separate so the every-second refresh only runs while the timer is in use
-function Countdown(): JSX.Element | null {
+function Countdown({ className }: { className: string }): JSX.Element | null {
   const timer = useStudyStore((state) => state.timer)
   const now = useNow(1000)
   if (!timer) return null
   return (
     <span
-      className={`ml-auto rounded-full px-2 py-0.5 text-xs tabular-nums ${
+      className={`${className} rounded-full px-2 py-0.5 text-xs tabular-nums ${
         timer.phase === 'break'
           ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300'
           : 'bg-indigo-100 text-indigo-800 dark:bg-indigo-500/15 dark:text-indigo-300'

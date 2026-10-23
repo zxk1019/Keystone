@@ -241,7 +241,9 @@
       "loginCanceled": "Se ha cancelado el inicio de sesión en Spotify.",
       "loginTimeout": "El inicio de sesión ha tardado demasiado. Inténtalo de nuevo.",
       "unknown": "Spotify ha dado un error. Inténtalo de nuevo."
-    }
+    },
+    "phoneDescription": "Pon música para estudiar en tu app de Spotify.",
+    "playStudyPlaylist": "Poner la playlist de estudio"
   },
   "sync": {
     "errors": {
@@ -381,7 +383,12 @@
       "step4": "Pega el Client ID aquí arriba y pulsa «Conectar con Spotify».",
       "openDashboard": "Abrir el panel de Spotify",
       "copy": "Copiar",
-      "copied": "Copiado"
+      "copied": "Copiado",
+      "phoneDescription": "En el móvil, Mi Estudio abre Spotify con tu playlist de estudio.",
+      "playlistLink": "Enlace de tu playlist de estudio",
+      "playlistLinkPlaceholder": "https://open.spotify.com/playlist/…",
+      "playlistLinkHint": "En Spotify, abre la playlist, pulsa ⋯ → Compartir → Copiar enlace y pégalo aquí.",
+      "playlistLinkInvalid": "Ese enlace no es de una playlist de Spotify."
     },
     "notifications": {
       "title": "Avisos",
@@ -445,13 +452,14 @@
     },
     "data": {
       "title": "Datos",
-      "description": "Tus datos se guardan en este ordenador y, si activas la sincronización, en tu proyecto de Firebase. Haz una copia de seguridad de vez en cuando.",
+      "description": "Tus datos se guardan en este dispositivo y, si activas la sincronización, en tu proyecto de Firebase. Haz una copia de seguridad de vez en cuando.",
       "export": "Exportar copia",
       "import": "Importar copia",
       "exported": "Copia guardada en {{path}}",
       "imported": "Copia importada correctamente.",
       "invalid": "Ese archivo no es una copia válida de Mi Estudio.",
-      "error": "No se ha podido completar: {{message}}"
+      "error": "No se ha podido completar: {{message}}",
+      "shared": "Copia lista para guardar o enviar."
     }
   },
   "tray": {
@@ -483,7 +491,9 @@
     "breakStartBody": "Levántate y despéjate {{count}} minutos.",
     "breakEndTitle": "Fin del descanso",
     "breakEndBody": "Cuando quieras, empieza el bloque {{count}}.",
-    "markDone": "Hecho"
+    "markDone": "Hecho",
+    "channelReminders": "Recordatorios",
+    "channelStudy": "Temporizador de estudio"
   },
   "dialog": {
     "exportTitle": "Exportar copia de seguridad",

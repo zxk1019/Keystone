@@ -1,6 +1,6 @@
 # Mi Estudio
 
-App de estudio de escritorio (Electron + React + TypeScript). Más adelante habrá una versión móvil con Capacitor.
+App de estudio para el PC (Electron + React + TypeScript) y Android (Capacitor), con la misma interfaz de React.
 
 El proyecto vive en esta carpeta (`Mi Estudio`, con el repositorio git). Al lado, en `..\exe`, se guarda el instalador para el usuario.
 
@@ -9,9 +9,9 @@ El proyecto vive en esta carpeta (`Mi Estudio`, con el repositorio git). Al lado
   1. explica qué has hecho y cómo probarlo,
   2. actualiza la línea "Fase actual" de este archivo,
   3. espera a que te confirme antes de seguir.
-- **Fase actual: 9 — Sincronización** (hecha, pendiente de que la confirme). La siguiente es la 10 — App Android con Capacitor.
+- **Fase actual: 10 — App Android** (hecha, pendiente de que la confirme). La siguiente es la 11 — Publicar en GitHub (README, licencia, quitar datos personales, actualizaciones automáticas y Releases).
 - Sincronización: solo se ha probado contra el emulador de Firebase. Falta que el usuario cree su proyecto de Firebase (la guía está en Ajustes → Sincronización), ponga el ID del proyecto y la clave de API web, y cree su cuenta. La contraseña la escribe siempre él.
-- Para la fase 10: el móvil necesita Android Studio, y hay que decidir qué avisos salen en el móvil y cuáles en el PC para que no lleguen dos veces.
+- Avisos: el usuario quiere que avisen el PC y el móvil, aunque lleguen dos veces.
 - Pendiente de probar con la app instalada (solo ella se registra en Windows), juntos:
   - el botón «Hecho» de un aviso de tarea con retraso;
   - «Arrancar con Windows» (arranca escondida en la bandeja);
@@ -22,7 +22,14 @@ El proyecto vive en esta carpeta (`Mi Estudio`, con el repositorio git). Al lado
 - `npm test`: tests de Vitest (`*.test.ts` junto al código) para la lógica que no necesita Electron.
 - `npm run typecheck`, `npm run lint` y `npm test`: pásalos antes de dar una fase por acabada.
 - `npm run build:win`: genera el instalador de Windows en `dist/mi-estudio-<versión>-setup.exe` y la app sin instalar en `dist/win-unpacked/mi-estudio.exe`. No está firmado, así que SmartScreen avisa al instalarlo. Después, copia el instalador nuevo a `..\exe` (y borra el de la versión anterior si cambia el número).
-- `npm run icons`: vuelve a dibujar los iconos (`build/` y `resources/`) a partir del SVG de `scripts/make-icons.cjs`.
+- `npm run icons`: vuelve a dibujar los iconos (`build/`, `resources/` y los de Android en `android/app/src/main/res/mipmap-*`) a partir del SVG de `scripts/make-icons.cjs`.
+- Android:
+  - `npm run build:android` compila la versión móvil, la copia a `android/` y genera el APK firmado en `dist/mi-estudio-<versión>.apk` (con `-- debug`, uno de pruebas). Después, cópialo a `..\exe`. Usa el Java 21 de Android Studio (`jbr`) solo para Gradle; el Java 17 del PC no se toca.
+  - La clave de firma está en `%USERPROFILE%\.mi-estudio` (`mi-estudio-release.jks` y `keystore.properties` con la contraseña), fuera del repositorio. Sin ella no se pueden instalar actualizaciones encima de la app.
+  - `npm run dev:mobile` abre la versión móvil en el navegador para ver las pantallas; los avisos no funcionan ahí.
+  - Para probar el móvil virtual contra el emulador de Firebase: `VITE_FIREBASE_EMULATOR=10.0.2.2 npm run build:android -- debug` (10.0.2.2 es el PC visto desde el móvil virtual). Ese APK permite http y deja manejar la app desde las pruebas con `window.miEstudio` (como `window.api` en el PC); los que se dan al usuario se compilan sin la variable y no tienen nada de eso.
+  - El móvil virtual es `Medium_Phone_API_37.0`: `emulator -avd Medium_Phone_API_37.0 -no-window -gpu swiftshader_indirect` (en `%LOCALAPPDATA%\Android\Sdk\emulator`). Arranca en hora GMT: ponlo en hora de aquí con `adb shell service call alarm 3 s16 Europe/Madrid`. Para las DevTools de la app: `adb forward tcp:9363 localabstract:webview_devtools_remote_<pid>` (el pid sale de `adb shell pidof com.miestudio.app`).
+  - `electron-builder.yml` deja fuera del paquete del PC `android/` y `out/mobile`: si no, el instalador crece unos 60 MB.
 - Para probar sin tocar los datos reales, lanza la app con otra carpeta de datos: `MI_ESTUDIO_DATA_DIR=<carpeta>`. Usa una ruta corta: si la ruta es larga, Windows no deja crear los archivos de Chromium y la app se cierra al arrancar. Una ejecución con esta variable cuenta como prueba (`isTestRun`) y no registra nada en Windows, ni siquiera desde `dist/win-unpacked`.
 - `npm run test:emulator`: arranca el emulador de Firebase, pasa `src/shared/firebase.emulator.test.ts` (cuentas, subir y bajar, y las reglas de `firebase/firestore.rules`) y lo cierra. `npm run emulators` lo deja abierto para probar la app: lánzala con `MI_ESTUDIO_FIREBASE_EMULATOR=127.0.0.1` (solo en desarrollo; la app instalada lo ignora) y en Ajustes pon el ID de proyecto `demo-mi-estudio` y cualquier clave que empiece por `AIza` y tenga 39 caracteres.
   - El emulador usa los puertos 9099 y 8085 (el 8080 lo ocupa Oracle). Si al cerrarlo el 8085 se queda ocupado, ciérralo con `curl -X POST http://127.0.0.1:8085/shutdown`.
@@ -31,11 +38,16 @@ El proyecto vive en esta carpeta (`Mi Estudio`, con el repositorio git). Al lado
 - Para probar Spotify sin una cuenta real: `MI_ESTUDIO_SPOTIFY_ACCOUNTS` y `MI_ESTUDIO_SPOTIFY_API` apuntan la app a un Spotify falso. Solo funcionan en desarrollo; la app instalada los ignora.
 
 ## Dónde está cada cosa
-- `src/shared/`: tipos de datos, canales IPC (`api.ts`), validación y traducciones (`locales/`). Lo usan tanto main como renderer.
-- `src/main/`: ventana, bandeja y datos (`data/`: `dataStore.ts` guarda el JSON, los repos acceden a él y `backup.ts` exporta e importa).
+- `src/shared/`: tipos de datos, canales IPC (`api.ts`), validación, traducciones (`locales/`) y la lógica pura. Lo usan main, el renderer y el móvil.
+- `src/core/`: los servicios con estado que funcionan igual en el PC (dentro de main) y en el móvil (dentro de la app): `data/dataStore.ts` (el JSON de datos; lee y escribe a través de `TextFile`), los repos (`agendaRepos.ts`, `settingsRepo.ts`), `sync/service.ts`, `studyTimer.ts` y los textos de los avisos. No pueden importar Node ni Electron.
+- `src/main/`: lo que solo es del PC: ventana, bandeja, avisos de Windows, 20-20-20, Spotify, exportar e importar con diálogos (`data/backup.ts`) y el archivo en disco (`data/nodeTextFile.ts`).
+- `src/renderer/src/platform/`: `index.ts` define `Platform` y las `capabilities` (lo que el dispositivo puede hacer; las pantallas esconden el resto). La compilación elige la versión con el alias `@platform`: `desktop.ts` (el puente de Electron) o `mobile/` (Capacitor: datos en `files.ts`, avisos en `notifications.ts`, copias en `backup.ts`).
+- Android: `capacitor.config.ts`, `vite.mobile.config.ts` (añade a la CSP las direcciones de Firebase) y el proyecto en `android/` (icono, `launch_screen.xml`, el icono de los avisos `ic_stat_mi_estudio.xml`, el permiso `USE_EXACT_ALARM` y la versión, que sale de `package.json`).
+- Avisos en el móvil: Android no deja la app abierta, así que `planAhead` (en `src/shared/notifications.ts`, con tests) calcula los avisos de los próximos 7 días con las mismas reglas que el PC y `platform/mobile/notifications.ts` se los da al sistema. Se reprograman tras cada cambio, sincronización o al abrir la app. El botón «Hecho» y el clic llegan por `localNotificationActionPerformed`.
+- Pantallas en el móvil: por debajo de `md` la barra lateral pasa a `components/BottomNav.tsx`, las páginas tienen menos margen y la semana de la agenda se desplaza de lado (empezando en hoy). `.safe-area` y `.safe-bottom` (en `main.css`) dejan sitio a las barras de Android. El botón «atrás» (`hooks/useBackButton.ts`) cierra el diálogo abierto o vuelve a Hoy.
 - `src/shared/schedule.ts`: horas y solapes del horario, y la clase actual y la siguiente. Los repos de main lo usan para no guardar clases solapadas.
 - `src/shared/items.ts`: qué va con retraso (solo deberes y trabajos; los exámenes y eventos pasados no), qué vence hoy o mañana y los próximos exámenes.
-- Temporizador de estudio: la lógica pura está en `src/shared/studyTimer.ts` (con tests) y vive en main (`src/main/studyTimer.ts`), porque Chromium frena los relojes de las ventanas escondidas. La pantalla recibe el estado por IPC (`onStudyState`) y la campanita suena con `onStudyPhase` (`lib/chime.ts`, Web Audio, sin archivos de sonido). Mientras se estudia, `planNotifications` recibe `studying = true` y no envía nada.
+- Temporizador de estudio: la lógica pura está en `src/shared/studyTimer.ts` (con tests) y el servicio en `src/core/studyTimer.ts`. En el PC vive en main, porque Chromium frena los relojes de las ventanas escondidas; en el móvil, la app llama a `catchUp` al volver al frente y programa un aviso para el final del bloque mientras está en segundo plano. La pantalla recibe el estado por IPC (`onStudyState`) y la campanita suena con `onStudyPhase` (`lib/chime.ts`, Web Audio, sin archivos de sonido). Mientras se estudia, `planNotifications` recibe `studying = true` y no envía nada.
 - 20-20-20: la lógica pura está en `src/shared/eyeBreak.ts` (con tests): suma el tiempo de uso, lo reinicia por inactividad o en un descanso de estudio, y gestiona las pausas. `src/main/eyeBreak.ts` la ejecuta cada 10 s y abre una ventana oscura por monitor, que carga la misma app React con `#eye-break` (`features/eyeBreak/EyeBreakOverlay.tsx`). `src/main/fullscreen.ts` pregunta a Windows con PowerShell (`SHQueryUserNotificationState`) si hay un juego o una presentación a pantalla completa; si la hay, lo intenta a los 2 min.
 - Spotify: la app controla el Spotify oficial con la Web API (Spotify Connect); no reproduce nada. El login es PKCE con un servidor temporal en `127.0.0.1:43821/callback`, que tiene que coincidir con la Redirect URI del panel de Spotify. Los tokens viven solo en main (`src/main/spotify/`) y la sesión se guarda cifrada con `safeStorage` en `mi-estudio-spotify.bin`, fuera de las copias de seguridad. Las respuestas de la API se leen en `src/shared/spotify.ts` (con tests), junto con la decisión de pausar o reanudar la música con el temporizador (`studyMusicAction`). El panel está en `features/study/SpotifyPanel.tsx`.
 - Contenido de Estudio: los consejos (`study.tips`, 20) y las técnicas (`study.techniques.items`) están en `src/shared/locales/`. Si cambias el número de consejos, actualiza `TIP_COUNT` en `store/studyStore.ts`.

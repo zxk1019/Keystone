@@ -33,7 +33,7 @@ export default function ScheduleEditor(): JSX.Element | null {
   const { subjects, schedule } = agenda
 
   return (
-    <div className="flex h-full flex-col gap-4 px-8 py-8">
+    <div className="flex h-full flex-col gap-4 px-4 py-5 md:px-8 md:py-8">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <PageHeader title={t('agenda.editSchedule')} />

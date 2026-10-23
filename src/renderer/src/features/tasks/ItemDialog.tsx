@@ -130,7 +130,8 @@ function ItemForm({ initial }: { initial: Draft<AgendaItem> }): JSX.Element {
           <div
             role="radiogroup"
             aria-label={t('item.type')}
-            className={`${segmentedClass} self-start`}
+            // Two rows on phones, where the four types do not fit in one
+            className={`${segmentedClass} self-start max-sm:grid max-sm:grid-cols-2 max-sm:self-stretch`}
           >
             {AGENDA_ITEM_TYPES.map((option) => {
               const Icon = TYPE_ICONS[option]

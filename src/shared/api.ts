@@ -55,7 +55,9 @@ export const IPC = {
   syncStatusChanged: 'sync:status-changed'
 } as const
 
-export type ExportResult = { status: 'saved'; path: string } | { status: 'canceled' }
+/** 'shared': on the phone the copy goes to the Android share menu (Drive, email...) */
+export type ExportResult =
+  { status: 'saved'; path: string } | { status: 'shared' } | { status: 'canceled' }
 
 export type ImportResult = { status: 'imported' } | { status: 'canceled' } | { status: 'invalid' }
 

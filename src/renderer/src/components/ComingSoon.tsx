@@ -15,7 +15,7 @@ export default function ComingSoon({ section, phase }: ComingSoonProps): JSX.Ele
   const Icon = SECTION_ICONS[section]
 
   return (
-    <div className="flex h-full flex-col px-8 py-8">
+    <div className="flex h-full flex-col px-4 py-5 md:px-8 md:py-8">
       <PageHeader title={t(`nav.${section}`)} />
       <div className="flex flex-1 flex-col items-center justify-center gap-3 text-zinc-500 dark:text-zinc-400">
         <Icon className="size-12 text-zinc-300 dark:text-zinc-700" strokeWidth={1.5} />

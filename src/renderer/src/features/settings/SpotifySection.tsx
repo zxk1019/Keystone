@@ -1,10 +1,12 @@
 import { useState, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Copy, ExternalLink, LogOut, Music2 } from 'lucide-react'
+import { playlistUriFromLink } from '@shared/spotify'
 import { SPOTIFY_CLIENT_ID_PATTERN } from '@shared/validation'
 import type { Settings, SpotifySettings } from '@shared/types'
 import Button from '../../components/Button'
 import { inputClass } from '../../components/styles'
+import { platform } from '../../platform'
 import Switch from '../../components/Switch'
 import { useSpotifyStore } from '../../store/spotifyStore'
 import { SettingsRow, SettingsSection } from './SettingsLayout'
@@ -18,8 +20,75 @@ interface SpotifySectionProps {
   update: (patch: Partial<Settings>) => Promise<void>
 }
 
-/** Ajustes → Spotify: Client ID, connection and what happens with the music while studying. */
-export default function SpotifySection({ settings, update }: SpotifySectionProps): JSX.Element {
+/** Ajustes → Spotify: everything on the PC; on the phone, only the study playlist to open. */
+export default function SpotifySection(props: SpotifySectionProps): JSX.Element {
+  return platform.capabilities.spotifyControl ? (
+    <SpotifyControlSection {...props} />
+  ) : (
+    <PhoneSpotifySection {...props} />
+  )
+}
+
+/** On the phone the study playlist comes from a link copied in Spotify. */
+function PhoneSpotifySection({ settings, update }: SpotifySectionProps): JSX.Element {
+  const { t } = useTranslation()
+  const options = settings.spotify
+  const [link, setLink] = useState(
+    options.studyPlaylistUri
+      ? `https://open.spotify.com/playlist/${options.studyPlaylistUri.split(':')[2]}`
+      : ''
+  )
+  const [invalid, setInvalid] = useState(false)
+
+  const save = (): void => {
+    const uri = link.trim() === '' ? '' : playlistUriFromLink(link)
+    if (uri === null) {
+      setInvalid(true)
+      return
+    }
+    setInvalid(false)
+    if (uri !== options.studyPlaylistUri) {
+      update({ spotify: { ...options, studyPlaylistUri: uri, studyPlaylistName: '' } })
+    }
+  }
+
+  return (
+    <SettingsSection
+      title={t('settings.spotify.title')}
+      description={t('settings.spotify.phoneDescription')}
+    >
+      <label className="flex flex-col gap-1.5 text-sm">
+        <span className="font-medium text-zinc-700 dark:text-zinc-300">
+          {t('settings.spotify.playlistLink')}
+        </span>
+        <input
+          type="url"
+          value={link}
+          placeholder={t('settings.spotify.playlistLinkPlaceholder')}
+          spellCheck={false}
+          onChange={(event) => {
+            setLink(event.target.value)
+            setInvalid(false)
+          }}
+          onBlur={save}
+          onKeyDown={(event) => event.key === 'Enter' && save()}
+          className={inputClass}
+        />
+        <span className="text-xs text-zinc-500 dark:text-zinc-400">
+          {t('settings.spotify.playlistLinkHint')}
+        </span>
+      </label>
+      {invalid && (
+        <p role="alert" className="text-sm text-red-700 dark:text-red-400">
+          {t('settings.spotify.playlistLinkInvalid')}
+        </p>
+      )}
+    </SettingsSection>
+  )
+}
+
+/** Client ID, connection and what happens with the music while studying. */
+function SpotifyControlSection({ settings, update }: SpotifySectionProps): JSX.Element {
   const { t } = useTranslation()
   const status = useSpotifyStore((state) => state.status)
   const connecting = useSpotifyStore((state) => state.connecting)

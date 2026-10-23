@@ -193,3 +193,22 @@ export function parseSpotifyCommand(value: unknown): SpotifyCommand | null {
       return null
   }
 }
+
+/**
+ * A study playlist from a link copied in Spotify ("Share → Copy link"), as Spotify writes it
+ * in the app: "spotify:playlist:<id>". Null if the text is not a playlist.
+ */
+export function playlistUriFromLink(text: string): string | null {
+  const value = text.trim()
+  const uri = /^spotify:playlist:([A-Za-z0-9]+)$/.exec(value)
+  if (uri) return value
+  try {
+    const url = new URL(value)
+    if (url.hostname !== 'open.spotify.com') return null
+    // Links may carry a language first: /intl-es/playlist/<id>
+    const match = /^(?:\/intl-[a-z-]+)?\/playlist\/([A-Za-z0-9]+)\/?$/i.exec(url.pathname)
+    return match ? `spotify:playlist:${match[1]}` : null
+  } catch {
+    return null
+  }
+}

@@ -16,12 +16,13 @@ interface StudyTimerDeps {
 }
 
 /**
- * The study timer lives in the main process: it keeps exact time with the window hidden
- * (Chromium slows down timers in hidden windows) and the notifier needs to know about it.
+ * The study timer. On the PC it lives in the main process: it keeps exact time with the window
+ * hidden (Chromium slows down timers in hidden windows) and the notifier needs to know about
+ * it. On the phone it runs in the app, which calls `catchUp` when it comes back to the front.
  */
 export class StudyTimer {
   private state: TimerState
-  private timeout: NodeJS.Timeout | undefined
+  private timeout: ReturnType<typeof setTimeout> | undefined
 
   constructor(private readonly deps: StudyTimerDeps) {
     this.state = createTimer(deps.durations())
@@ -35,6 +36,11 @@ export class StudyTimer {
     const { state, events } = applyCommand(this.state, command, Date.now(), this.deps.durations())
     this.update(state, events)
     return this.state
+  }
+
+  /** Moves on to the right phase after the app was paused (the phone puts apps to sleep). */
+  catchUp(): void {
+    this.tick()
   }
 
   /** Called when the settings change. */

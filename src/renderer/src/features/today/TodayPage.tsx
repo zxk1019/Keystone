@@ -30,7 +30,7 @@ export default function TodayPage(): JSX.Element | null {
   if (!agenda) return null
 
   return (
-    <div className="mx-auto flex max-w-5xl flex-col gap-6 px-8 py-8">
+    <div className="mx-auto flex max-w-5xl flex-col gap-6 px-4 py-5 md:px-8 md:py-8">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <PageHeader title={t('nav.today')} />
@@ -43,7 +43,7 @@ export default function TodayPage(): JSX.Element | null {
         </Button>
       </div>
 
-      <div className="grid items-start gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-2">
         <div className="flex flex-col gap-6">
           <ClassesCard schedule={agenda.schedule} subjects={subjectById} now={now} />
           <ExamsCard items={agenda.items} subjects={subjectById} now={now} />

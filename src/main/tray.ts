@@ -2,7 +2,7 @@ import { app, Menu, Tray, type MenuItemConstructorOptions } from 'electron'
 import type { EyeBreakCommand } from '@shared/api'
 import type { EyeBreakStatus } from '@shared/eyeBreak'
 import icon from '../../resources/icon.ico?asset'
-import type { Translate } from './i18n'
+import type { Translate } from '@core/i18n'
 import { showMainWindow } from './mainWindow'
 
 // Kept at module level so the tray icon is not garbage collected

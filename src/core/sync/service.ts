@@ -19,12 +19,43 @@ import {
   type SyncStatus
 } from '@shared/sync'
 import type { SyncSettings } from '@shared/types'
+import { isRecord } from '@shared/validation'
 import type { DataStore } from '../data/dataStore'
-import type { SavedSyncSession, SyncSessionStore } from './sessionStore'
+
+/** What is remembered between runs once signed in. The password is never saved. */
+export interface SavedSyncSession {
+  /** The Firebase project the account belongs to: a different one needs a new sign-in */
+  projectId: string
+  uid: string
+  email: string
+  refreshToken: string
+}
+
+/** Where the session is kept on each device (encrypted on the PC, app storage on the phone). */
+export interface SyncSessionStore {
+  save(session: SavedSyncSession): void
+  clear(): void
+}
+
+/** A saved session read back from storage; null if it is not one. */
+export function parseSavedSession(value: unknown): SavedSyncSession | null {
+  if (!isRecord(value)) return null
+  const { projectId, uid, email, refreshToken } = value
+  if (
+    typeof projectId !== 'string' ||
+    typeof uid !== 'string' ||
+    typeof refreshToken !== 'string'
+  ) {
+    return null
+  }
+  return { projectId, uid, refreshToken, email: typeof email === 'string' ? email : '' }
+}
 
 interface SyncDeps {
   store: DataStore
   config: () => SyncSettings
+  /** The session saved on a previous run, if any */
+  savedSession: SavedSyncSession | null
   sessions: SyncSessionStore
   /** The real Firebase, or the local emulator in development tests */
   urls: FirebaseUrls
@@ -62,7 +93,7 @@ export class SyncService {
   private expired = false
 
   constructor(private readonly deps: SyncDeps) {
-    const saved = deps.sessions.load()
+    const saved = deps.savedSession
     this.session = saved && saved.projectId === deps.config().projectId ? saved : null
   }
 

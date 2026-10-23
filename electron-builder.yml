@@ -8,6 +8,11 @@ files:
   - '!docs/*'
   - '!scripts/*'
   - '!firebase/*'
+  # The Android app (Capacitor project and the phone build) is not part of the PC app
+  - '!android/**'
+  - '!out/mobile/**'
+  - '!{capacitor.config.ts,vite.mobile.config.ts,.gitattributes}'
+  - '!.claude/**'
   - '!{firebase.json,firebase-debug.log,firestore-debug.log}'
   - '!CLAUDE.md'
   - '!electron.vite.config.{js,ts,mjs,cjs}'

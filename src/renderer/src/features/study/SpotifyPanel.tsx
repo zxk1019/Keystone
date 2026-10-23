@@ -29,8 +29,43 @@ import { useSpotifyStore } from '../../store/spotifyStore'
 /** How often the panel asks Spotify what is playing, only while the Study screen is open */
 const REFRESH_MS = 5000
 
-/** Controls the user's Spotify from the Study screen. */
+/** Spotify on the Study screen: full control on the PC, a shortcut to Spotify on the phone. */
 export default function SpotifyPanel(): JSX.Element | null {
+  return platform.capabilities.spotifyControl ? <SpotifyControlPanel /> : <PhoneSpotifyPanel />
+}
+
+/** On the phone the app does not control Spotify: it opens it, on the study playlist if set. */
+function PhoneSpotifyPanel(): JSX.Element {
+  const { t } = useTranslation()
+  const playlist = useSettingsStore((state) => state.settings?.spotify.studyPlaylistUri ?? '')
+
+  return (
+    <section className="flex flex-col gap-3 rounded-xl border border-zinc-200 p-5 dark:border-zinc-800">
+      <h2 className="flex items-center gap-2 font-semibold">
+        <Music2 className="size-4 text-emerald-600 dark:text-emerald-400" />
+        {t('spotify.title')}
+      </h2>
+      <p className="text-sm text-zinc-500 dark:text-zinc-400">{t('spotify.phoneDescription')}</p>
+      <div className="flex flex-wrap gap-3">
+        {playlist && (
+          <Button
+            variant="primary"
+            icon={Play}
+            onClick={() => platform.spotifyCommand({ type: 'playPlaylist', uri: playlist })}
+          >
+            {t('spotify.playStudyPlaylist')}
+          </Button>
+        )}
+        <Button icon={ExternalLink} onClick={() => platform.spotifyCommand({ type: 'openApp' })}>
+          {t('spotify.openSpotify')}
+        </Button>
+      </div>
+    </section>
+  )
+}
+
+/** Controls the user's Spotify from the Study screen. */
+function SpotifyControlPanel(): JSX.Element | null {
   const { t } = useTranslation()
   const status = useSpotifyStore((state) => state.status)
   const connecting = useSpotifyStore((state) => state.connecting)
