@@ -1,0 +1,9 @@
+# Always LF in the working folder, as Prettier expects, also after switching branches on Windows
+* text=auto eol=lf
+# Windows scripts (Gradle wrapper) need CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.png binary
+*.ico binary
+*.jar binary
+*.jks binary

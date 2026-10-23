@@ -28,7 +28,7 @@ export default function StudyPage(): JSX.Element | null {
   if (!timer) return null
 
   return (
-    <div className="mx-auto flex max-w-5xl flex-col gap-6 px-8 py-8">
+    <div className="mx-auto flex max-w-5xl flex-col gap-6 px-4 py-5 md:px-8 md:py-8">
       <PageHeader title={t('nav.study')} />
 
       <div className="grid items-start gap-6 lg:grid-cols-[1fr_20rem]">

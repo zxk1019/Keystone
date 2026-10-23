@@ -43,6 +43,8 @@ export default function SettingsPage(): JSX.Element | null {
       const result = await platform.exportData()
       if (result.status === 'saved') {
         setStatus({ kind: 'success', text: t('settings.data.exported', { path: result.path }) })
+      } else if (result.status === 'shared') {
+        setStatus({ kind: 'success', text: t('settings.data.shared') })
       }
     } catch (error) {
       showError(error)
@@ -64,7 +66,7 @@ export default function SettingsPage(): JSX.Element | null {
   }
 
   return (
-    <div className="mx-auto flex max-w-2xl flex-col gap-8 px-8 py-8">
+    <div className="mx-auto flex max-w-2xl flex-col gap-8 px-4 py-5 md:px-8 md:py-8">
       <PageHeader title={t('nav.settings')} />
 
       <SettingsSection title={t('settings.appearance')}>
@@ -116,7 +118,7 @@ export default function SettingsPage(): JSX.Element | null {
 
       <StudySection settings={settings} update={update} />
 
-      <EyeBreakSection settings={settings} update={update} />
+      {platform.capabilities.eyeBreak && <EyeBreakSection settings={settings} update={update} />}
 
       <SpotifySection settings={settings} update={update} />
 

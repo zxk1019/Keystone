@@ -1,4 +1,4 @@
-import { useMemo, type JSX } from 'react'
+import { useEffect, useMemo, useRef, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 import { isSameDay } from 'date-fns'
 import { Plus } from 'lucide-react'
@@ -67,131 +67,147 @@ export default function WeekGrid({
   const isToday = (column: GridColumn): boolean =>
     Boolean(now && column.date && isSameDay(column.date, now))
 
+  // On a phone the week does not fit: it scrolls sideways, starting at today
+  const scroller = useRef<HTMLDivElement>(null)
+  const todayHeader = useRef<HTMLDivElement>(null)
+  const todayKey = columns.find(isToday)?.date?.getTime()
+  useEffect(() => {
+    const container = scroller.current
+    const header = todayHeader.current
+    if (!container || !header || container.scrollWidth <= container.clientWidth) return
+    container.scrollLeft = header.offsetLeft - container.clientWidth / 2 + header.offsetWidth / 2
+  }, [todayKey])
+
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
-      <div
-        className="grid overflow-y-hidden border-b border-zinc-200 [scrollbar-gutter:stable] dark:border-zinc-800"
-        style={gridStyle}
-      >
-        <div />
-        {columns.map((column) => (
-          <div
-            key={column.weekday}
-            className="flex flex-col items-center gap-0.5 border-l border-zinc-200 py-2 dark:border-zinc-800"
-          >
-            <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
-              {weekdayName(column.weekday, i18n.language, column.date ? 'short' : 'long')}
-            </span>
-            {column.date && (
-              <span
-                className={`flex size-7 items-center justify-center rounded-full text-sm font-semibold ${
-                  isToday(column) ? 'bg-indigo-600 text-white' : ''
-                }`}
-              >
-                {column.date.getDate()}
-              </span>
-            )}
-          </div>
-        ))}
-
-        {items && <div className="border-t border-zinc-200 dark:border-zinc-800" />}
-        {items &&
-          columns.map((column) => {
-            const date = column.date
-            const dayItems = date ? (items.get(toDateKey(date)) ?? []) : []
-            return (
-              <div
-                key={column.weekday}
-                className="group relative flex min-h-9 flex-col gap-1 border-t border-l border-zinc-200 p-1 dark:border-zinc-800"
-              >
-                {/* The free space behind the chips adds a new item on that date */}
-                {date && onDayClick && (
-                  <button
-                    type="button"
-                    onClick={() => onDayClick(date)}
-                    aria-label={t('tasks.newFor', { date: date.toLocaleDateString(i18n.language) })}
-                    className="absolute inset-0 flex items-end justify-center pb-1 hover:bg-indigo-50 dark:hover:bg-indigo-500/10"
-                  >
-                    <Plus className="size-3.5 text-indigo-500 opacity-0 group-hover:opacity-70" />
-                  </button>
-                )}
-                {dayItems.slice(0, MAX_ITEMS_PER_DAY).map((item) => (
-                  <ItemChip
-                    key={item.id}
-                    item={item}
-                    subject={item.subjectId ? subjectById.get(item.subjectId) : undefined}
-                    onClick={onItemClick}
-                  />
-                ))}
-                {dayItems.length > MAX_ITEMS_PER_DAY && (
-                  <span className="pointer-events-none relative z-10 px-1 text-xs text-zinc-500 dark:text-zinc-400">
-                    {t('agenda.moreItems', { count: dayItems.length - MAX_ITEMS_PER_DAY })}
-                  </span>
-                )}
-              </div>
-            )
-          })}
-      </div>
-
-      <div className="min-h-0 flex-1 overflow-y-auto pt-2 [scrollbar-gutter:stable]">
-        <div className="grid" style={gridStyle}>
-          <div className="relative" style={{ height: bodyHeight }}>
-            {hourList.map((hour, index) => (
-              <span
-                key={hour}
-                className="absolute right-2 -translate-y-1/2 text-xs text-zinc-500 tabular-nums dark:text-zinc-400"
-                style={{ top: index * HOUR_HEIGHT }}
-              >
-                {hour}:00
-              </span>
-            ))}
-          </div>
-
+    <div ref={scroller} className="flex min-h-0 flex-1 flex-col overflow-x-auto">
+      <div className="flex min-h-0 min-w-[40rem] flex-1 flex-col md:min-w-0">
+        <div
+          className="grid overflow-y-hidden border-b border-zinc-200 [scrollbar-gutter:stable] dark:border-zinc-800"
+          style={gridStyle}
+        >
+          <div />
           {columns.map((column) => (
             <div
               key={column.weekday}
-              className={`relative border-l border-zinc-200 dark:border-zinc-800 ${
-                isToday(column) ? 'bg-indigo-50/60 dark:bg-indigo-500/5' : ''
-              }`}
-              style={{ height: bodyHeight }}
+              ref={isToday(column) ? todayHeader : undefined}
+              className="flex flex-col items-center gap-0.5 border-l border-zinc-200 py-2 dark:border-zinc-800"
             >
-              {hourList.map((hour, index) =>
-                onEmptyClick ? (
-                  <button
-                    key={hour}
-                    type="button"
-                    onClick={() => onEmptyClick(column.weekday, hour)}
-                    aria-label={`${t('agenda.addClass')}: ${weekdayName(column.weekday, i18n.language, 'long')} ${hour}:00`}
-                    className="group absolute inset-x-0 flex items-center justify-center border-t border-zinc-100 hover:bg-indigo-50 dark:border-zinc-800/70 dark:hover:bg-indigo-500/10"
-                    style={{ top: index * HOUR_HEIGHT, height: HOUR_HEIGHT }}
-                  >
-                    <Plus className="size-4 text-indigo-500 opacity-0 group-hover:opacity-70" />
-                  </button>
-                ) : (
-                  <div
-                    key={hour}
-                    className="absolute inset-x-0 border-t border-zinc-100 dark:border-zinc-800/70"
-                    style={{ top: index * HOUR_HEIGHT }}
-                  />
-                )
+              <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+                {weekdayName(column.weekday, i18n.language, column.date ? 'short' : 'long')}
+              </span>
+              {column.date && (
+                <span
+                  className={`flex size-7 items-center justify-center rounded-full text-sm font-semibold ${
+                    isToday(column) ? 'bg-indigo-600 text-white' : ''
+                  }`}
+                >
+                  {column.date.getDate()}
+                </span>
               )}
-
-              {slots
-                .filter((slot) => slot.weekday === column.weekday)
-                .map((slot) => (
-                  <SlotBlock
-                    key={slot.id}
-                    slot={slot}
-                    title={slotTitle(slot, subjectById)}
-                    subject={slot.subjectId ? subjectById.get(slot.subjectId) : undefined}
-                    firstHour={hours.start}
-                    onClick={onSlotClick && ((clicked) => onSlotClick(clicked, column))}
-                  />
-                ))}
-
-              {now && isToday(column) && <NowLine now={now} hours={hours} />}
             </div>
           ))}
+
+          {items && <div className="border-t border-zinc-200 dark:border-zinc-800" />}
+          {items &&
+            columns.map((column) => {
+              const date = column.date
+              const dayItems = date ? (items.get(toDateKey(date)) ?? []) : []
+              return (
+                <div
+                  key={column.weekday}
+                  className="group relative flex min-h-9 flex-col gap-1 border-t border-l border-zinc-200 p-1 dark:border-zinc-800"
+                >
+                  {/* The free space behind the chips adds a new item on that date */}
+                  {date && onDayClick && (
+                    <button
+                      type="button"
+                      onClick={() => onDayClick(date)}
+                      aria-label={t('tasks.newFor', {
+                        date: date.toLocaleDateString(i18n.language)
+                      })}
+                      className="absolute inset-0 flex items-end justify-center pb-1 hover:bg-indigo-50 dark:hover:bg-indigo-500/10"
+                    >
+                      <Plus className="size-3.5 text-indigo-500 opacity-0 group-hover:opacity-70" />
+                    </button>
+                  )}
+                  {dayItems.slice(0, MAX_ITEMS_PER_DAY).map((item) => (
+                    <ItemChip
+                      key={item.id}
+                      item={item}
+                      subject={item.subjectId ? subjectById.get(item.subjectId) : undefined}
+                      onClick={onItemClick}
+                    />
+                  ))}
+                  {dayItems.length > MAX_ITEMS_PER_DAY && (
+                    <span className="pointer-events-none relative z-10 px-1 text-xs text-zinc-500 dark:text-zinc-400">
+                      {t('agenda.moreItems', { count: dayItems.length - MAX_ITEMS_PER_DAY })}
+                    </span>
+                  )}
+                </div>
+              )
+            })}
+        </div>
+
+        <div className="min-h-0 flex-1 overflow-y-auto pt-2 [scrollbar-gutter:stable]">
+          <div className="grid" style={gridStyle}>
+            <div className="relative" style={{ height: bodyHeight }}>
+              {hourList.map((hour, index) => (
+                <span
+                  key={hour}
+                  className="absolute right-2 -translate-y-1/2 text-xs text-zinc-500 tabular-nums dark:text-zinc-400"
+                  style={{ top: index * HOUR_HEIGHT }}
+                >
+                  {hour}:00
+                </span>
+              ))}
+            </div>
+
+            {columns.map((column) => (
+              <div
+                key={column.weekday}
+                className={`relative border-l border-zinc-200 dark:border-zinc-800 ${
+                  isToday(column) ? 'bg-indigo-50/60 dark:bg-indigo-500/5' : ''
+                }`}
+                style={{ height: bodyHeight }}
+              >
+                {hourList.map((hour, index) =>
+                  onEmptyClick ? (
+                    <button
+                      key={hour}
+                      type="button"
+                      onClick={() => onEmptyClick(column.weekday, hour)}
+                      aria-label={`${t('agenda.addClass')}: ${weekdayName(column.weekday, i18n.language, 'long')} ${hour}:00`}
+                      className="group absolute inset-x-0 flex items-center justify-center border-t border-zinc-100 hover:bg-indigo-50 dark:border-zinc-800/70 dark:hover:bg-indigo-500/10"
+                      style={{ top: index * HOUR_HEIGHT, height: HOUR_HEIGHT }}
+                    >
+                      <Plus className="size-4 text-indigo-500 opacity-0 group-hover:opacity-70" />
+                    </button>
+                  ) : (
+                    <div
+                      key={hour}
+                      className="absolute inset-x-0 border-t border-zinc-100 dark:border-zinc-800/70"
+                      style={{ top: index * HOUR_HEIGHT }}
+                    />
+                  )
+                )}
+
+                {slots
+                  .filter((slot) => slot.weekday === column.weekday)
+                  .map((slot) => (
+                    <SlotBlock
+                      key={slot.id}
+                      slot={slot}
+                      title={slotTitle(slot, subjectById)}
+                      subject={slot.subjectId ? subjectById.get(slot.subjectId) : undefined}
+                      firstHour={hours.start}
+                      onClick={onSlotClick && ((clicked) => onSlotClick(clicked, column))}
+                    />
+                  ))}
+
+                {now && isToday(column) && <NowLine now={now} hours={hours} />}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

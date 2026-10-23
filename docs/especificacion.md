@@ -198,7 +198,8 @@ Cada 20 minutos de uso del ordenador hay que mirar algo a unos 6 metros durante 
 7. **Spotify**: login PKCE, controles, playlists, dispositivos y pausa automática en los descansos.
 8. **Pulido y paquete**: revisar las traducciones, los estados vacíos y los errores, y generar el instalador `.exe` con electron-builder.
 9. **Sincronización**: datos con registro de cambios, cuenta de Firebase, subir y bajar cambios, Ajustes → Sincronización y pruebas con el emulador de Firebase (ver sección 9).
-10. **App Android con Capacitor**: reutiliza el renderer de React y cambia las implementaciones de `platform/` (datos, avisos y sincronización en el móvil). Hay que decidir qué avisos salen en el móvil y cuáles en el PC para que no lleguen dos veces.
+10. **App Android con Capacitor**: reutiliza el renderer de React y cambia las implementaciones de `platform/` (datos, avisos y sincronización en el móvil). Los servicios con estado (datos, sincronización, temporizador) pasan a `src/core/` para funcionar en los dos. Avisan los dos dispositivos. En el móvil no hay 20-20-20 ni bandeja, y Spotify solo se abre (con la playlist de estudio si se ha puesto su enlace).
+11. **Publicar en GitHub**: README con cómo instalarla y configurar Firebase y Spotify, licencia, quitar datos personales del repositorio, actualizaciones automáticas y Releases con el instalador del PC y el APK.
 
 ---
 

@@ -2,17 +2,22 @@ import { app, BrowserWindow, ipcMain, type IpcMainInvokeEvent } from 'electron'
 import { EYE_BREAK_COMMANDS, IPC, type EyeBreakCommand } from '@shared/api'
 import { parseSpotifyCommand } from '@shared/spotify'
 import type { Settings } from '@shared/types'
-import { agendaOf, type ItemsRepo, type ScheduleRepo, type SubjectsRepo } from './data/agendaRepos'
+import {
+  agendaOf,
+  type ItemsRepo,
+  type ScheduleRepo,
+  type SubjectsRepo
+} from '@core/data/agendaRepos'
 import { exportBackup, importBackup } from './data/backup'
 import type { EyeBreakService } from './eyeBreak'
 import type { SpotifyService } from './spotify/service'
-import type { SyncService } from './sync/service'
-import type { DataStore } from './data/dataStore'
-import type { SettingsRepo } from './data/settingsRepo'
-import { createTranslator } from './i18n'
+import type { SyncService } from '@core/sync/service'
+import type { DataStore } from '@core/data/dataStore'
+import type { SettingsRepo } from '@core/data/settingsRepo'
+import { createTranslator } from '@core/i18n'
 import { takeNavigation } from './navigation'
 import type { Notifier } from './notifier'
-import type { StudyTimer } from './studyTimer'
+import type { StudyTimer } from '@core/studyTimer'
 
 interface IpcDeps {
   store: DataStore

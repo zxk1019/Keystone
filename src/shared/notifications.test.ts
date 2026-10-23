@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { isQuietTime, overdueKey, planNotifications, pruneLog, type SentLog } from './notifications'
+import {
+  isQuietTime,
+  overdueKey,
+  planAhead,
+  planNotifications,
+  pruneLog,
+  type SentLog
+} from './notifications'
 import { DEFAULT_NOTIFICATIONS, type AgendaData, type AgendaItem } from './types'
 
 const settings = DEFAULT_NOTIFICATIONS // summary 17:00, repeat 2 h, exams 7/3/1, quiet 22:00-08:00
@@ -173,5 +180,109 @@ describe('pruneLog', () => {
       recent: new Date(2026, 9, 1).toISOString()
     }
     expect(Object.keys(pruneLog(log, now))).toEqual(['recent'])
+  })
+})
+
+describe('planAhead', () => {
+  const times = (plan: ReturnType<typeof planAhead>): string[] =>
+    plan.reminders.map(({ at: time, notification }) => {
+      const day = time.getDate()
+      const clock = `${String(time.getHours()).padStart(2, '0')}:${String(time.getMinutes()).padStart(2, '0')}`
+      return `${day} ${clock} ${notification.kind}`
+    })
+
+  it('plans the daily summary of the coming days at the summary time', () => {
+    const plan = planAhead(
+      at('10:00'),
+      agendaWith(item('a', 'homework', '2026-10-30')),
+      settings,
+      {},
+      {
+        days: 3
+      }
+    )
+    expect(times(plan)).toEqual(['21 17:00 summary', '22 17:00 summary', '23 17:00 summary'])
+  })
+
+  it('reminds about late work after the quiet hours and then every few hours', () => {
+    // Due today: late from midnight, but the first reminder waits until 08:00
+    const plan = planAhead(
+      at('18:00'),
+      agendaWith(item('a', 'homework', '2026-10-21')),
+      settings,
+      {
+        'summary:2026-10-21': at('17:00').toISOString()
+      },
+      // Until 22:48 the next day
+      { days: 1.2 }
+    )
+    expect(times(plan)).toEqual([
+      '22 08:00 overdue',
+      '22 10:00 overdue',
+      '22 12:00 overdue',
+      '22 14:00 overdue',
+      '22 16:00 overdue',
+      // The summary in between does not change the rhythm of the reminders
+      '22 17:00 summary',
+      '22 18:00 overdue',
+      '22 20:00 overdue'
+    ])
+  })
+
+  it('reminds about exams on the chosen days before, with the summary', () => {
+    const exam = item('e', 'exam', '2026-10-24')
+    const plan = planAhead(
+      at('18:00'),
+      agendaWith(exam),
+      settings,
+      {
+        'summary:2026-10-21': at('17:00').toISOString()
+      },
+      { days: 3 }
+    )
+    // 3 days before was today, already past the summary time: it goes out right away
+    expect(times(plan)).toEqual([
+      '21 18:00 exam',
+      '22 17:00 summary',
+      '23 17:00 summary',
+      '23 17:00 exam',
+      '24 17:00 summary'
+    ])
+    expect(plan.sent.map((entry) => entry.key)).toContain('exam:e:2026-10-24:1')
+  })
+
+  it('holds reminders back until the study block ends', () => {
+    const plan = planAhead(
+      at('16:30'),
+      agendaWith(item('a', 'homework', '2026-10-30')),
+      settings,
+      {},
+      {
+        days: 0.5,
+        studyingUntil: at('17:15').getTime()
+      }
+    )
+    expect(times(plan)).toEqual(['21 17:15 summary'])
+  })
+
+  it('plans nothing with reminders turned off, and stops at the maximum', () => {
+    const agenda = agendaWith(item('a', 'homework', '2026-10-01'))
+    expect(planAhead(at('10:00'), agenda, { ...settings, enabled: false }, {}).reminders).toEqual(
+      []
+    )
+    expect(planAhead(at('10:00'), agenda, settings, {}, { max: 3 }).reminders).toHaveLength(3)
+  })
+
+  it('is quick enough to run after every change', () => {
+    const many = Array.from({ length: 300 }, (_, index) =>
+      item(
+        `i${index}`,
+        index % 3 === 0 ? 'exam' : 'homework',
+        `2026-10-${String(15 + (index % 15)).padStart(2, '0')}`
+      )
+    )
+    const started = performance.now()
+    planAhead(at('10:00'), agendaWith(...many), settings, {})
+    expect(performance.now() - started).toBeLessThan(500)
   })
 })

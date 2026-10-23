@@ -3,8 +3,8 @@ import { readFile, writeFile } from 'fs/promises'
 import { join } from 'path'
 import type { ExportResult, ImportResult } from '@shared/api'
 import { parseAppData } from '@shared/validation'
-import type { Translate } from '../i18n'
-import type { DataStore } from './dataStore'
+import type { Translate } from '@core/i18n'
+import type { DataStore } from '@core/data/dataStore'
 
 function todayStamp(): string {
   const now = new Date()

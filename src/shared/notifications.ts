@@ -111,3 +111,99 @@ export function pruneLog(log: SentLog, now: Date, days = 60): SentLog {
     Object.entries(log).filter(([, sentAt]) => new Date(sentAt).getTime() >= limit)
   )
 }
+
+/** A reminder of the coming days and the moment it should appear. */
+export interface ScheduledReminder {
+  at: Date
+  notification: PlannedNotification
+}
+
+export interface AheadPlan {
+  reminders: ScheduledReminder[]
+  /** The keys these reminders record as sent, and when, to add to the log once they are out */
+  sent: { key: string; at: string }[]
+}
+
+export interface AheadOptions {
+  /** A study block is running until then (ms): reminders wait for the break, as on the PC */
+  studyingUntil?: number
+  /** How many days ahead */
+  days?: number
+  /** At most this many reminders, the earliest ones */
+  max?: number
+}
+
+/** The moments of a day when something can become due: midnight, the summary, end of quiet. */
+function dailyMoments(day: Date, settings: NotificationSettings): Date[] {
+  return ['00:00', settings.summaryTime, settings.quietEnd].map((time) => {
+    const minutes = timeToMinutes(time)
+    return new Date(
+      day.getFullYear(),
+      day.getMonth(),
+      day.getDate(),
+      Math.floor(minutes / 60),
+      minutes % 60
+    )
+  })
+}
+
+/**
+ * The reminders of the coming days, for a device where the app is not running all the time:
+ * the phone hands them to the system in advance. It asks `planNotifications` at every moment
+ * something can become due, so the result is what the PC would send checking every minute,
+ * assuming nothing changes meanwhile (the app plans again after any change).
+ */
+export function planAhead(
+  now: Date,
+  agenda: AgendaData,
+  settings: NotificationSettings,
+  log: SentLog,
+  { studyingUntil, days = 7, max = 60 }: AheadOptions = {}
+): AheadPlan {
+  const plan: AheadPlan = { reminders: [], sent: [] }
+  if (!settings.enabled) return plan
+
+  const end = now.getTime() + days * 24 * HOUR_MS
+  const repeatMs = settings.overdueRepeatHours * HOUR_MS
+  // Moments to check, in ms. Nothing can become due between them: reminders start at midnight
+  // (late work) or at the summary time, wait for the end of quiet hours or of the study block,
+  // and late work comes back every `overdueRepeatHours`.
+  const moments = new Set<number>([now.getTime()])
+  if (studyingUntil !== undefined) moments.add(studyingUntil)
+  for (let day = 0; day <= days + 1; day++) {
+    const date = new Date(now.getFullYear(), now.getMonth(), now.getDate() + day)
+    for (const moment of dailyMoments(date, settings)) moments.add(moment.getTime())
+  }
+  const addRepeat = (sentAt: number): void => {
+    if (repeatMs > 0) moments.add(sentAt + repeatMs)
+  }
+  for (const [key, sentAt] of Object.entries(log)) {
+    if (key.startsWith('overdue:')) addRepeat(new Date(sentAt).getTime())
+  }
+
+  const simulatedLog = { ...log }
+  const done = new Set<number>()
+  for (;;) {
+    const pending = [...moments].filter(
+      (time) => time >= now.getTime() && time <= end && !done.has(time)
+    )
+    if (pending.length === 0 || plan.reminders.length >= max) break
+    const time = Math.min(...pending)
+    done.add(time)
+
+    const date = new Date(time)
+    const studying = studyingUntil !== undefined && time < studyingUntil
+    const step = planNotifications(date, agenda, settings, simulatedLog, studying)
+    if (step.sentKeys.length === 0) continue
+    for (const notification of step.notifications) {
+      if (plan.reminders.length < max) plan.reminders.push({ at: date, notification })
+    }
+    const sentAt = date.toISOString()
+    for (const key of step.sentKeys) {
+      simulatedLog[key] = sentAt
+      plan.sent.push({ key, at: sentAt })
+      if (key.startsWith('overdue:')) addRepeat(time)
+    }
+  }
+  return plan
+}

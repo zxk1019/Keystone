@@ -7,29 +7,30 @@ import type { EyeBreakStatus } from '@shared/eyeBreak'
 import { FIREBASE_URLS, emulatorUrls } from '@shared/firebase'
 import { isStudying, type TimerState } from '@shared/studyTimer'
 import type { Settings } from '@shared/types'
-import { ItemsRepo, ScheduleRepo, SubjectsRepo } from './data/agendaRepos'
-import { DataStore } from './data/dataStore'
+import { ItemsRepo, ScheduleRepo, SubjectsRepo } from '@core/data/agendaRepos'
+import { DataStore } from '@core/data/dataStore'
+import { SettingsRepo } from '@core/data/settingsRepo'
+import { createTranslator } from '@core/i18n'
+import { phaseNotification, trayStatus } from '@core/studyText'
+import { StudyTimer } from '@core/studyTimer'
+import { SyncService } from '@core/sync/service'
+import { nodeTextFile } from './data/nodeTextFile'
 import { NotificationLog } from './data/notificationLog'
-import { SettingsRepo } from './data/settingsRepo'
 import { EyeBreakService } from './eyeBreak'
 import { isUserBusy } from './fullscreen'
-import { createTranslator } from './i18n'
 import { broadcast, broadcastSettings, registerIpc } from './ipc'
 import { createMainWindow, isMainWindowInFront, showMainWindow } from './mainWindow'
 import { openTarget } from './navigation'
 import { Notifier } from './notifier'
 import { SpotifyService } from './spotify/service'
 import { TokenStore } from './spotify/tokenStore'
-import { SyncService } from './sync/service'
-import { SyncSessionStore } from './sync/sessionStore'
 import {
   applyStartWithWindows,
   canUseRichToasts,
   registerAppProtocol,
   startsHidden
 } from './startup'
-import { StudyTimer } from './studyTimer'
-import { phaseNotification, trayStatus } from './studyText'
+import { SecureSyncSessionStore } from './sync/sessionStore'
 import { createTray, setTrayStatus, updateTrayMenu } from './tray'
 
 const APP_ID = 'com.miestudio.app'
@@ -48,7 +49,7 @@ if (!app.requestSingleInstanceLock()) {
   app.whenReady().then(start)
 }
 
-function start(): void {
+async function start(): Promise<void> {
   // Needed on Windows so notifications show the app name
   electronApp.setAppUserModelId(APP_ID)
 
@@ -56,7 +57,7 @@ function start(): void {
   app.on('browser-window-created', (_, window) => optimizer.watchWindowShortcuts(window))
 
   const userData = app.getPath('userData')
-  const store = new DataStore(join(userData, 'mi-estudio-data.json'))
+  const store = await DataStore.open(nodeTextFile(join(userData, 'mi-estudio-data.json')))
   const settings = new SettingsRepo(store)
   const items = new ItemsRepo(store)
   const notifier = new Notifier({
@@ -157,10 +158,12 @@ function start(): void {
 
   // Development tests can use the local Firebase emulator; the installed app never can
   const emulatorHost = !app.isPackaged && process.env['MI_ESTUDIO_FIREBASE_EMULATOR']
+  const syncSessions = new SecureSyncSessionStore(join(userData, 'mi-estudio-sync.bin'))
   const sync = new SyncService({
     store,
     config: () => settings.get().sync,
-    sessions: new SyncSessionStore(join(userData, 'mi-estudio-sync.bin')),
+    savedSession: syncSessions.load(),
+    sessions: syncSessions,
     urls: emulatorHost ? emulatorUrls(emulatorHost) : FIREBASE_URLS,
     onStatus: (status) => broadcast(IPC.syncStatusChanged, status),
     onRemoteChange: (change) => {

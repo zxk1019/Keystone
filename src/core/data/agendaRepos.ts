@@ -1,4 +1,3 @@
-import { randomUUID } from 'crypto'
 import type { SaveSlotResult } from '@shared/api'
 import { compareItems } from '@shared/items'
 import { findOverlap, sortSlots, sortSubjects } from '@shared/schedule'
@@ -16,7 +15,7 @@ function upsert<T extends { id: string }>(list: T[], entry: T): T[] {
 /** Drafts from the renderer keep their id when editing and get a new one when creating. */
 function withId(draft: unknown): Record<string, unknown> {
   const input = isRecord(draft) ? draft : {}
-  return { ...input, id: typeof input.id === 'string' && input.id ? input.id : randomUUID() }
+  return { ...input, id: typeof input.id === 'string' && input.id ? input.id : crypto.randomUUID() }
 }
 
 export function agendaOf(store: DataStore): AgendaData {

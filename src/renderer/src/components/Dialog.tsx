@@ -41,7 +41,7 @@ export default function Dialog({
     <dialog
       ref={ref}
       onClose={onClose}
-      className="m-auto w-full max-w-md rounded-xl border border-zinc-200 bg-white p-0 text-zinc-900 shadow-xl backdrop:bg-black/40 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100"
+      className="m-auto w-[calc(100%-2rem)] max-w-md rounded-xl border border-zinc-200 bg-white p-0 text-zinc-900 shadow-xl backdrop:bg-black/40 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100"
     >
       <form onSubmit={handleSubmit}>
         <div className="flex flex-col gap-4 p-5">

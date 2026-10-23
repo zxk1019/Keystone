@@ -9,7 +9,7 @@ import {
   type SpotifyStatus
 } from '@shared/spotify'
 import type { SpotifySettings } from '@shared/types'
-import type { Translate } from '../i18n'
+import type { Translate } from '@core/i18n'
 import { exchangeCode, refreshTokens, waitForCode } from './auth'
 import { SpotifyClient } from './client'
 import { authorizeUrl, challengeFor, createState, createVerifier } from './pkce'

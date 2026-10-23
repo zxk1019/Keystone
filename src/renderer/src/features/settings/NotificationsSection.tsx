@@ -156,23 +156,25 @@ export default function NotificationsSection({
         </div>
       </fieldset>
 
-      <div className="border-t border-zinc-200 pt-4 dark:border-zinc-800">
-        <SettingsRow
-          label={t('settings.startup.title')}
-          hint={
-            packaged === false
-              ? t('settings.startup.onlyInstalled')
-              : t('settings.startup.description')
-          }
-        >
-          <Switch
-            checked={settings.startWithWindows}
-            onChange={(startWithWindows) => update({ startWithWindows })}
+      {platform.capabilities.startWithWindows && (
+        <div className="border-t border-zinc-200 pt-4 dark:border-zinc-800">
+          <SettingsRow
             label={t('settings.startup.title')}
-            disabled={packaged !== true}
-          />
-        </SettingsRow>
-      </div>
+            hint={
+              packaged === false
+                ? t('settings.startup.onlyInstalled')
+                : t('settings.startup.description')
+            }
+          >
+            <Switch
+              checked={settings.startWithWindows}
+              onChange={(startWithWindows) => update({ startWithWindows })}
+              label={t('settings.startup.title')}
+              disabled={packaged !== true}
+            />
+          </SettingsRow>
+        </div>
+      )}
     </SettingsSection>
   )
 }

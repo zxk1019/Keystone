@@ -1,5 +1,5 @@
 import { buildAppUrl } from '@shared/appUrl'
-import type { NotificationContent } from './notificationText'
+import type { NotificationContent } from '@core/notificationText'
 
 function escapeXml(text: string): string {
   return text

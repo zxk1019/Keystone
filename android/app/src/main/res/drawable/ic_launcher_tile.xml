@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The indigo tile behind the graduation cap, as in the PC icon -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <gradient
+        android:angle="315"
+        android:startColor="#818CF8"
+        android:endColor="#4F46E5" />
+</shape>

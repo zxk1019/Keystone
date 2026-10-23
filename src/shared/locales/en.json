@@ -241,7 +241,9 @@
       "loginCanceled": "The Spotify login was canceled.",
       "loginTimeout": "The login took too long. Try again.",
       "unknown": "Spotify returned an error. Try again."
-    }
+    },
+    "phoneDescription": "Play music to study with in your Spotify app.",
+    "playStudyPlaylist": "Play the study playlist"
   },
   "sync": {
     "errors": {
@@ -381,7 +383,12 @@
       "step4": "Paste the Client ID above and click \"Connect to Spotify\".",
       "openDashboard": "Open the Spotify dashboard",
       "copy": "Copy",
-      "copied": "Copied"
+      "copied": "Copied",
+      "phoneDescription": "On the phone, Mi Estudio opens Spotify with your study playlist.",
+      "playlistLink": "Link to your study playlist",
+      "playlistLinkPlaceholder": "https://open.spotify.com/playlist/…",
+      "playlistLinkHint": "In Spotify, open the playlist, tap ⋯ → Share → Copy link and paste it here.",
+      "playlistLinkInvalid": "That link is not a Spotify playlist."
     },
     "notifications": {
       "title": "Notifications",
@@ -445,13 +452,14 @@
     },
     "data": {
       "title": "Data",
-      "description": "Your data is stored on this computer and, if you turn on sync, in your Firebase project. Make a backup from time to time.",
+      "description": "Your data is stored on this device and, if you turn on sync, in your Firebase project. Make a backup from time to time.",
       "export": "Export backup",
       "import": "Import backup",
       "exported": "Backup saved to {{path}}",
       "imported": "Backup imported successfully.",
       "invalid": "That file is not a valid Mi Estudio backup.",
-      "error": "Could not complete: {{message}}"
+      "error": "Could not complete: {{message}}",
+      "shared": "Backup ready to save or send."
     }
   },
   "tray": {
@@ -483,7 +491,9 @@
     "breakStartBody": "Get up and take {{count}} minutes off.",
     "breakEndTitle": "Break over",
     "breakEndBody": "Start block {{count}} whenever you are ready.",
-    "markDone": "Done"
+    "markDone": "Done",
+    "channelReminders": "Reminders",
+    "channelStudy": "Study timer"
   },
   "dialog": {
     "exportTitle": "Export backup",

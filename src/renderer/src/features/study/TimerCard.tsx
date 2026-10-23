@@ -5,6 +5,7 @@ import { remainingMs, type TimerState } from '@shared/studyTimer'
 import Button from '../../components/Button'
 import { useNow } from '../../hooks/useNow'
 import { formatClock, formatCountdown } from '../../lib/time'
+import { platform } from '../../platform'
 import { useStudyStore } from '../../store/studyStore'
 import EyeBreakNotice from '../eyeBreak/EyeBreakNotice'
 
@@ -102,7 +103,7 @@ export default function TimerCard({ timer }: { timer: TimerState }): JSX.Element
           {t('study.silenced')}
         </p>
       )}
-      <EyeBreakNotice />
+      {platform.capabilities.eyeBreak && <EyeBreakNotice />}
     </section>
   )
 }

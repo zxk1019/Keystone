@@ -41,7 +41,7 @@ export default function TasksPage(): JSX.Element | null {
   const sections = buildSections(filtered, status, now)
 
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-6 px-8 py-8">
+    <div className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-5 md:px-8 md:py-8">
       <div className="flex items-center justify-between gap-3">
         <PageHeader title={t('nav.tasks')} />
         <Button variant="primary" icon={Plus} onClick={() => openNew()}>
