@@ -2,6 +2,7 @@ import { useEffect, type ComponentType, type JSX } from 'react'
 import BottomNav from './components/BottomNav'
 import Sidebar from './components/Sidebar'
 import AgendaPage from './features/agenda/AgendaPage'
+import HabitsPage from './features/habits/HabitsPage'
 import SettingsPage from './features/settings/SettingsPage'
 import StudyPage from './features/study/StudyPage'
 import ItemDialog from './features/tasks/ItemDialog'
@@ -15,6 +16,7 @@ import { platform } from './platform'
 import type { SectionId } from './sections'
 import { useAgendaStore } from './store/agendaStore'
 import { useEyeBreakStore } from './store/eyeBreakStore'
+import { useHabitsStore } from './store/habitsStore'
 import { useNavigationStore } from './store/navigationStore'
 import { useSettingsStore } from './store/settingsStore'
 import { useSpotifyStore } from './store/spotifyStore'
@@ -25,6 +27,7 @@ const PAGES: Record<SectionId, ComponentType> = {
   today: TodayPage,
   agenda: AgendaPage,
   tasks: TasksPage,
+  habits: HabitsPage,
   study: StudyPage,
   settings: SettingsPage
 }
@@ -33,6 +36,7 @@ export default function App(): JSX.Element | null {
   const settings = useSettingsStore((state) => state.settings)
   const loadSettings = useSettingsStore((state) => state.load)
   const loadAgenda = useAgendaStore((state) => state.load)
+  const loadHabits = useHabitsStore((state) => state.load)
   const loadStudy = useStudyStore((state) => state.load)
   const loadEyeBreak = useEyeBreakStore((state) => state.load)
   const loadSpotify = useSpotifyStore((state) => state.load)
@@ -43,6 +47,7 @@ export default function App(): JSX.Element | null {
   useEffect(() => {
     loadSettings()
     loadAgenda()
+    loadHabits()
     loadStudy()
     loadEyeBreak()
     loadSpotify()
@@ -51,7 +56,10 @@ export default function App(): JSX.Element | null {
     const stopSettings = platform.onSettingsChanged((updated) =>
       useSettingsStore.setState({ settings: updated })
     )
-    const stopData = platform.onDataChanged(() => loadAgenda())
+    const stopData = platform.onDataChanged(() => {
+      loadAgenda()
+      loadHabits()
+    })
     const stopTimer = platform.onStudyState((timer) => useStudyStore.setState({ timer }))
     // The chime plays whatever screen is open, even with the window in the tray
     const stopChime = platform.onStudyPhase(playChime)
@@ -69,7 +77,7 @@ export default function App(): JSX.Element | null {
       stopSpotify()
       stopSync()
     }
-  }, [loadSettings, loadAgenda, loadStudy, loadEyeBreak, loadSpotify, loadSync])
+  }, [loadSettings, loadAgenda, loadHabits, loadStudy, loadEyeBreak, loadSpotify, loadSync])
 
   useApplySettings(settings)
   useNotificationNavigation()

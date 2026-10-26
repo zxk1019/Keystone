@@ -14,7 +14,7 @@ service cloud.firestore {
           && record.keys().hasAll(['key', 'changedAt', 'data', 'syncedAt'])
           && record.key is string
           && record.key.size() <= 300
-          && record.key.matches('(subjects|schedule|items|settings)/.+')
+          && record.key.matches('(subjects|schedule|items|habits|habitMarks|settings)/.+')
           && record.changedAt is int
           && (record.data == null || (record.data is string && record.data.size() <= 20000))
           && record.syncedAt == request.time;

@@ -8,6 +8,7 @@ import { formatClock, formatCountdown } from '../../lib/time'
 import { platform } from '../../platform'
 import { useStudyStore } from '../../store/studyStore'
 import EyeBreakNotice from '../eyeBreak/EyeBreakNotice'
+import StudyModePicker from './StudyModePicker'
 
 const RADIUS = 96
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS
@@ -15,7 +16,6 @@ const CIRCUMFERENCE = 2 * Math.PI * RADIUS
 export default function TimerCard({ timer }: { timer: TimerState }): JSX.Element {
   const { t, i18n } = useTranslation()
   const command = useStudyStore((state) => state.command)
-  const nextTip = useStudyStore((state) => state.nextTip)
   const now = useNow(1000)
 
   const left = remainingMs(timer, now.getTime())
@@ -25,21 +25,19 @@ export default function TimerCard({ timer }: { timer: TimerState }): JSX.Element
   let status: string
   if (timer.status === 'idle') status = t('study.ready')
   else if (timer.status === 'paused') status = t('study.paused')
+  else if (onBreak && timer.eyeRest) status = t('study.lookAway')
   else
     status = t(onBreak ? 'study.backAt' : 'study.breakAt', {
       time: formatClock(timer.endsAt ?? now.getTime(), i18n.language)
     })
-
-  const start = (): void => {
-    // A new study block brings a new tip
-    if (timer.status === 'idle' && timer.phase === 'focus') nextTip()
-    command('start')
-  }
+  const phase = onBreak && timer.eyeRest ? 'eyeRest' : timer.phase
 
   return (
     <section className="flex flex-col items-center gap-5 rounded-xl border border-zinc-200 p-6 dark:border-zinc-800">
+      <StudyModePicker locked={timer.status !== 'idle'} />
+
       <p className="text-sm font-semibold tracking-wide text-zinc-500 uppercase dark:text-zinc-400">
-        {t(`study.phase.${timer.phase}`)} · {t('study.block', { count: timer.block })}
+        {t(`study.phase.${phase}`)} · {t('study.block', { count: timer.block })}
       </p>
 
       <div className="relative size-56">
@@ -80,7 +78,7 @@ export default function TimerCard({ timer }: { timer: TimerState }): JSX.Element
             {t('study.pause')}
           </Button>
         ) : (
-          <Button variant="primary" icon={Play} onClick={start}>
+          <Button variant="primary" icon={Play} onClick={() => command('start')}>
             {timer.status === 'paused' ? t('study.resume') : t('study.start')}
           </Button>
         )}
@@ -103,7 +101,10 @@ export default function TimerCard({ timer }: { timer: TimerState }): JSX.Element
           {t('study.silenced')}
         </p>
       )}
-      {platform.capabilities.eyeBreak && <EyeBreakNotice />}
+      {/* With the 20-20-20 timer running, the timer itself is the eye break */}
+      {platform.capabilities.eyeBreak && !(timer.eyeRest && timer.status === 'running') && (
+        <EyeBreakNotice />
+      )}
     </section>
   )
 }

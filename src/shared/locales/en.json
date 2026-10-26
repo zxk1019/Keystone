@@ -6,6 +6,7 @@
     "today": "Today",
     "agenda": "Calendar",
     "tasks": "Tasks",
+    "habits": "Habits",
     "study": "Study",
     "settings": "Settings"
   },
@@ -101,9 +102,22 @@
   "study": {
     "phase": {
       "focus": "Study",
-      "break": "Break"
+      "break": "Break",
+      "eyeRest": "Eye break"
     },
     "block": "Block {{count}}",
+    "mode": {
+      "title": "Timer mode",
+      "computer": "At the computer",
+      "noComputer": "Away from it",
+      "custom": "Custom",
+      "computerHint": "20-20-20: study for 20 minutes, look at something 6 metres away for 20 seconds, and carry on.",
+      "noComputerHint": "Study for 45 minutes and rest for 5.",
+      "customHint": "You choose how long studying and breaks last.",
+      "focusMinutes": "Study minutes",
+      "breakMinutes": "Break minutes",
+      "locked": "To change the mode, stop the timer with “Reset”."
+    },
     "start": "Start",
     "resume": "Resume",
     "pause": "Pause",
@@ -111,34 +125,11 @@
     "reset": "Reset",
     "ready": "Ready to start",
     "paused": "Paused",
+    "lookAway": "Look at something 6 metres away",
     "breakAt": "Break at {{time}}",
     "backAt": "Back at {{time}}",
     "silenced": "While you study, reminders wait for the break.",
-    "tip": "Tip",
-    "anotherTip": "Another tip",
     "close": "Close",
-    "tips": [
-      "Before rereading, try writing down from memory what you remember about the topic.",
-      "Leave your phone in another room, or at least out of sight.",
-      "Start with the task you find hardest, while you have the most energy.",
-      "Set a concrete goal for this block: \"do exercises 1 to 5\", not \"study maths\".",
-      "Explain the topic out loud as if you were teaching it to someone.",
-      "Today, review a bit of what you studied a week ago.",
-      "Mix different kinds of exercises instead of doing twenty of the same in a row.",
-      "Drink some water and have everything you need at hand before you start.",
-      "If an idea distracts you, jot it down on paper and carry on; look at it during the break.",
-      "Highlighting is not studying: after reading, close the book and summarise in your own words.",
-      "Ask yourself exam-style questions and answer them without looking at your notes.",
-      "During the break, get up and move; do not spend it on your phone.",
-      "Sleeping well is part of studying: what you learn settles while you sleep.",
-      "When something does not work out, find a solved example and redo it on your own.",
-      "Split long assignments into small steps and tick each one off when you finish it.",
-      "Study in the same place and at the same time: your mind gets used to focusing sooner.",
-      "Connect new ideas to something you already know: an example from your life, another subject...",
-      "When you finish, write one line about what you learned today.",
-      "If you have been stuck for a long time, switch tasks and come back later with a fresh mind.",
-      "Draw diagrams or sketches: seeing information in another way helps you remember it."
-    ],
     "techniques": {
       "title": "Study techniques",
       "what": "What it is",
@@ -196,6 +187,38 @@
         }
       }
     }
+  },
+  "habits": {
+    "new": "New habit",
+    "edit": "Edit habit",
+    "name": "Name",
+    "namePlaceholder": "Read for 20 minutes",
+    "nameRequired": "Give the habit a name.",
+    "days": "Which days",
+    "daysRequired": "Choose at least one day.",
+    "color": "Color",
+    "everyDay": "Every day",
+    "weekdaysOnly": "Monday to Friday",
+    "empty": "You have no habits yet. Create one and mark each day whether you kept it: a green ✓ if you did and a red ✗ if you didn't.",
+    "markHint": "Tap a day to mark it: once for ✓, twice for ✗, three times to clear it.",
+    "pick": "Habit",
+    "streak_one": "{{count}} day in a row",
+    "streak_other": "{{count}} days in a row",
+    "streakLabel": "Current streak",
+    "record": "Record: {{count}}",
+    "recordLabel": "Longest streak",
+    "monthSummary": "This month: {{done}} ✓ · {{missed}} ✗",
+    "cell": "{{habit}}, {{date}}: {{status}}",
+    "status": {
+      "done": "done",
+      "missed": "missed",
+      "none": "not marked",
+      "notDue": "not due",
+      "future": "not here yet"
+    },
+    "deleteConfirm_zero": "Delete “{{name}}”?",
+    "deleteConfirm_one": "Delete “{{name}}”? Its marked day will be deleted too.",
+    "deleteConfirm_other": "Delete “{{name}}”? Its {{count}} marked days will be deleted too."
   },
   "eyeBreak": {
     "lookAway": "Look at something far away (about 6 m)",
@@ -350,12 +373,6 @@
       "description": "Create your subjects and set up your weekly timetable.",
       "open": "Edit timetable"
     },
-    "study": {
-      "title": "Study",
-      "description": "Length of the timer blocks.",
-      "focusMinutes": "Study minutes",
-      "breakMinutes": "Break minutes"
-    },
     "eyeBreak": {
       "title": "Eye breaks (20-20-20)",
       "description": "Every so often while using the computer, look at something far away for a few seconds.",
@@ -491,6 +508,8 @@
     "breakStartBody": "Get up and take {{count}} minutes off.",
     "breakEndTitle": "Break over",
     "breakEndBody": "Start block {{count}} whenever you are ready.",
+    "eyeRestTitle": "Rest your eyes",
+    "eyeRestBody": "Look at something 6 metres away for 20 seconds. The timer then carries on by itself.",
     "markDone": "Done",
     "channelReminders": "Reminders",
     "channelStudy": "Study timer"

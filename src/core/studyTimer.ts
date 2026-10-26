@@ -2,15 +2,16 @@ import {
   advance,
   applyCommand,
   createTimer,
-  withDurations,
+  withPlan,
   type PhaseEvent,
+  type StudyPlan,
   type TimerCommand,
   type TimerState
 } from '@shared/studyTimer'
-import type { StudySettings } from '@shared/types'
 
 interface StudyTimerDeps {
-  durations: () => StudySettings
+  /** The lengths of the mode chosen in the settings */
+  plan: () => StudyPlan
   onChange: (state: TimerState) => void
   onPhaseEvent: (event: PhaseEvent, state: TimerState) => void
 }
@@ -25,7 +26,7 @@ export class StudyTimer {
   private timeout: ReturnType<typeof setTimeout> | undefined
 
   constructor(private readonly deps: StudyTimerDeps) {
-    this.state = createTimer(deps.durations())
+    this.state = createTimer(deps.plan())
   }
 
   get(): TimerState {
@@ -33,7 +34,7 @@ export class StudyTimer {
   }
 
   command(command: TimerCommand): TimerState {
-    const { state, events } = applyCommand(this.state, command, Date.now(), this.deps.durations())
+    const { state, events } = applyCommand(this.state, command, Date.now(), this.deps.plan())
     this.update(state, events)
     return this.state
   }
@@ -44,8 +45,8 @@ export class StudyTimer {
   }
 
   /** Called when the settings change. */
-  durationsChanged(): void {
-    const state = withDurations(this.state, this.deps.durations())
+  planChanged(): void {
+    const state = withPlan(this.state, this.deps.plan())
     if (state !== this.state) this.update(state, [])
   }
 
@@ -66,7 +67,7 @@ export class StudyTimer {
   }
 
   private tick(): void {
-    const { state, events } = advance(this.state, Date.now(), this.deps.durations())
+    const { state, events } = advance(this.state, Date.now(), this.deps.plan())
     if (events.length > 0) this.update(state, events)
     else this.schedule()
   }

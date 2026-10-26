@@ -1,6 +1,5 @@
 import { useState, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Lightbulb, RefreshCw } from 'lucide-react'
 import Button from '../../components/Button'
 import Dialog from '../../components/Dialog'
 import PageHeader from '../../components/PageHeader'
@@ -33,10 +32,7 @@ export default function StudyPage(): JSX.Element | null {
 
       <div className="grid items-start gap-6 lg:grid-cols-[1fr_20rem]">
         <TimerCard timer={timer} />
-        <div className="flex flex-col gap-6">
-          <TipCard />
-          <SpotifyPanel />
-        </div>
+        <SpotifyPanel />
       </div>
 
       <section className="flex flex-col gap-3">
@@ -60,26 +56,6 @@ export default function StudyPage(): JSX.Element | null {
 
       {open && <TechniqueDialog key={open} technique={open} onClose={() => setOpen(null)} />}
     </div>
-  )
-}
-
-function TipCard(): JSX.Element {
-  const { t } = useTranslation()
-  const tipIndex = useStudyStore((state) => state.tipIndex)
-  const nextTip = useStudyStore((state) => state.nextTip)
-  const tips = t('study.tips', { returnObjects: true }) as string[]
-
-  return (
-    <section className="flex flex-col gap-3 rounded-xl border border-amber-200 bg-amber-50 p-5 dark:border-amber-500/20 dark:bg-amber-500/5">
-      <h2 className="flex items-center gap-2 font-semibold text-amber-900 dark:text-amber-200">
-        <Lightbulb className="size-4" />
-        {t('study.tip')}
-      </h2>
-      <p className="text-sm leading-relaxed">{tips[tipIndex]}</p>
-      <Button variant="ghost" icon={RefreshCw} onClick={nextTip} className="self-end">
-        {t('study.anotherTip')}
-      </Button>
-    </section>
   )
 }
 

@@ -8,12 +8,12 @@ import {
   type EyeBreakState,
   type TickInput
 } from './eyeBreak'
-import { applyCommand, createTimer, type TimerState } from './studyTimer'
+import { applyCommand, createTimer, type StudyPlan, type TimerState } from './studyTimer'
 import { DEFAULT_EYE_BREAK } from './types'
 
 const MIN = 60_000
-const durations = { focusMinutes: 45, breakMinutes: 5 }
-const idleTimer = createTimer(durations)
+const plan: StudyPlan = { focusMs: 45 * MIN, breakMs: 5 * MIN, eyeRest: false }
+const idleTimer = createTimer(plan)
 
 /** Ticks of 10 s for `minutes` of active use, starting at `start` */
 function useComputer(
@@ -81,20 +81,32 @@ describe('tickEyeBreak', () => {
   })
 
   it('treats a study break as rest', () => {
-    const running = applyCommand(idleTimer, 'start', 0, durations).state
-    const onBreak: TimerState = applyCommand(running, 'skip', 0, durations).state
+    const running = applyCommand(idleTimer, 'start', 0, plan).state
+    const onBreak: TimerState = applyCommand(running, 'skip', 0, plan).state
     const { state, shows } = useComputer(createEyeBreak(), 25, { study: onBreak })
     expect(shows).toEqual([])
     expect(state.activeMs).toBe(0)
   })
 
+  it('leaves the eyes to the timer while it runs the 20-20-20', () => {
+    const eyes = { focusMs: 20 * MIN, breakMs: 20_000, eyeRest: true }
+    const studying = applyCommand(createTimer(eyes), 'start', 0, eyes).state
+    const { state, shows } = useComputer(createEyeBreak(), 40, { study: studying })
+    expect(shows).toEqual([])
+    expect(state.activeMs).toBe(0)
+
+    // Paused, the timer sends no one to look away, so the dark screen does
+    const paused = applyCommand(studying, 'pause', 0, eyes).state
+    expect(useComputer(createEyeBreak(), 21, { study: paused }).shows).toHaveLength(1)
+  })
+
   it('waits when the study break is less than 2 minutes away', () => {
     // Study block started at minute 0 and ends at minute 21
     const studying = applyCommand(
-      createTimer({ focusMinutes: 21, breakMinutes: 5 }),
+      createTimer({ ...plan, focusMs: 21 * MIN }),
       'start',
       0,
-      durations
+      plan
     ).state
     const { shows } = useComputer(createEyeBreak(), 20.5, { study: studying })
     expect(shows).toEqual([])

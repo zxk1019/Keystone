@@ -6,11 +6,12 @@ import type { NavigationTarget } from '@shared/api'
 import type { EyeBreakStatus } from '@shared/eyeBreak'
 import { FIREBASE_URLS, emulatorUrls } from '@shared/firebase'
 import type { SpotifyResult } from '@shared/spotify'
-import type { PhaseEvent, TimerState } from '@shared/studyTimer'
+import { studyPlan, type PhaseEvent, type TimerState } from '@shared/studyTimer'
 import type { SyncStatus } from '@shared/sync'
-import type { Settings, ThemeSetting } from '@shared/types'
+import { DEVICE_STUDY_MODE, type Settings, type ThemeSetting } from '@shared/types'
 import { ItemsRepo, ScheduleRepo, SubjectsRepo, agendaOf } from '@core/data/agendaRepos'
 import { DataStore } from '@core/data/dataStore'
+import { HabitsRepo, habitsOf } from '@core/data/habitsRepo'
 import { SettingsRepo } from '@core/data/settingsRepo'
 import { createTranslator, type Translate } from '@core/i18n'
 import { StudyTimer } from '@core/studyTimer'
@@ -59,6 +60,7 @@ interface Services {
   subjects: SubjectsRepo
   schedule: ScheduleRepo
   items: ItemsRepo
+  habits: HabitsRepo
   studyTimer: StudyTimer
   sync: SyncService
   notifier: MobileNotifier
@@ -92,7 +94,7 @@ async function start(): Promise<Services> {
   const translate = (): Translate => createTranslator(settings.get().language)
 
   const studyTimer: StudyTimer = new StudyTimer({
-    durations: () => settings.get().study,
+    plan: () => studyPlan(settings.get(), DEVICE_STUDY_MODE.phone),
     onChange: (state) => {
       studyState.emit(state)
       // Reminders wait while studying, so they move with the timer
@@ -116,7 +118,7 @@ async function start(): Promise<Services> {
   let language = settings.get().language
   const settingsUpdated = (current: Settings): void => {
     settingsChanged.emit(current)
-    studyTimer.durationsChanged()
+    studyTimer.planChanged()
     sync.configChanged()
     applySystemBars(current.theme)
     if (current.language !== language) {
@@ -176,6 +178,7 @@ async function start(): Promise<Services> {
     subjects: new SubjectsRepo(store),
     schedule: new ScheduleRepo(store),
     items,
+    habits: new HabitsRepo(store),
     studyTimer,
     sync,
     notifier,
@@ -207,6 +210,7 @@ async function openSpotify(uri?: string): Promise<void> {
 
 export const platform: Platform = {
   capabilities: { eyeBreak: false, startWithWindows: false, spotifyControl: false },
+  defaultStudyMode: DEVICE_STUDY_MODE.phone,
   onBackButton: (callback) => {
     backButton.add(callback)
     return () => backButton.delete(callback)
@@ -242,6 +246,12 @@ export const platform: Platform = {
   saveItem: (item) => withServices(({ items }) => items.save(item)),
   setItemDone: (id, done) => withServices(({ items }) => items.setDone(id, done)),
   deleteItem: (id) => withServices(({ items }) => items.delete(id)),
+
+  getHabits: () => withServices(({ store }) => habitsOf(store)),
+  saveHabit: (habit) => withServices(({ habits }) => habits.save(habit)),
+  deleteHabit: (id) => withServices(({ habits }) => habits.delete(id)),
+  setHabitMark: (habitId, date, status) =>
+    withServices(({ habits }) => habits.setMark(habitId, date, status)),
 
   getAppInfo: async () => ({ packaged: true }),
   sendTestNotification: () => withServices(({ notifier }) => notifier.sendTest()),

@@ -6,6 +6,7 @@
     "today": "Hoy",
     "agenda": "Agenda",
     "tasks": "Tareas",
+    "habits": "Hábitos",
     "study": "Estudio",
     "settings": "Ajustes"
   },
@@ -101,9 +102,22 @@
   "study": {
     "phase": {
       "focus": "Estudio",
-      "break": "Descanso"
+      "break": "Descanso",
+      "eyeRest": "Descanso de la vista"
     },
     "block": "Bloque {{count}}",
+    "mode": {
+      "title": "Modo del temporizador",
+      "computer": "Con ordenador",
+      "noComputer": "Sin ordenador",
+      "custom": "Personalizado",
+      "computerHint": "20-20-20: estudias 20 minutos, miras algo a 6 metros durante 20 segundos y sigues.",
+      "noComputerHint": "Estudias 45 minutos y descansas 5.",
+      "customHint": "Tú eliges cuánto duran el estudio y el descanso.",
+      "focusMinutes": "Minutos de estudio",
+      "breakMinutes": "Minutos de descanso",
+      "locked": "Para cambiar de modo, para el temporizador con «Reiniciar»."
+    },
     "start": "Empezar",
     "resume": "Seguir",
     "pause": "Pausar",
@@ -111,34 +125,11 @@
     "reset": "Reiniciar",
     "ready": "Listo para empezar",
     "paused": "En pausa",
+    "lookAway": "Mira algo a 6 metros",
     "breakAt": "Descanso a las {{time}}",
     "backAt": "Vuelves a las {{time}}",
     "silenced": "Mientras estudias, los avisos esperan al descanso.",
-    "tip": "Consejo",
-    "anotherTip": "Otro consejo",
     "close": "Cerrar",
-    "tips": [
-      "Antes de releer, intenta escribir de memoria lo que recuerdas del tema.",
-      "Deja el móvil en otra habitación o, al menos, fuera de tu vista.",
-      "Empieza por la tarea que más te cuesta, cuando tienes más energía.",
-      "Ponte un objetivo concreto para este bloque: «hacer los ejercicios 1 a 5», no «estudiar mates».",
-      "Explica el tema en voz alta como si se lo enseñaras a alguien.",
-      "Repasa hoy un poco de lo que estudiaste hace una semana.",
-      "Mezcla tipos de ejercicios en vez de hacer veinte iguales seguidos.",
-      "Bebe agua y ten a mano todo lo que vas a necesitar antes de empezar.",
-      "Si te distrae una idea, apúntala en un papel y sigue; ya la mirarás en el descanso.",
-      "Subrayar no es estudiar: después de leer, cierra el libro y resume con tus palabras.",
-      "Hazte preguntas tipo examen y respóndelas sin mirar los apuntes.",
-      "En el descanso, levántate y muévete; no lo pases mirando el móvil.",
-      "Dormir bien también es estudiar: lo que aprendes se asienta mientras duermes.",
-      "Cuando algo no te salga, busca un ejemplo resuelto y rehazlo tú solo.",
-      "Divide los trabajos largos en pasos pequeños y marca cada uno al terminarlo.",
-      "Estudia en el mismo sitio y a la misma hora: tu cabeza se acostumbra antes a concentrarse.",
-      "Relaciona lo nuevo con algo que ya sepas: un ejemplo de tu vida, otra asignatura...",
-      "Al acabar, escribe en una línea qué has aprendido hoy.",
-      "Si llevas mucho rato atascado, cambia de tarea y vuelve después con la cabeza fresca.",
-      "Haz dibujos o esquemas: ver la información de otra forma ayuda a recordarla."
-    ],
     "techniques": {
       "title": "Técnicas de estudio",
       "what": "Qué es",
@@ -196,6 +187,38 @@
         }
       }
     }
+  },
+  "habits": {
+    "new": "Nuevo hábito",
+    "edit": "Editar hábito",
+    "name": "Nombre",
+    "namePlaceholder": "Leer 20 minutos",
+    "nameRequired": "Ponle un nombre al hábito.",
+    "days": "Qué días",
+    "daysRequired": "Elige al menos un día.",
+    "color": "Color",
+    "everyDay": "Todos los días",
+    "weekdaysOnly": "De lunes a viernes",
+    "empty": "Aún no tienes hábitos. Crea uno y marca cada día si lo has cumplido: un ✓ verde si lo has hecho y una ✗ roja si no.",
+    "markHint": "Toca un día para marcarlo: una vez ✓, dos veces ✗ y tres veces lo dejas vacío.",
+    "pick": "Hábito",
+    "streak_one": "{{count}} día seguido",
+    "streak_other": "{{count}} días seguidos",
+    "streakLabel": "Racha actual",
+    "record": "Récord: {{count}}",
+    "recordLabel": "La racha más larga",
+    "monthSummary": "Este mes: {{done}} ✓ · {{missed}} ✗",
+    "cell": "{{habit}}, {{date}}: {{status}}",
+    "status": {
+      "done": "cumplido",
+      "missed": "no cumplido",
+      "none": "sin marcar",
+      "notDue": "no toca",
+      "future": "todavía no ha llegado"
+    },
+    "deleteConfirm_zero": "¿Borrar «{{name}}»?",
+    "deleteConfirm_one": "¿Borrar «{{name}}»? También se borrará el día que tiene marcado.",
+    "deleteConfirm_other": "¿Borrar «{{name}}»? También se borrarán los {{count}} días que tiene marcados."
   },
   "eyeBreak": {
     "lookAway": "Mira algo lejano (a unos 6 m)",
@@ -350,12 +373,6 @@
       "description": "Crea tus asignaturas y monta tu horario semanal.",
       "open": "Editar horario"
     },
-    "study": {
-      "title": "Estudio",
-      "description": "Duración de los bloques del temporizador.",
-      "focusMinutes": "Minutos de estudio",
-      "breakMinutes": "Minutos de descanso"
-    },
     "eyeBreak": {
       "title": "Descanso de la vista (20-20-20)",
       "description": "Cada cierto tiempo usando el ordenador, mira algo lejano durante unos segundos.",
@@ -491,6 +508,8 @@
     "breakStartBody": "Levántate y despéjate {{count}} minutos.",
     "breakEndTitle": "Fin del descanso",
     "breakEndBody": "Cuando quieras, empieza el bloque {{count}}.",
+    "eyeRestTitle": "Descansa la vista",
+    "eyeRestBody": "Mira algo a 6 metros durante 20 segundos. Después el temporizador sigue solo.",
     "markDone": "Hecho",
     "channelReminders": "Recordatorios",
     "channelStudy": "Temporizador de estudio"

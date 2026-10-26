@@ -6,8 +6,8 @@ import {
 import { Preferences } from '@capacitor/preferences'
 import type { NavigationTarget } from '@shared/api'
 import { planAhead, pruneLog, type SentLog } from '@shared/notifications'
-import { advance, type TimerState } from '@shared/studyTimer'
-import type { Settings } from '@shared/types'
+import { advance, studyPlan, type TimerState } from '@shared/studyTimer'
+import { DEVICE_STUDY_MODE, type Settings } from '@shared/types'
 import { isRecord } from '@shared/validation'
 import { agendaOf } from '@core/data/agendaRepos'
 import type { DataStore } from '@core/data/dataStore'
@@ -24,7 +24,8 @@ import { phaseNotification } from '@core/studyText'
 const STATE_KEY = 'notifications'
 /** Ids 1 to 999 are reminders, 1000+ the study timer and the test */
 const FIRST_REMINDER_ID = 1
-const STUDY_IDS = [1001, 1002]
+/** The 20-20-20 goes on by itself: ten of them cover more than three hours */
+const STUDY_IDS = Array.from({ length: 10 }, (_, index) => 1001 + index)
 const TEST_ID = 1100
 const REMINDERS_CHANNEL = 'reminders'
 const STUDY_CHANNEL = 'study'
@@ -145,17 +146,22 @@ export class MobileNotifier {
     await LocalNotifications.cancel({ notifications: STUDY_IDS.map((id) => ({ id })) })
     if (!timer) return
     const t = this.deps.translate()
-    const durations = this.deps.settings().study
+    const plan = studyPlan(this.deps.settings(), DEVICE_STUDY_MODE.phone)
     const notifications: LocalNotificationSchema[] = []
     let state = timer
-    for (const id of STUDY_IDS) {
+    // Each change of phase, until the timer stops or the ids run out (the end of a 20-20-20
+    // break has no notification, so it takes no id)
+    while (notifications.length < STUDY_IDS.length) {
       if (state.status !== 'running' || state.endsAt === null) break
       const endsAt = state.endsAt
-      const next = advance(state, endsAt, durations)
+      const next = advance(state, endsAt, plan)
       const [event] = next.events
       if (!event) break
       const content = phaseNotification(event, next.state, t)
-      notifications.push(this.toNotification(id, new Date(endsAt), STUDY_CHANNEL, content))
+      if (content) {
+        const id = STUDY_IDS[notifications.length]
+        notifications.push(this.toNotification(id, new Date(endsAt), STUDY_CHANNEL, content))
+      }
       state = next.state
     }
     await this.schedule(notifications)
