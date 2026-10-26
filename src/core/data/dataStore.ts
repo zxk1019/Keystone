@@ -1,4 +1,4 @@
-import { markAllPending, trackChanges } from '@shared/sync'
+import { markAllPending, trackChanges, withCursor } from '@shared/sync'
 import { createDefaultData, type AppData } from '@shared/types'
 import { isRecord, parseAppData } from '@shared/validation'
 import type { TextFile } from './textFile'
@@ -38,6 +38,14 @@ export class DataStore {
       // as it was, just in case, before it is overwritten.
       await file.copyAside('.v1')
       const store = new DataStore(file, { ...data, sync: markAllPending(data, Date.now()) })
+      store.save()
+      return store
+    }
+    if (isRecord(raw) && raw.version === 2) {
+      // Data from before habits. While this device had the old version it skipped the habits
+      // made on the other device, so the next sync downloads everything again to get them.
+      await file.copyAside('.v2')
+      const store = new DataStore(file, { ...data, sync: withCursor(data.sync, '') })
       store.save()
       return store
     }

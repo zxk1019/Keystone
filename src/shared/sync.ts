@@ -1,4 +1,5 @@
 import type { SyncError } from './firebase'
+import { sortHabitMarks, sortHabits } from './habits'
 import { compareItems } from './items'
 import { sortSlots, sortSubjects } from './schedule'
 import {
@@ -12,6 +13,8 @@ import {
 import {
   isRecord,
   parseAgendaItem,
+  parseHabit,
+  parseHabitMark,
   parseScheduleSlot,
   parseSubject,
   sanitizeSettings
@@ -20,10 +23,10 @@ import {
 /*
  * Sync between devices (the PC and the phone) through the cloud.
  *
- * Every record of the agenda, and the settings both devices share, has a key such as
- * "items/<id>". Each device remembers when each key last changed (also for deleted records,
- * so a deletion is not undone by the other device) and which changes the cloud does not have
- * yet. When two devices change the same record, the latest change wins.
+ * Every record of the agenda and of the habits, and the settings both devices share, has a key
+ * such as "items/<id>". Each device remembers when each key last changed (also for deleted
+ * records, so a deletion is not undone by the other device) and which changes the cloud does
+ * not have yet. When two devices change the same record, the latest change wins.
  *
  * This file only decides what changes; talking to the cloud is in main/sync.
  */
@@ -46,7 +49,7 @@ export type SyncStatus =
       error: SyncError | null
     }
 
-export const RECORD_COLLECTIONS = ['subjects', 'schedule', 'items'] as const
+export const RECORD_COLLECTIONS = ['subjects', 'schedule', 'items', 'habits', 'habitMarks'] as const
 export type RecordCollection = (typeof RECORD_COLLECTIONS)[number]
 export type SyncCollection = RecordCollection | 'settings'
 const SYNC_COLLECTIONS: SyncCollection[] = [...RECORD_COLLECTIONS, 'settings']
@@ -178,7 +181,7 @@ export function withCursor(meta: SyncMeta, cursor: string): SyncMeta {
 
 export interface MergeResult {
   data: AppData
-  /** Subjects, timetable or tasks changed, so the screens must reload */
+  /** Subjects, timetable, tasks or habits changed, so the screens must reload */
   agendaChanged: boolean
   settingsChanged: boolean
 }
@@ -189,6 +192,10 @@ export interface MergeResult {
  */
 function referencedSubject(value: Record<string, unknown>): Set<string> {
   return new Set(typeof value.subjectId === 'string' ? [value.subjectId] : [])
+}
+
+function referencedHabit(value: Record<string, unknown>): Set<string> {
+  return new Set(typeof value.habitId === 'string' ? [value.habitId] : [])
 }
 
 /** Applies one downloaded record to its table. False if it cannot be read. */
@@ -215,18 +222,30 @@ function withoutSubject(item: AgendaItem): AgendaItem {
   return rest
 }
 
-/** The same clean-up as deleting a subject: its classes go, its tasks stay without it. */
+/**
+ * The same clean-up as deleting a subject or a habit: the subject's classes go and its tasks
+ * stay without it; the habit's marks go.
+ */
 function withValidReferences(data: AppData): AppData {
   const subjectIds = new Set(data.subjects.map((subject) => subject.id))
   const missing = (subjectId: string | undefined): boolean =>
     subjectId !== undefined && !subjectIds.has(subjectId)
+  const habitIds = new Set(data.habits.map((habit) => habit.id))
   const schedule = data.schedule.filter((slot) => !missing(slot.subjectId))
+  const habitMarks = data.habitMarks.filter((mark) => habitIds.has(mark.habitId))
   const danglingItems = data.items.some((item) => missing(item.subjectId))
-  if (schedule.length === data.schedule.length && !danglingItems) return data
+  if (
+    schedule.length === data.schedule.length &&
+    habitMarks.length === data.habitMarks.length &&
+    !danglingItems
+  ) {
+    return data
+  }
   return {
     ...data,
     schedule,
-    items: data.items.map((item) => (missing(item.subjectId) ? withoutSubject(item) : item))
+    items: data.items.map((item) => (missing(item.subjectId) ? withoutSubject(item) : item)),
+    habitMarks
   }
 }
 
@@ -247,6 +266,8 @@ export function applyRemote(data: AppData, remote: SyncRecord[], now: number): M
   const subjects = new Map(data.subjects.map((subject) => [subject.id, subject]))
   const schedule = new Map(data.schedule.map((slot) => [slot.id, slot]))
   const items = new Map(data.items.map((item) => [item.id, item]))
+  const habits = new Map(data.habits.map((habit) => [habit.id, habit]))
+  const habitMarks = new Map(data.habitMarks.map((mark) => [mark.id, mark]))
   let settings = data.settings
   const changes = { ...data.sync.changes }
   const applied = new Set<string>()
@@ -264,6 +285,12 @@ export function applyRemote(data: AppData, remote: SyncRecord[], now: number): M
     } else if (target.collection === 'items') {
       ok = applyTo(items, target.id, record.data, (value) =>
         parseAgendaItem(value, referencedSubject(value))
+      )
+    } else if (target.collection === 'habits') {
+      ok = applyTo(habits, target.id, record.data, parseHabit)
+    } else if (target.collection === 'habitMarks') {
+      ok = applyTo(habitMarks, target.id, record.data, (value) =>
+        parseHabitMark(value, referencedHabit(value))
       )
     } else if (record.key === SHARED_SETTINGS_KEY && isRecord(record.data)) {
       // Only the shared part: the other device can never change this one's theme or Spotify
@@ -283,6 +310,8 @@ export function applyRemote(data: AppData, remote: SyncRecord[], now: number): M
     subjects: sortSubjects([...subjects.values()]),
     schedule: sortSlots([...schedule.values()]),
     items: [...items.values()].sort(compareItems),
+    habits: sortHabits([...habits.values()]),
+    habitMarks: sortHabitMarks([...habitMarks.values()]),
     // A newer version from the cloud replaces whatever this device had waiting to upload
     sync: { ...data.sync, changes, pending: data.sync.pending.filter((key) => !applied.has(key)) }
   }

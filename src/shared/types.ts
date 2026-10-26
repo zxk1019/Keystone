@@ -19,6 +19,7 @@ export interface NotificationSettings {
   quietEnd: string
 }
 
+/** The lengths of the "Custom" study timer. */
 export interface StudySettings {
   /** Length of a study block */
   focusMinutes: number
@@ -29,6 +30,16 @@ export const STUDY_LIMITS = {
   focusMinutes: { min: 1, max: 120 },
   breakMinutes: { min: 1, max: 60 }
 } as const
+
+/**
+ * The study timer: the 20-20-20 for studying at the computer (20 minutes, then 20 seconds
+ * looking far away), 45 + 5 minutes without it, or the user's own lengths.
+ */
+export const STUDY_MODES = ['computer', 'noComputer', 'custom'] as const
+export type StudyMode = (typeof STUDY_MODES)[number]
+
+/** Until the user picks one, each device starts with the mode that suits it. */
+export const DEVICE_STUDY_MODE = { desktop: 'computer', phone: 'noComputer' } as const
 
 /** The 20-20-20 rule: every so often, look at something far away for a few seconds. */
 export interface EyeBreakSettings {
@@ -69,6 +80,8 @@ export interface Settings {
   language: Language
   notifications: NotificationSettings
   study: StudySettings
+  /** Chosen on each device; null until then (see DEVICE_STUDY_MODE) */
+  studyMode: StudyMode | null
   eyeBreak: EyeBreakSettings
   spotify: SpotifySettings
   sync: SyncSettings
@@ -136,11 +149,42 @@ export interface AgendaItem {
   topics?: string
 }
 
+/** A habit to keep, e.g. "Read 20 minutes", on some days of the week. */
+export interface Habit {
+  id: string
+  name: string
+  color: SubjectColor
+  /** Days it is due: 1 = Monday ... 7 = Sunday, at least one */
+  weekdays: number[]
+  /** "YYYY-MM-DD": the streak does not count the days before it (unless they are marked) */
+  createdOn: string
+}
+
+export const HABIT_MARK_STATUSES = ['done', 'missed'] as const
+/** Green tick or red cross */
+export type HabitMarkStatus = (typeof HABIT_MARK_STATUSES)[number]
+
+/** How a day of a habit went. Days without a mark have no entry. */
+export interface HabitMark {
+  /** "<habitId>/<date>": the same day always has the same id, so two devices never make two */
+  id: string
+  habitId: string
+  /** "YYYY-MM-DD" */
+  date: string
+  status: HabitMarkStatus
+}
+
 /** What is being created or edited: new records have no id yet, the main process assigns it. */
 export type Draft<T extends { id: string }> = Omit<T, 'id'> & { id?: string }
 
-/** 2 added the sync bookkeeping; version 1 files are converted when they are read. */
-export const DATA_VERSION = 2
+/** The day a habit starts is set when it is saved, so the screens do not send it. */
+export type HabitDraft = Omit<Draft<Habit>, 'createdOn'>
+
+/**
+ * 2 added the sync bookkeeping and 3 the habits. Files of older versions are converted when
+ * they are read.
+ */
+export const DATA_VERSION = 3
 
 /** When a synced record last changed; a deleted record keeps its entry so the deletion syncs too. */
 export interface RecordChange {
@@ -165,7 +209,15 @@ export interface AppData {
   subjects: Subject[]
   schedule: ScheduleSlot[]
   items: AgendaItem[]
+  habits: Habit[]
+  habitMarks: HabitMark[]
   sync: SyncMeta
+}
+
+/** The part of the data the Habits screen works with. */
+export interface HabitsData {
+  habits: Habit[]
+  marks: HabitMark[]
 }
 
 /** The part of the data the agenda screens work with. */
@@ -204,6 +256,7 @@ export const DEFAULT_SETTINGS: Settings = {
   language: 'es',
   notifications: DEFAULT_NOTIFICATIONS,
   study: DEFAULT_STUDY,
+  studyMode: null,
   eyeBreak: DEFAULT_EYE_BREAK,
   spotify: DEFAULT_SPOTIFY,
   sync: DEFAULT_SYNC,
@@ -226,6 +279,8 @@ export function createDefaultData(): AppData {
     subjects: [],
     schedule: [],
     items: [],
+    habits: [],
+    habitMarks: [],
     sync: { changes: {}, pending: [] }
   }
 }

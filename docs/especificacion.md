@@ -2,10 +2,11 @@
 
 Quiero que construyas conmigo una app de escritorio para estudiantes llamada **Mi Estudio**. Primero será para **Windows**. Más adelante la pasaré al móvil con **Capacitor**, así que la arquitectura tiene que dejarlo preparado desde el principio.
 
-La app tiene tres partes:
+La app tiene cuatro partes:
 1. **Agenda**: mi horario del cole, deberes, exámenes, trabajos y eventos.
 2. **Avisos**: notificaciones de lo que tengo pendiente y aún no he hecho.
-3. **Zona de estudio**: temporizador, música de Spotify, la regla 20-20-20 y consejos para estudiar mejor.
+3. **Hábitos**: marcar cada día si he cumplido un hábito, con la racha y el récord.
+4. **Zona de estudio**: temporizador (20-20-20 con ordenador, 45 + 5 sin él o a mi gusto), música de Spotify, la regla 20-20-20 y técnicas para estudiar mejor.
 
 Trabaja **por fases** (están al final). Al terminar cada fase, explícame brevemente qué has hecho y cómo lo pruebo, y espera a que te confirme antes de seguir. Si algo no está claro, pregúntame antes de decidirlo tú.
 
@@ -33,7 +34,7 @@ src/
   shared/        lo que usan main y renderer: tipos, canales IPC,
                  validación y traducciones (locales/es, en, zh-CN)
   renderer/src/  React
-    features/    today/, agenda/, tasks/, study/, settings/
+    features/    today/, agenda/, tasks/, habits/, study/, settings/
     i18n/        configuración de react-i18next
     platform/    interfaz que abstrae lo específico de Electron
 ```
@@ -61,7 +62,7 @@ Las traducciones están en `shared/` y no en `renderer/` porque el proceso main 
 - **Tema claro y oscuro**, con tres opciones en Ajustes: Claro, Oscuro y Seguir el sistema (por defecto).
 - **Idiomas**: castellano (por defecto), inglés y chino simplificado (`zh-CN`), que se eligen en Ajustes. Fechas y horas con el formato del idioma elegido.
 - **Barra lateral fija a la izquierda** con el nombre de la app arriba y estas secciones:
-  `Hoy` · `Agenda` · `Tareas` · `Estudio` · y `Ajustes` abajo del todo.
+  `Hoy` · `Agenda` · `Tareas` · `Hábitos` · `Estudio` · y `Ajustes` abajo del todo.
 - Cada **asignatura tiene un color**, y ese color se usa en el horario, las tareas y los exámenes.
 - Diseño limpio y con espacio. Aunque es para PC, las vistas deben adaptarse a pantallas estrechas para que pasarlo al móvil sea fácil.
 
@@ -72,6 +73,7 @@ Las traducciones están en `shared/` y no en `renderer/` porque el proceso main 
 | > Hoy      |                              |
 |   Agenda   |      contenido de la         |
 |   Tareas   |      sección elegida         |
+|   Hábitos  |                              |
 |   Estudio  |                              |
 |            |                              |
 |   Ajustes  |                              |
@@ -89,7 +91,9 @@ Las traducciones están en `shared/` y no en `renderer/` porque el proceso main 
   - `examen`, con un campo opcional "temas que entran"
   - `trabajo`, para trabajos y proyectos
   - `evento`, para eventos personales, con hora de inicio y de fin
-- **Ajustes**: tema, idioma, configuración de avisos, estudio, 20-20-20, Spotify y el proyecto de Firebase para sincronizar.
+- **Hábito**: id, nombre, color, días de la semana que toca (1-7, al menos uno) y el día en que se creó.
+- **Marca de un hábito**: hábito, fecha y estado (`cumplido` o `no cumplido`). El id es `<hábitoId>/<fecha>`, así un mismo día siempre es el mismo registro. Los días sin marcar no tienen entrada.
+- **Ajustes**: tema, idioma, configuración de avisos, tiempos del modo Personalizado, modo del temporizador (de cada dispositivo), 20-20-20, Spotify y el proyecto de Firebase para sincronizar.
 - **Registro de cambios** (para sincronizar): cuándo cambió por última vez cada registro, también los borrados, y qué cambios faltan por subir a la nube.
 
 ---
@@ -114,18 +118,28 @@ Las traducciones están en `shared/` y no en `renderer/` porque el proceso main 
 - Formulario para crear y editar: tipo, título, asignatura, fecha y hora, prioridad y, en los exámenes, temas.
 - Marcar como hecho con un clic. Borrar pidiendo confirmación.
 
-### 4.4 Estudio
-- **Temporizador**: **45 minutos de estudio y 5 de descanso** por defecto, con los tiempos configurables en Ajustes. Botones de empezar, pausa, saltar fase y reiniciar. Suena un sonido suave al cambiar de fase.
+### 4.4 Hábitos
+- **Crear un hábito**: nombre, color y qué días toca (por defecto todos). Se edita al hacer clic en su nombre y se borra pidiendo confirmación (se borran también sus marcas).
+- **Vista semana** (la principal): una fila por hábito y una columna por día, de lunes a domingo. Cada clic en un día cambia la marca: vacío → **✓ verde** (cumplido) → **✗ roja** (no cumplido) → vacío.
+- **Vista mes**: se elige un hábito y se ve el mes entero con su ✓ o ✗ en cada día, y cuántos de cada hay ese mes.
+- Para moverse: semana o mes anterior, siguiente y "Hoy". Los días futuros y los que no toca salen apagados y no se pueden marcar.
+- **Racha y récord** de cada hábito: la racha son los días que toca seguidos con ✓ hasta hoy; el récord, la racha más larga que ha tenido. Una ✗ o un día pasado sin marcar cortan la racha; hoy sin marcar no (hay tiempo hasta medianoche). Los días que no toca ni cuentan ni cortan. Se cuenta desde el día en que se creó el hábito, o desde el primer día marcado si se rellenan días de antes.
+- No tiene avisos.
+
+### 4.5 Estudio
+- **Temporizador** con tres modos, que se eligen encima del temporizador y solo con él parado:
+  - **Con ordenador (20-20-20)**: 20 minutos de estudio y 20 segundos mirando algo a 6 metros; después el siguiente bloque empieza solo. La música no se pausa en esos 20 segundos, y mientras va este modo no sale la pantalla oscura del 20-20-20.
+  - **Sin ordenador**: 45 minutos de estudio y 5 de descanso.
+  - **Personalizado**: los minutos de estudio y de descanso que yo ponga.
+  Por defecto el PC usa «Con ordenador» y el móvil «Sin ordenador»; cada dispositivo recuerda su modo. Botones de empezar, pausa, saltar fase y reiniciar. Suena un sonido suave al cambiar de fase.
 - **Spotify** (ver sección 6): conectar la cuenta, ver la canción que suena, play/pausa, anterior/siguiente, volumen y elegir la playlist de estudio. La música se pausa sola en el descanso y vuelve al estudiar; esto se puede desactivar.
-- **Un consejo al azar** cada vez que empiezas una sesión.
 - Una subsección **"Técnicas de estudio"** con fichas que explican, en breve, qué es cada técnica, cómo se hace y cuándo usarla: recuperación activa, repaso espaciado, técnica Feynman, práctica intercalada, autoexplicación, mapas mentales y Pomodoro. El texto está en los tres idiomas.
 - Un indicador de cuánto falta para el próximo descanso 20-20-20.
 
-### 4.5 Ajustes
+### 4.6 Ajustes
 - Tema e idioma.
 - Asignaturas y horario (o un enlace al modo editar de la Agenda).
 - Avisos y horas de silencio (ver sección 5).
-- Tiempos del temporizador.
 - 20-20-20: activado o no, intervalo (20 min), duración (20 s) y pausa por inactividad.
 - Spotify: conectar o desconectar y playlist por defecto.
 - Arrancar con Windows.
@@ -181,7 +195,7 @@ Cada 20 minutos de uso del ordenador hay que mirar algo a unos 6 metros durante 
 +-------------------------------------------+
 ```
 
-- **Con el temporizador de estudio**: el descanso de 5 minutos reinicia el contador del 20-20-20. Si faltan menos de 2 minutos para el descanso del temporizador, el 20-20-20 no salta.
+- **Con el temporizador de estudio**: el descanso del temporizador reinicia el contador del 20-20-20. Si faltan menos de 2 minutos para el descanso del temporizador, el 20-20-20 no salta. Con el temporizador en marcha en el modo «Con ordenador», la pantalla oscura no sale, porque el propio temporizador ya avisa cada 20 minutos.
 - **Menú de la bandeja** para pausar el 20-20-20 durante 30 minutos, 1 hora o hasta reiniciar (para cuando juego, veo una peli o hago una presentación), y para reanudarlo.
 - En Ajustes: activarlo o no, intervalo, duración y umbral de inactividad.
 
@@ -199,7 +213,8 @@ Cada 20 minutos de uso del ordenador hay que mirar algo a unos 6 metros durante 
 8. **Pulido y paquete**: revisar las traducciones, los estados vacíos y los errores, y generar el instalador `.exe` con electron-builder.
 9. **Sincronización**: datos con registro de cambios, cuenta de Firebase, subir y bajar cambios, Ajustes → Sincronización y pruebas con el emulador de Firebase (ver sección 9).
 10. **App Android con Capacitor**: reutiliza el renderer de React y cambia las implementaciones de `platform/` (datos, avisos y sincronización en el móvil). Los servicios con estado (datos, sincronización, temporizador) pasan a `src/core/` para funcionar en los dos. Avisan los dos dispositivos. En el móvil no hay 20-20-20 ni bandeja, y Spotify solo se abre (con la playlist de estudio si se ha puesto su enlace).
-11. **Publicar en GitHub**: README con cómo instalarla y configurar Firebase y Spotify, licencia, quitar datos personales del repositorio, actualizaciones automáticas y Releases con el instalador del PC y el APK.
+11. **Hábitos y modos de estudio**: sección Hábitos (vista semana y mes, ✓ y ✗, racha y récord, sincronizada), modos del temporizador (20-20-20, 45 + 5 y personalizado) y quitar los consejos.
+12. **Publicar en GitHub**: README con cómo instalarla y configurar Firebase y Spotify, licencia, quitar datos personales del repositorio, actualizaciones automáticas y Releases con el instalador del PC y el APK.
 
 ---
 
@@ -208,10 +223,11 @@ Cada 20 minutos de uso del ordenador hay que mirar algo a unos 6 metros durante 
 - **Opcional.** Sin cuenta, la app funciona igual que antes. Sin internet también: los cambios se guardan y se suben al volver la conexión.
 - **Dónde:** en el propio proyecto de Firebase del usuario (plan gratuito Spark), que no se pausa aunque no se use. Firebase Auth con **correo y contraseña** y una base de datos Firestore. La API key y el ID del proyecto se ponen en Ajustes; no son secretos.
 - **Sin SDK:** la app habla con Firebase por su API REST con `fetch` (`src/shared/firebase.ts`), para que el mismo código sirva en el móvil.
-- **Qué se sincroniza:** asignaturas, horario, tareas, exámenes, trabajos y eventos, y los ajustes de idioma, avisos y temporizador. **No** se sincronizan el tema, el 20-20-20, Spotify ni «Arrancar con Windows», que son de cada dispositivo.
-- **Conflictos:** cada registro guarda cuándo cambió por última vez y gana el último cambio. Lo que se borra deja una marca de borrado para que no reaparezca. Si un dispositivo deja una clase o una tarea apuntando a una asignatura que el otro borró, se limpia igual que al borrar una asignatura.
+- **Qué se sincroniza:** asignaturas, horario, tareas, exámenes, trabajos y eventos, hábitos y sus marcas, y los ajustes de idioma, avisos y tiempos del modo Personalizado. **No** se sincronizan el tema, el modo del temporizador, el 20-20-20, Spotify ni «Arrancar con Windows», que son de cada dispositivo.
+- **Conflictos:** cada registro guarda cuándo cambió por última vez y gana el último cambio. Lo que se borra deja una marca de borrado para que no reaparezca. Si un dispositivo deja una clase o una tarea apuntando a una asignatura que el otro borró, se limpia igual que al borrar una asignatura; las marcas de un hábito borrado se borran.
 - **Cuándo:** al abrir la app, unos segundos después de cada cambio, al volver a la ventana y cada 5 minutos. Sin conexión lo vuelve a intentar cada minuto.
 - **Primera vez:** al iniciar sesión, la app une lo que tiene el dispositivo con lo que hay en la nube, sin borrar nada. Los ajustes que nunca se han tocado no pisan los de la nube.
 - **Seguridad:** las reglas de Firestore (`firebase/firestore.rules`) solo dejan a cada usuario leer y escribir lo suyo, y no dejan que una versión más vieja pise a una más nueva. La contraseña no se guarda; la sesión se guarda cifrada en `mi-estudio-sync.bin`, fuera de las copias de seguridad.
 - **Importar una copia** reemplaza los datos también en los otros dispositivos.
 - **Datos versión 2:** el archivo de la versión 1 se convierte solo al abrir la app, y antes se guarda una copia en `mi-estudio-data.v1.json`.
+- **Datos versión 3 (hábitos):** el archivo de la versión 2 se convierte solo y se guarda una copia en `mi-estudio-data.v2.json`. Al convertirlo, la siguiente sincronización vuelve a bajar todo, para recoger los hábitos que el otro dispositivo creó mientras este tenía la versión vieja (la versión vieja ignora los hábitos que le llegan).

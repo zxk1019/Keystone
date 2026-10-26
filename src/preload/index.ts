@@ -30,6 +30,11 @@ const api: DesktopApi = {
   saveItem: (item) => ipcRenderer.invoke(IPC.saveItem, item),
   setItemDone: (id, done) => ipcRenderer.invoke(IPC.setItemDone, id, done),
   deleteItem: (id) => ipcRenderer.invoke(IPC.deleteItem, id),
+  getHabits: () => ipcRenderer.invoke(IPC.getHabits),
+  saveHabit: (habit) => ipcRenderer.invoke(IPC.saveHabit, habit),
+  deleteHabit: (id) => ipcRenderer.invoke(IPC.deleteHabit, id),
+  setHabitMark: (habitId, date, status) =>
+    ipcRenderer.invoke(IPC.setHabitMark, habitId, date, status),
 
   getAppInfo: () => ipcRenderer.invoke(IPC.getAppInfo),
   sendTestNotification: () => ipcRenderer.invoke(IPC.sendTestNotification),

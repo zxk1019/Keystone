@@ -10,7 +10,17 @@ import type {
 import type { PhaseEvent, TimerCommand, TimerState } from './studyTimer'
 import type { SyncResult } from './firebase'
 import type { SyncStatus } from './sync'
-import type { AgendaData, AgendaItem, Draft, ScheduleSlot, Settings, Subject } from './types'
+import type {
+  AgendaData,
+  AgendaItem,
+  Draft,
+  HabitDraft,
+  HabitMarkStatus,
+  HabitsData,
+  ScheduleSlot,
+  Settings,
+  Subject
+} from './types'
 
 /** IPC channel names used between the preload script and the main process. */
 export const IPC = {
@@ -28,6 +38,10 @@ export const IPC = {
   saveItem: 'items:save',
   setItemDone: 'items:set-done',
   deleteItem: 'items:delete',
+  getHabits: 'habits:get',
+  saveHabit: 'habits:save',
+  deleteHabit: 'habits:delete',
+  setHabitMark: 'habits:mark',
   getAppInfo: 'app:info',
   sendTestNotification: 'notifications:test',
   navigate: 'app:navigate',
@@ -112,6 +126,13 @@ export interface DesktopApi {
   saveItem(item: Draft<AgendaItem>): Promise<AgendaData>
   setItemDone(id: string, done: boolean): Promise<AgendaData>
   deleteItem(id: string): Promise<AgendaData>
+
+  getHabits(): Promise<HabitsData>
+  saveHabit(habit: HabitDraft): Promise<HabitsData>
+  /** Also deletes its marks. */
+  deleteHabit(id: string): Promise<HabitsData>
+  /** A tick or a cross on a day that has come ("YYYY-MM-DD"); null takes the mark away. */
+  setHabitMark(habitId: string, date: string, status: HabitMarkStatus | null): Promise<HabitsData>
 
   getAppInfo(): Promise<AppInfo>
   sendTestNotification(): Promise<void>

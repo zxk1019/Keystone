@@ -74,7 +74,9 @@ export function tickEyeBreak(
   }
 
   const studyBreak = study.status === 'running' && study.phase === 'break'
-  if (idleSeconds >= settings.idleResetMinutes * 60 || studyBreak) {
+  // The timer in the 20-20-20 mode already sends the user to look far away
+  const timerRestsEyes = study.status === 'running' && study.eyeRest
+  if (idleSeconds >= settings.idleResetMinutes * 60 || studyBreak || timerRestsEyes) {
     return none(restartCount(state))
   }
 

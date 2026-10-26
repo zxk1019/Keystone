@@ -1,12 +1,14 @@
 import { useState, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Check, Trash2 } from 'lucide-react'
+import { Trash2 } from 'lucide-react'
 import { MAX_NAME_LENGTH } from '@shared/validation'
-import { SUBJECT_COLORS, type Subject, type SubjectColor } from '@shared/types'
+import type { Subject, SubjectColor } from '@shared/types'
 import Button from '../../components/Button'
+import ColorPicker from '../../components/ColorPicker'
 import Dialog from '../../components/Dialog'
 import Field from '../../components/Field'
 import { inputClass } from '../../components/styles'
+import { suggestColor } from '../../lib/colors'
 import { useAgendaStore } from '../../store/agendaStore'
 import { SUBJECT_STYLES } from './subjectStyles'
 
@@ -20,14 +22,6 @@ interface SubjectDialogProps {
   onClose: () => void
 }
 
-function suggestColor(subjects: Subject[]): SubjectColor {
-  const used = new Set(subjects.map((subject) => subject.color))
-  return (
-    SUBJECT_COLORS.find((color) => !used.has(color)) ??
-    SUBJECT_COLORS[subjects.length % SUBJECT_COLORS.length]
-  )
-}
-
 export default function SubjectDialog({
   subject,
   subjects,
@@ -38,7 +32,9 @@ export default function SubjectDialog({
   const saveSubject = useAgendaStore((state) => state.saveSubject)
   const deleteSubject = useAgendaStore((state) => state.deleteSubject)
   const [name, setName] = useState(subject?.name ?? '')
-  const [color, setColor] = useState<SubjectColor>(subject?.color ?? suggestColor(subjects))
+  const [color, setColor] = useState<SubjectColor>(
+    subject?.color ?? suggestColor(subjects.map((other) => other.color))
+  )
   const [error, setError] = useState<string | null>(null)
   const [confirmingDelete, setConfirmingDelete] = useState(false)
 
@@ -109,35 +105,7 @@ export default function SubjectDialog({
             />
           </Field>
 
-          <div className="flex flex-col gap-1.5 text-sm">
-            <span className="font-medium text-zinc-700 dark:text-zinc-300">
-              {t('subjects.color')}
-            </span>
-            <div
-              role="radiogroup"
-              aria-label={t('subjects.color')}
-              className="flex flex-wrap gap-2"
-            >
-              {SUBJECT_COLORS.map((option) => (
-                <button
-                  key={option}
-                  type="button"
-                  role="radio"
-                  aria-checked={option === color}
-                  aria-label={t(`colors.${option}`)}
-                  title={t(`colors.${option}`)}
-                  onClick={() => setColor(option)}
-                  className={`flex size-8 items-center justify-center rounded-full ${SUBJECT_STYLES[option].solid} ${
-                    option === color
-                      ? 'ring-2 ring-zinc-900 ring-offset-2 dark:ring-white dark:ring-offset-zinc-900'
-                      : ''
-                  }`}
-                >
-                  {option === color && <Check className="size-4 text-white" />}
-                </button>
-              ))}
-            </div>
-          </div>
+          <ColorPicker label={t('subjects.color')} value={color} onChange={setColor} />
 
           {/* How the classes of this subject will look in the timetable */}
           <div

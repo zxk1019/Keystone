@@ -1,3 +1,4 @@
+import { habitMarkId, sortHabitMarks, sortHabits } from './habits'
 import { isValidTime, sortSubjects, timeToMinutes } from './schedule'
 import {
   AGENDA_ITEM_TYPES,
@@ -10,15 +11,19 @@ import {
   DEFAULT_SYNC,
   EYE_BREAK_LIMITS,
   EXAM_REMINDER_DAYS,
+  HABIT_MARK_STATUSES,
   LANGUAGES,
   OVERDUE_REPEAT_HOURS,
   PRIORITIES,
   STUDY_LIMITS,
+  STUDY_MODES,
   SUBJECT_COLORS,
   THEMES,
   type AgendaItem,
   type AppData,
   type EyeBreakSettings,
+  type Habit,
+  type HabitMark,
   type NotificationSettings,
   type ScheduleSlot,
   type Settings,
@@ -62,6 +67,7 @@ export function sanitizeSettings(value: unknown, fallback: Settings = DEFAULT_SE
     language,
     notifications: sanitizeNotifications(input.notifications, fallback.notifications),
     study: sanitizeStudy(input.study, fallback.study),
+    studyMode: STUDY_MODES.find((mode) => mode === input.studyMode) ?? fallback.studyMode,
     eyeBreak: sanitizeEyeBreak(input.eyeBreak, fallback.eyeBreak),
     spotify: sanitizeSpotify(input.spotify, fallback.spotify),
     sync: sanitizeSync(input.sync, fallback.sync),
@@ -261,13 +267,38 @@ export function parseAgendaItem(value: unknown, subjectIds: Set<string>): Agenda
   return item
 }
 
+export function parseHabit(value: unknown): Habit | null {
+  if (!isRecord(value) || !isId(value.id)) return null
+  const name = cleanText(value.name, MAX_NAME_LENGTH)
+  const color = SUBJECT_COLORS.find((option) => option === value.color)
+  const weekdays = Array.isArray(value.weekdays)
+    ? [1, 2, 3, 4, 5, 6, 7].filter((day) => (value.weekdays as unknown[]).includes(day))
+    : []
+  const { createdOn } = value
+  if (!name || !color || weekdays.length === 0) return null
+  if (typeof createdOn !== 'string' || !DATE_PATTERN.test(createdOn)) return null
+  return { id: value.id, name, color, weekdays, createdOn }
+}
+
+/** A mark needs an existing habit; `habitIds` are the habits that exist right now. */
+export function parseHabitMark(value: unknown, habitIds: Set<string>): HabitMark | null {
+  if (!isRecord(value) || !isId(value.habitId) || !habitIds.has(value.habitId)) return null
+  const { date } = value
+  const status = HABIT_MARK_STATUSES.find((option) => option === value.status)
+  if (typeof date !== 'string' || !DATE_PATTERN.test(date) || !status) return null
+  const id = habitMarkId(value.habitId, date)
+  // The id says which day it is: a mark with another id is not one this app wrote
+  if (value.id !== id) return null
+  return { id, habitId: value.habitId, date, status }
+}
+
 /** Keeps the valid entries of a list and drops the rest. */
 function parseList<T>(values: unknown[], parse: (value: unknown) => T | null): T[] {
   return values.map(parse).filter((value): value is T => value !== null)
 }
 
 /** "items/<id>", "settings/shared"... (see shared/sync.ts) */
-const SYNC_KEY_PATTERN = /^(subjects|schedule|items|settings)\/.+$/
+const SYNC_KEY_PATTERN = /^(subjects|schedule|items|habits|habitMarks|settings)\/.+$/
 
 /** Sync bookkeeping read from the data file; anything that does not fit is dropped. */
 export function parseSyncMeta(value: unknown): SyncMeta {
@@ -294,22 +325,27 @@ export function parseSyncMeta(value: unknown): SyncMeta {
 /**
  * Returns the data if it looks like a Mi Estudio data file, or null if it does not.
  * Invalid entries inside the lists are dropped instead of rejecting the whole file.
- * Version 1 files (from before sync) come back with no sync bookkeeping: whoever loads them
- * decides what to do with it (see DataStore).
+ * Version 1 files (from before sync) come back with no sync bookkeeping, and files from before
+ * habits (1 and 2) with no habits: whoever loads them decides what else to do (see DataStore).
  */
 export function parseAppData(value: unknown): AppData | null {
-  if (!isRecord(value) || (value.version !== 1 && value.version !== DATA_VERSION)) return null
+  if (!isRecord(value) || ![1, 2, DATA_VERSION].includes(value.version as number)) return null
   const { subjects, schedule, items } = value
   if (!Array.isArray(subjects) || !Array.isArray(schedule) || !Array.isArray(items)) return null
 
   const validSubjects = sortSubjects(parseList(subjects, parseSubject))
   const subjectIds = new Set(validSubjects.map((subject) => subject.id))
+  const habits = sortHabits(Array.isArray(value.habits) ? parseList(value.habits, parseHabit) : [])
+  const habitIds = new Set(habits.map((habit) => habit.id))
+  const marks = Array.isArray(value.habitMarks) ? value.habitMarks : []
   return {
     version: DATA_VERSION,
     settings: sanitizeSettings(value.settings),
     subjects: validSubjects,
     schedule: parseList(schedule, (slot) => parseScheduleSlot(slot, subjectIds)),
     items: parseList(items, (item) => parseAgendaItem(item, subjectIds)),
-    sync: parseSyncMeta(value.version === DATA_VERSION ? value.sync : undefined)
+    habits,
+    habitMarks: sortHabitMarks(parseList(marks, (mark) => parseHabitMark(mark, habitIds))),
+    sync: parseSyncMeta(value.version === 1 ? undefined : value.sync)
   }
 }

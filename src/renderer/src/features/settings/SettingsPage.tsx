@@ -11,7 +11,6 @@ import { useSettingsStore } from '../../store/settingsStore'
 import EyeBreakSection from './EyeBreakSection'
 import NotificationsSection from './NotificationsSection'
 import SpotifySection from './SpotifySection'
-import StudySection from './StudySection'
 import SyncSection from './SyncSection'
 import { SettingsRow, SettingsSection } from './SettingsLayout'
 
@@ -115,8 +114,6 @@ export default function SettingsPage(): JSX.Element | null {
           {t('settings.schedule.open')}
         </Button>
       </SettingsSection>
-
-      <StudySection settings={settings} update={update} />
 
       {platform.capabilities.eyeBreak && <EyeBreakSection settings={settings} update={update} />}
 

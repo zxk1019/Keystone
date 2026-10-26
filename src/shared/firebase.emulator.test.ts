@@ -87,7 +87,9 @@ describe.skipIf(!emulatorHost)('Firebase emulator', () => {
     const records: SyncRecord[] = [
       { key: 'items/a/b', changedAt: 200, data: { title: 'Con barra en el id' } },
       { key: 'subjects/maths', changedAt: 210, data: { name: 'Mates' } },
-      { key: 'items/old', changedAt: 220, data: null }
+      { key: 'items/old', changedAt: 220, data: null },
+      { key: 'habits/read', changedAt: 230, data: { name: 'Leer' } },
+      { key: 'habitMarks/read/2026-10-26', changedAt: 240, data: { status: 'done' } }
     ]
     expect(await commitRecords(targetOf(user), records)).toEqual({ ok: true, value: null })
 

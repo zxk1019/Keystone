@@ -6,6 +6,7 @@
     "today": "今天",
     "agenda": "日程",
     "tasks": "任务",
+    "habits": "习惯",
     "study": "学习",
     "settings": "设置"
   },
@@ -101,9 +102,22 @@
   "study": {
     "phase": {
       "focus": "学习",
-      "break": "休息"
+      "break": "休息",
+      "eyeRest": "护眼休息"
     },
     "block": "第 {{count}} 段",
+    "mode": {
+      "title": "计时模式",
+      "computer": "用电脑",
+      "noComputer": "不用电脑",
+      "custom": "自定义",
+      "computerHint": "20-20-20：学习 20 分钟，看 6 米外 20 秒，然后继续。",
+      "noComputerHint": "学习 45 分钟，休息 5 分钟。",
+      "customHint": "学习和休息的时长由你决定。",
+      "focusMinutes": "学习分钟数",
+      "breakMinutes": "休息分钟数",
+      "locked": "要切换模式，请先点“重置”停止计时。"
+    },
     "start": "开始",
     "resume": "继续",
     "pause": "暂停",
@@ -111,34 +125,11 @@
     "reset": "重置",
     "ready": "准备开始",
     "paused": "已暂停",
+    "lookAway": "看看 6 米外的地方",
     "breakAt": "{{time}} 开始休息",
     "backAt": "{{time}} 回来",
     "silenced": "学习期间，提醒会等到休息时再显示。",
-    "tip": "小建议",
-    "anotherTip": "换一条",
     "close": "关闭",
-    "tips": [
-      "重读之前，先试着凭记忆写下你记得的内容。",
-      "把手机放到另一个房间，至少放在看不见的地方。",
-      "趁精力最充沛的时候，先做最难的任务。",
-      "给这一段学习定一个具体目标：“做完第1到5题”，而不是“学数学”。",
-      "把内容大声讲出来，就像在教别人一样。",
-      "今天花点时间复习一周前学过的内容。",
-      "把不同类型的题目混在一起做，不要连续做二十道一样的题。",
-      "开始之前先喝点水，把需要的东西都准备好。",
-      "如果脑子里冒出让你分心的念头，先写在纸上，休息时再看。",
-      "划重点不等于学习：读完后合上书，用自己的话总结。",
-      "给自己出考试题，不看笔记作答。",
-      "休息时站起来活动一下，别一直看手机。",
-      "睡好觉也是学习的一部分：你学到的东西会在睡眠中巩固。",
-      "遇到不会的题，找一道例题，然后自己独立重做一遍。",
-      "把大作业拆成小步骤，每完成一步就打个勾。",
-      "固定在同一个地方、同一个时间学习，大脑会更快进入专注状态。",
-      "把新知识和你已经知道的东西联系起来：生活中的例子、其他科目……",
-      "学完之后，用一句话写下今天学到了什么。",
-      "如果卡住太久，就先换个任务，过一会儿再带着清醒的头脑回来。",
-      "画图或画示意图：换一种方式看信息有助于记忆。"
-    ],
     "techniques": {
       "title": "学习方法",
       "what": "是什么",
@@ -196,6 +187,38 @@
         }
       }
     }
+  },
+  "habits": {
+    "new": "新建习惯",
+    "edit": "编辑习惯",
+    "name": "名称",
+    "namePlaceholder": "阅读 20 分钟",
+    "nameRequired": "请给习惯起个名字。",
+    "days": "哪几天",
+    "daysRequired": "至少选择一天。",
+    "color": "颜色",
+    "everyDay": "每天",
+    "weekdaysOnly": "周一至周五",
+    "empty": "还没有习惯。新建一个，每天标记是否做到：做到了打绿色 ✓，没做到打红色 ✗。",
+    "markHint": "点一下某天来标记：点一次 ✓，两次 ✗，三次清空。",
+    "pick": "习惯",
+    "streak_one": "连续 {{count}} 天",
+    "streak_other": "连续 {{count}} 天",
+    "streakLabel": "当前连续天数",
+    "record": "最佳：{{count}}",
+    "recordLabel": "最长连续纪录",
+    "monthSummary": "本月：{{done}} ✓ · {{missed}} ✗",
+    "cell": "{{habit}}，{{date}}：{{status}}",
+    "status": {
+      "done": "已做到",
+      "missed": "没做到",
+      "none": "未标记",
+      "notDue": "这天不用做",
+      "future": "还没到"
+    },
+    "deleteConfirm_zero": "删除“{{name}}”？",
+    "deleteConfirm_one": "删除“{{name}}”？已标记的 {{count}} 天也会一起删除。",
+    "deleteConfirm_other": "删除“{{name}}”？已标记的 {{count}} 天也会一起删除。"
   },
   "eyeBreak": {
     "lookAway": "看看远处的东西（大约 6 米外）",
@@ -350,12 +373,6 @@
       "description": "创建科目并设置每周课表。",
       "open": "编辑课表"
     },
-    "study": {
-      "title": "学习",
-      "description": "计时器每段的时长。",
-      "focusMinutes": "学习时长（分钟）",
-      "breakMinutes": "休息时长（分钟）"
-    },
     "eyeBreak": {
       "title": "护眼休息（20-20-20）",
       "description": "每使用电脑一段时间，就看看远处几秒钟。",
@@ -491,6 +508,8 @@
     "breakStartBody": "站起来放松 {{count}} 分钟。",
     "breakEndTitle": "休息结束",
     "breakEndBody": "准备好后，开始第 {{count}} 段学习。",
+    "eyeRestTitle": "让眼睛休息一下",
+    "eyeRestBody": "看看 6 米外的地方，坚持 20 秒。之后计时会自动继续。",
     "markDone": "完成",
     "channelReminders": "提醒",
     "channelStudy": "学习计时器"

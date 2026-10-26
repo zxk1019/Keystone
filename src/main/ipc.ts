@@ -8,6 +8,7 @@ import {
   type ScheduleRepo,
   type SubjectsRepo
 } from '@core/data/agendaRepos'
+import { habitsOf, type HabitsRepo } from '@core/data/habitsRepo'
 import { exportBackup, importBackup } from './data/backup'
 import type { EyeBreakService } from './eyeBreak'
 import type { SpotifyService } from './spotify/service'
@@ -25,6 +26,7 @@ interface IpcDeps {
   subjects: SubjectsRepo
   schedule: ScheduleRepo
   items: ItemsRepo
+  habits: HabitsRepo
   notifier: Notifier
   studyTimer: StudyTimer
   eyeBreak: EyeBreakService
@@ -57,6 +59,7 @@ export function registerIpc({
   subjects,
   schedule,
   items,
+  habits,
   notifier,
   studyTimer,
   eyeBreak,
@@ -94,6 +97,13 @@ export function registerIpc({
   ipcMain.handle(IPC.saveItem, (_event, draft: unknown) => items.save(draft))
   ipcMain.handle(IPC.setItemDone, (_event, id: unknown, done: unknown) => items.setDone(id, done))
   ipcMain.handle(IPC.deleteItem, (_event, id: unknown) => items.delete(id))
+
+  ipcMain.handle(IPC.getHabits, () => habitsOf(store))
+  ipcMain.handle(IPC.saveHabit, (_event, draft: unknown) => habits.save(draft))
+  ipcMain.handle(IPC.deleteHabit, (_event, id: unknown) => habits.delete(id))
+  ipcMain.handle(IPC.setHabitMark, (_event, habitId: unknown, date: unknown, status: unknown) =>
+    habits.setMark(habitId, date, status)
+  )
 
   ipcMain.handle(IPC.getAppInfo, () => ({ packaged: app.isPackaged }))
   ipcMain.handle(IPC.sendTestNotification, () => notifier.sendTest())

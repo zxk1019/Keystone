@@ -5,10 +5,11 @@ import { IPC } from '@shared/api'
 import { findAppUrl, parseAppUrl } from '@shared/appUrl'
 import type { EyeBreakStatus } from '@shared/eyeBreak'
 import { FIREBASE_URLS, emulatorUrls } from '@shared/firebase'
-import { isStudying, type TimerState } from '@shared/studyTimer'
-import type { Settings } from '@shared/types'
+import { isStudying, studyPlan, type TimerState } from '@shared/studyTimer'
+import { DEVICE_STUDY_MODE, type Settings } from '@shared/types'
 import { ItemsRepo, ScheduleRepo, SubjectsRepo } from '@core/data/agendaRepos'
 import { DataStore } from '@core/data/dataStore'
+import { HabitsRepo } from '@core/data/habitsRepo'
 import { SettingsRepo } from '@core/data/settingsRepo'
 import { createTranslator } from '@core/i18n'
 import { phaseNotification, trayStatus } from '@core/studyText'
@@ -92,7 +93,7 @@ async function start(): Promise<void> {
   let wasStudying = false
   let previousTimer: TimerState | null = null
   const studyTimer = new StudyTimer({
-    durations: () => settings.get().study,
+    plan: () => studyPlan(settings.get(), DEVICE_STUDY_MODE.desktop),
     onChange: (state) => {
       broadcast(IPC.studyState, state)
       refreshTrayStatus()
@@ -109,9 +110,11 @@ async function start(): Promise<void> {
       // A study break rests the eyes too
       if (event === 'breakStarted') {
         eyeBreak.restart()
-        spotify.onStudyEvent('breakStarted')
+        // 20 seconds looking far away are no reason to stop the music
+        if (!state.eyeRest) spotify.onStudyEvent('breakStarted')
       }
-      if (!isMainWindowInFront()) notifier.show(phaseNotification(event, state, translator()))
+      const notification = phaseNotification(event, state, translator())
+      if (notification && !isMainWindowInFront()) notifier.show(notification)
     }
   })
 
@@ -147,7 +150,7 @@ async function start(): Promise<void> {
   const onSettingsChanged = (current: Settings): void => {
     applySettings(current)
     broadcastSettings(current)
-    studyTimer.durationsChanged()
+    studyTimer.planChanged()
     eyeBreak.settingsChanged()
     spotify.settingsChanged()
     sync.configChanged()
@@ -184,6 +187,7 @@ async function start(): Promise<void> {
     subjects: new SubjectsRepo(store),
     schedule: new ScheduleRepo(store),
     items,
+    habits: new HabitsRepo(store),
     notifier,
     studyTimer,
     eyeBreak,

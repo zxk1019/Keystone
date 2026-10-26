@@ -278,6 +278,43 @@ describe('applyRemote', () => {
     expect(result.data.sync.changes['schedule/slot-1']).toEqual({ at: 1000, deleted: true })
   })
 
+  it('applies habits and their marks, and drops the marks of a deleted habit', () => {
+    const read = {
+      id: 'read',
+      name: 'Leer',
+      color: 'teal',
+      weekdays: [1, 2, 3, 4, 5, 6, 7],
+      createdOn: '2026-10-20'
+    }
+    const mark = { habitId: 'read', date: '2026-10-21', status: 'done' }
+    const added = applyRemote(
+      createDefaultData(),
+      [remote('habitMarks/read/2026-10-21', 200, mark), remote('habits/read', 200, read)],
+      1000
+    )
+    expect(added.data.habits).toEqual([read])
+    expect(added.data.habitMarks).toEqual([{ id: 'read/2026-10-21', ...mark }])
+    expect(added.agendaChanged).toBe(true)
+    expect(added.data.sync.pending).toEqual([])
+
+    const deleted = applyRemote(added.data, [remote('habits/read', 300, null)], 1000)
+    expect(deleted.data.habitMarks).toEqual([])
+    expect(deleted.data.sync.pending).toEqual(['habitMarks/read/2026-10-21'])
+  })
+
+  it('keeps the study mode of each device', () => {
+    const data = {
+      ...syncedData(),
+      settings: { ...syncedData().settings, studyMode: 'computer' as const }
+    }
+    const result = applyRemote(
+      data,
+      [remote(SHARED_SETTINGS_KEY, 200, { language: 'es', studyMode: 'noComputer' })],
+      1000
+    )
+    expect(result.data.settings.studyMode).toBe('computer')
+  })
+
   it('applies only the shared settings', () => {
     const data = syncedData()
     const result = applyRemote(

@@ -35,7 +35,35 @@ describe('DataStore', () => {
     await store.saved()
     expect(file.copies).toEqual(['.v1'])
     expect(store.get().sync.pending).toEqual(['subjects/maths'])
-    expect(JSON.parse(file.text ?? '').version).toBe(2)
+    expect(JSON.parse(file.text ?? '').version).toBe(3)
+  })
+
+  it('converts version 2 files, keeping a copy, and downloads everything again', async () => {
+    const file = memoryFile(
+      JSON.stringify({
+        version: 2,
+        settings: {},
+        subjects: [subject],
+        schedule: [],
+        items: [],
+        sync: {
+          changes: { 'subjects/maths': { at: 5 } },
+          pending: [],
+          account: { uid: 'user-1', cursor: '2026-10-21T08:00:00Z' }
+        }
+      })
+    )
+    const store = await DataStore.open(file)
+    await store.saved()
+    expect(file.copies).toEqual(['.v2'])
+    expect(store.get().habits).toEqual([])
+    // The habits the other device made while this one had the old version come down again
+    expect(store.get().sync).toEqual({
+      changes: { 'subjects/maths': { at: 5 } },
+      pending: [],
+      account: { uid: 'user-1', cursor: '' }
+    })
+    expect(JSON.parse(file.text ?? '').version).toBe(3)
   })
 
   it('keeps a copy of a broken file and starts again', async () => {
@@ -44,7 +72,7 @@ describe('DataStore', () => {
     await store.saved()
     expect(file.copies[0]).toMatch(/^\.corrupt-\d+$/)
     expect(store.get().subjects).toEqual([])
-    expect(JSON.parse(file.text ?? '').version).toBe(2)
+    expect(JSON.parse(file.text ?? '').version).toBe(3)
   })
 
   it('records local changes, tells the listeners and saves them in order', async () => {

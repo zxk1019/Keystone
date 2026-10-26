@@ -3,6 +3,8 @@ import { DEFAULT_SETTINGS } from './types'
 import {
   parseAgendaItem,
   parseAppData,
+  parseHabit,
+  parseHabitMark,
   parseScheduleSlot,
   parseSubject,
   sanitizeSettings
@@ -130,13 +132,13 @@ describe('parseAgendaItem', () => {
 describe('parseAppData', () => {
   it('rejects files that are not Mi Estudio data', () => {
     expect(parseAppData({ foo: 1 })).toBeNull()
-    expect(parseAppData({ version: 3, subjects: [], schedule: [], items: [] })).toBeNull()
+    expect(parseAppData({ version: 4, subjects: [], schedule: [], items: [] })).toBeNull()
     expect(parseAppData({ version: 2, subjects: [], schedule: {}, items: [] })).toBeNull()
   })
 
   it('reads version 1 files (from before sync) as the current version', () => {
     const data = parseAppData({ version: 1, subjects: [], schedule: [], items: [] })
-    expect(data?.version).toBe(2)
+    expect(data?.version).toBe(3)
     expect(data?.sync).toEqual({ changes: {}, pending: [] })
   })
 
@@ -211,5 +213,75 @@ describe('parseAgendaItem for events and exams', () => {
       parseAgendaItem({ ...base, type: 'homework', completedAt: '2026-10-20T10:00:00Z' }, new Set())
         ?.completedAt
     ).toBeUndefined()
+  })
+})
+
+describe('habits', () => {
+  const habit = {
+    id: 'read',
+    name: ' Leer ',
+    color: 'teal',
+    weekdays: [5, 1, 3, 3, 9],
+    createdOn: '2026-10-20'
+  }
+
+  it('keeps valid weekdays in order, and needs at least one', () => {
+    expect(parseHabit(habit)).toEqual({ ...habit, name: 'Leer', weekdays: [1, 3, 5] })
+    expect(parseHabit({ ...habit, weekdays: [0, 8] })).toBeNull()
+    expect(parseHabit({ ...habit, createdOn: 'ayer' })).toBeNull()
+    expect(parseHabit({ ...habit, color: 'gold' })).toBeNull()
+  })
+
+  it('reads marks only of existing habits, with the id of their day', () => {
+    const mark = { id: 'read/2026-10-21', habitId: 'read', date: '2026-10-21', status: 'done' }
+    const habits = new Set(['read'])
+    expect(parseHabitMark(mark, habits)).toEqual(mark)
+    expect(parseHabitMark(mark, new Set())).toBeNull()
+    expect(parseHabitMark({ ...mark, status: 'maybe' }, habits)).toBeNull()
+    expect(parseHabitMark({ ...mark, id: 'read/2026-10-22' }, habits)).toBeNull()
+  })
+
+  it('reads files without habits, and drops marks of missing habits', () => {
+    const empty = parseAppData({ version: 2, subjects: [], schedule: [], items: [] })
+    expect(empty?.habits).toEqual([])
+    expect(empty?.habitMarks).toEqual([])
+
+    const data = parseAppData({
+      version: 3,
+      subjects: [],
+      schedule: [],
+      items: [],
+      habits: [habit],
+      habitMarks: [
+        { id: 'read/2026-10-21', habitId: 'read', date: '2026-10-21', status: 'missed' },
+        { id: 'gym/2026-10-21', habitId: 'gym', date: '2026-10-21', status: 'done' }
+      ]
+    })
+    expect(data?.habits.map((h) => h.id)).toEqual(['read'])
+    expect(data?.habitMarks.map((m) => m.id)).toEqual(['read/2026-10-21'])
+  })
+})
+
+describe('study mode', () => {
+  it('stays unset until chosen, and only accepts known modes', () => {
+    expect(
+      parseAppData({ version: 2, subjects: [], schedule: [], items: [] })?.settings.studyMode
+    ).toBeNull()
+    const chosen = parseAppData({
+      version: 3,
+      settings: { studyMode: 'custom' },
+      subjects: [],
+      schedule: [],
+      items: []
+    })
+    expect(chosen?.settings.studyMode).toBe('custom')
+    const wrong = parseAppData({
+      version: 3,
+      settings: { studyMode: 'turbo' },
+      subjects: [],
+      schedule: [],
+      items: []
+    })
+    expect(wrong?.settings.studyMode).toBeNull()
   })
 })

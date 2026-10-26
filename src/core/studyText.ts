@@ -10,12 +10,23 @@ export function trayStatus(state: TimerState, now: number, t: Translate): string
   return t(state.phase === 'focus' ? 'tray.studying' : 'tray.onBreak', { minutes })
 }
 
-/** The notification shown when a break starts or ends and the app is not in front. */
+/**
+ * The notification shown when a break starts or ends and the app is not in front. With the
+ * 20-20-20 only the start says something: the next block starts by itself 20 seconds later.
+ */
 export function phaseNotification(
   event: PhaseEvent,
   state: TimerState,
   t: Translate
-): NotificationContent {
+): NotificationContent | null {
+  if (state.eyeRest) {
+    if (event === 'breakEnded') return null
+    return {
+      title: t('notify.eyeRestTitle'),
+      body: t('notify.eyeRestBody'),
+      target: { section: 'study' }
+    }
+  }
   return event === 'breakStarted'
     ? {
         title: t('notify.breakStartTitle'),
