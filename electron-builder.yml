@@ -5,7 +5,8 @@ directories:
 files:
   - '!**/.vscode/*'
   - '!src/*'
-  - '!docs/*'
+  - '!docs/**'
+  - '!.github/**'
   - '!scripts/*'
   - '!firebase/*'
   # The Android app (Capacitor project and the phone build) is not part of the PC app
@@ -17,7 +18,8 @@ files:
   - '!CLAUDE.md'
   - '!electron.vite.config.{js,ts,mjs,cjs}'
   - '!vitest.config.*'
-  - '!{.eslintcache,eslint.config.mjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
+  - '!{.eslintcache,eslint.config.mjs,.prettierignore,.prettierrc.yaml,.nvmrc,dev-app-update.yml}'
+  - '!{README.md,README.es.md,CHANGELOG.md,CONTRIBUTING.md,SECURITY.md}'
   - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
   - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
 asarUnpack:
@@ -40,3 +42,11 @@ nsis:
   # Removes what the app registers with Windows (miestudio:// links, start with Windows)
   include: build/installer.nsh
 npmRebuild: false
+# New versions are GitHub Releases (made by .github/workflows/release.yml). electron-builder
+# writes latest.yml next to the installer and app-update.yml inside the app, and the app
+# (src/main/updater.ts) reads them to find and check the new installer.
+publish:
+  provider: github
+  owner: zxk1019
+  repo: Keystone
+  releaseType: release

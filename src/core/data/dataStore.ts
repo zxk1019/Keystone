@@ -8,6 +8,8 @@ export class DataStore {
   private readonly listeners = new Set<() => void>()
   /** Saves go one after another, in the order the changes happened */
   private saving: Promise<void> = Promise.resolve()
+  /** A save is waiting for the one in progress to finish */
+  private saveWaiting = false
 
   private constructor(
     private readonly file: TextFile,
@@ -84,10 +86,19 @@ export class DataStore {
     return this.saving
   }
 
+  /**
+   * Writes the data after the save in progress. Many changes in a row share one write: the
+   * one waiting takes the data as it is when its turn comes. On the phone each write is slow,
+   * and a long queue would leave the file far behind if Android closed the app.
+   */
   private save(): void {
-    const text = JSON.stringify(this.data, null, 2)
+    if (this.saveWaiting) return
+    this.saveWaiting = true
     this.saving = this.saving
-      .then(() => this.file.write(text))
+      .then(() => {
+        this.saveWaiting = false
+        return this.file.write(JSON.stringify(this.data, null, 2))
+      })
       .catch((error: unknown) => console.error('[data] No se han podido guardar los datos', error))
   }
 }

@@ -2,7 +2,7 @@
 
 App de estudio para el PC (Electron + React + TypeScript) y Android (Capacitor), con la misma interfaz de React. Hasta la versión 1.3.0 se llamaba Mi Estudio.
 
-El proyecto vive en esta carpeta (`Mi Estudio`, con el repositorio git). Al lado, en `..\exe`, se guarda el instalador para el usuario.
+El proyecto vive en esta carpeta (`Mi Estudio`, con el repositorio git). Al lado, en `..\exe`, se guarda el instalador para el usuario. Desde la fase 13 el repositorio es público en GitHub: https://github.com/zxk1019/Keystone (rama `main`). Todo lo que se sube se ve: nada de datos personales, contraseñas ni claves.
 
 - Nombres que se quedan como antes a propósito (cambiarlos haría que la versión nueva no se instale encima o que no encuentre los datos): el id `com.miestudio.app` (Windows y Android), la carpeta de datos `%APPDATA%\Mi Estudio` (fijada en `src/main/index.ts`, porque Electron la nombraría como la app), el programa `mi-estudio.exe` (al actualizar, el instalador conserva los accesos directos viejos, que apuntan a él), los archivos `mi-estudio-*`, los enlaces `miestudio://`, el icono de los avisos `ic_stat_mi_estudio` (los avisos ya programados en el móvil lo nombran), la carpeta de la clave de firma y las variables `MI_ESTUDIO_*` de las pruebas. La carpeta del proyecto también sigue siendo `Mi Estudio`.
 
@@ -11,7 +11,8 @@ El proyecto vive en esta carpeta (`Mi Estudio`, con el repositorio git). Al lado
   1. explica qué has hecho y cómo probarlo,
   2. actualiza la línea "Fase actual" de este archivo,
   3. espera a que te confirme antes de seguir.
-- **Fase actual: 12 — Nuevo nombre: Keystone** (hecha, pendiente de que la confirme). La siguiente es la 13 — Publicar en GitHub (README, licencia, quitar datos personales, actualizaciones automáticas y Releases).
+- **Fase actual: 13 — Publicar en GitHub** (versión 1.5.0, hecha, pendiente de que la confirme y de subirla).
+- Git: no hagas commit ni `push` hasta que te lo pida. Los commits van a nombre de «Xinkai Zheng» con el correo `348464665+zxk1019@users.noreply.github.com` (el que da GitHub para no enseñar el real). Las ramas `fase-*` son solo locales.
 - Sincronización: solo se ha probado contra el emulador de Firebase. Falta que el usuario cree su proyecto de Firebase (la guía está en Ajustes → Sincronización), ponga el ID del proyecto y la clave de API web, y cree su cuenta. La contraseña la escribe siempre él.
 - Avisos: el usuario quiere que avisen el PC y el móvil, aunque lleguen dos veces.
 - Pendiente de probar con la app instalada (solo ella se registra en Windows), juntos:
@@ -23,7 +24,8 @@ El proyecto vive en esta carpeta (`Mi Estudio`, con el repositorio git). Al lado
 - `npm run dev`: abre la app en modo desarrollo (F12 abre las DevTools).
 - `npm test`: tests de Vitest (`*.test.ts` junto al código) para la lógica que no necesita Electron.
 - `npm run typecheck`, `npm run lint` y `npm test`: pásalos antes de dar una fase por acabada.
-- `npm run build:win`: genera el instalador de Windows en `dist/keystone-<versión>-setup.exe` y la app sin instalar en `dist/win-unpacked/mi-estudio.exe`. No está firmado, así que SmartScreen avisa al instalarlo. Después, copia el instalador nuevo a `..\exe` (y borra el de la versión anterior si cambia el número).
+- `npm run build:win`: genera el instalador de Windows en `dist/keystone-<versión>-setup.exe` (con `latest.yml` y el `.blockmap`, que usan las actualizaciones) y la app sin instalar en `dist/win-unpacked/mi-estudio.exe`. No está firmado, así que SmartScreen avisa al instalarlo. Después, copia el instalador nuevo a `..\exe` (y borra el de la versión anterior si cambia el número). No sube nada a GitHub (`--publish never`): eso lo hace el workflow de Release.
+- Publicar una versión: los pasos están en `CONTRIBUTING.md` (apartado «Releasing»): `CHANGELOG.md`, `npm version X.Y.Z --no-git-tag-version`, commit, y la etiqueta `vX.Y.Z` anotada. Al subir la etiqueta, `.github/workflows/release.yml` comprueba que coincide con `package.json`, compila el instalador y el APK firmado (con la clave de los secretos `ANDROID_*` del repositorio, y comprueba el certificado) y crea la Release con las notas del CHANGELOG. `.github/workflows/ci.yml` pasa en cada `push` a `main` y en cada pull request.
 - `npm run icons`: vuelve a dibujar los iconos (`build/`, `resources/`, los de Android en `android/app/src/main/res/mipmap-*` y el de los avisos del móvil) a partir del dibujo de `scripts/make-icons.cjs`. La barra lateral dibuja la misma piedra en `components/KeystoneLogo.tsx`: si cambias una, cambia la otra.
 - Android:
   - `npm run build:android` compila la versión móvil, la copia a `android/` y genera el APK firmado en `dist/keystone-<versión>.apk` (con `-- debug`, uno de pruebas). Después, cópialo a `..\exe`. Usa el Java 21 de Android Studio (`jbr`) solo para Gradle; el Java 17 del PC no se toca.
@@ -37,6 +39,9 @@ El proyecto vive en esta carpeta (`Mi Estudio`, con el repositorio git). Al lado
   - El emulador usa los puertos 9099 y 8085 (el 8080 lo ocupa Oracle). Si al cerrarlo el 8085 se queda ocupado, ciérralo con `curl -X POST http://127.0.0.1:8085/shutdown`.
   - `firebase-tools` está fijado en la 14.18.0 porque las versiones nuevas piden Java 21 y en este PC hay Java 17.
   - Para probar dos dispositivos a la vez, abre dos copias con carpetas de datos distintas (`MI_ESTUDIO_DATA_DIR`).
+- Para probar las actualizaciones sin GitHub:
+  - PC: `MI_ESTUDIO_UPDATES_URL=http://127.0.0.1:<puerto>/` (solo en desarrollo) apunta el actualizador a una carpeta servida con `latest.yml` y el instalador de una versión mayor. Escribe `keystone-dev-app-update.yml` en la carpeta temporal y descarga en `keystone-updater-test`; bórralos al acabar. En desarrollo no se instala nada: solo se prueba hasta «lista para instalar».
+  - Móvil: `VITE_UPDATES_API=http://10.0.2.2:<puerto>/latest.json npm run build:android -- debug`, con un JSON como el de la API de GitHub (`tag_name`, `assets`...). El servidor falso tiene que mandar `Access-Control-Allow-Origin: *` (la API de GitHub lo manda), si no el `fetch` falla.
 - Para probar Spotify sin una cuenta real: `MI_ESTUDIO_SPOTIFY_ACCOUNTS` y `MI_ESTUDIO_SPOTIFY_API` apuntan la app a un Spotify falso. Solo funcionan en desarrollo; la app instalada los ignora.
 
 ## Dónde está cada cosa
@@ -67,7 +72,9 @@ El proyecto vive en esta carpeta (`Mi Estudio`, con el repositorio git). Al lado
 - Agenda: `features/agenda/WeekGrid.tsx` es la cuadrícula semanal que usan tanto la vista como el editor del horario. Los colores de las asignaturas están en `subjectStyles.ts`.
 - Tareas: `features/tasks/ItemDialog.tsx` es el único formulario de elementos. Se abre desde cualquier pantalla con `useItemDialogStore` (`openNew` / `openEdit`).
 - Hábitos: la racha, el récord y qué días se pueden marcar están en `src/shared/habits.ts` (con tests); se guardan con `core/data/habitsRepo.ts` y la pantalla está en `features/habits/` (semana, mes y el diálogo). Cada día marcado es un registro propio (`habitMarks`, id `<hábitoId>/<fecha>`), así el PC y el móvil pueden marcar días distintos sin pisarse. Los días sin marcar no se guardan. El selector de colores (`components/ColorPicker.tsx`) es el mismo de las asignaturas.
-- `docs/ejemplo-horario.json`: un horario de ejemplo para probar. Se carga con Ajustes → Importar copia, que reemplaza los datos.
+- Actualizaciones: `src/shared/updates.ts` (con tests) tiene el repositorio, los estados (`UpdateStatus`), la comparación de versiones y cómo leer la última Release. En el PC, `src/main/updater.ts` envuelve `electron-updater` (solo en la app instalada y fuera de las pruebas); la configuración sale de `electron-builder.yml` (`publish`). En el móvil, `platform/mobile/index.ts` pregunta a la API de GitHub (con 20 s de límite) y abre la descarga en el navegador. La pantalla: `store/updateStore.ts`, `components/UpdateBanner.tsx` y `features/settings/UpdatesSection.tsx`. Al actualizar, `build/installer.nsh` no borra el protocolo ni el arranque con Windows (`${isUpdated}`).
+- Documentos públicos: `README.md` (inglés) y `README.es.md` con las capturas de `docs/images/<en|es>/` (hechas con datos de ejemplo, nunca con los reales), `CHANGELOG.md`, `CONTRIBUTING.md`, `SECURITY.md`, `LICENSE` y `.github/` (workflows, Dependabot y plantillas). Si cambias algo que el usuario nota, apúntalo en «Unreleased» del CHANGELOG.
+- `docs/ejemplo-horario.json`: un horario de ejemplo para probar. Se carga con Ajustes → Importar copia, que reemplaza los datos. El horario real del usuario (`docs/mi-horario.json`) está en `.gitignore` y no se sube nunca.
 - Los datos se guardan en `%APPDATA%\Mi Estudio\mi-estudio-data.json` (versión 3 desde la fase 11, con los hábitos). Los archivos viejos se convierten solos al abrir la app y antes se guarda una copia (`mi-estudio-data.v1.json` o `.v2.json`). Una versión vieja de la app no abre los datos ni las copias de la versión 3. Las copias de seguridad exportadas no llevan el registro de la sincronización.
 
 ## Convenciones

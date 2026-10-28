@@ -285,6 +285,29 @@
       "unknown": "Algo ha fallado. Vuelve a intentarlo."
     }
   },
+  "updates": {
+    "title": "Actualizaciones",
+    "descriptionAuto": "Keystone busca las versiones nuevas sola, las descarga en segundo plano y las instala al reiniciar. Tus datos no se tocan.",
+    "descriptionPhone": "Keystone mira si hay una versión nueva cada vez que la abres. Para instalarla, descarga el APK y ábrelo: se instala encima y no pierdes tus datos.",
+    "installed": "Versión instalada",
+    "check": "Buscar actualizaciones",
+    "idle": "Todavía no se ha comprobado.",
+    "checking": "Buscando versiones nuevas…",
+    "upToDate": "Tienes la última versión (comprobado a las {{time}}).",
+    "downloading": "Descargando la versión {{version}}… {{percent}} %",
+    "ready": "La versión {{version}} está lista. Se instalará al reiniciar la app.",
+    "available": "Hay una versión nueva: la {{version}}.",
+    "error": "No se ha podido comprobar. ¿Hay conexión a internet? Se volverá a intentar más tarde.",
+    "disabled": "En desarrollo y en las pruebas no se buscan versiones nuevas.",
+    "whatsNew": "Ver las novedades",
+    "restart": "Reiniciar y actualizar",
+    "download": "Descargar",
+    "later": "Ahora no",
+    "banner": {
+      "ready": "Keystone {{version}} está lista para instalarse.",
+      "available": "Hay una versión nueva de Keystone: la {{version}}."
+    }
+  },
   "agenda": {
     "week": "Semana",
     "month": "Mes",

@@ -1,0 +1,170 @@
+# Publishing a version: push a tag like v1.5.0 (it must match package.json). This builds the
+# Windows installer and the signed APK, and creates the GitHub Release with the notes of that
+# version from CHANGELOG.md. The installed PC app finds the new version through latest.yml,
+# and the phone app through the APK of the latest release.
+name: Release
+
+on:
+  push:
+    tags: ['v*.*.*']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+
+jobs:
+  version:
+    name: Check the version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: The tag matches package.json and CHANGELOG.md
+        run: |
+          version=$(node -p "require('./package.json').version")
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::The tag $GITHUB_REF_NAME does not match the version in package.json ($version)"
+            exit 1
+          fi
+          if ! grep -q "^## \[$version\]" CHANGELOG.md; then
+            echo "::error::CHANGELOG.md has no section for $version"
+            exit 1
+          fi
+
+  windows:
+    name: Windows installer
+    needs: version
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run build:win
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: windows
+          # latest.yml and the blockmap are what the installed app reads to update itself
+          path: |
+            dist/*-setup.exe
+            dist/*-setup.exe.blockmap
+            dist/latest.yml
+          if-no-files-found: error
+
+  android:
+    name: Android APK
+    needs: version
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      # Capacitor 8 compiles with exactly Java 21
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: '21'
+      - run: npm ci
+      # The release key never goes into the repository: it comes from the secrets of the
+      # repository and goes where android/app/build.gradle looks for it (see CONTRIBUTING.md)
+      - name: Restore the signing key
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ] || [ -z "$KEYSTORE_PASSWORD" ] || [ -z "$KEY_ALIAS" ] || [ -z "$KEY_PASSWORD" ]; then
+            echo "::error::The ANDROID_* secrets of the signing key are missing (see CONTRIBUTING.md)"
+            exit 1
+          fi
+          mkdir -p ~/.mi-estudio
+          echo "$KEYSTORE_BASE64" | base64 --decode > ~/.mi-estudio/mi-estudio-release.jks
+          {
+            echo "storeFile=$HOME/.mi-estudio/mi-estudio-release.jks"
+            echo "storePassword=$KEYSTORE_PASSWORD"
+            echo "keyAlias=$KEY_ALIAS"
+            echo "keyPassword=$KEY_PASSWORD"
+          } > ~/.mi-estudio/keystore.properties
+      - run: npm run build:android
+      - name: Remove the signing key
+        if: always()
+        run: rm -rf ~/.mi-estudio
+      # An APK signed with another key cannot be installed over the app people already have
+      - name: Check the signature
+        run: |
+          build_tools=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
+          "$build_tools/apksigner" verify --print-certs dist/*.apk | tee signature.txt
+          grep -q "SHA-256 digest: $EXPECTED" signature.txt || {
+            echo "::error::The APK is not signed with the release key of Keystone"
+            exit 1
+          }
+        env:
+          EXPECTED: f7673e35859e112d072a5ef053ccea1f23470b81ca036cf2e95b51bedbf01446
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: android
+          path: dist/*.apk
+          if-no-files-found: error
+
+  release:
+    name: GitHub Release
+    needs: [windows, android]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          path: dist
+          merge-multiple: true
+      - name: Checksums
+        working-directory: dist
+        run: sha256sum -- * | tee SHA256SUMS.txt
+      - name: Release notes from CHANGELOG.md
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          # From the heading of this version to the next heading or the links at the end
+          awk -v heading="## [$version]" '
+            index($0, "## [") == 1 || /^\[[^]]*\]: / {
+              if (found) exit
+              found = index($0, heading) == 1
+              next
+            }
+            found
+          ' CHANGELOG.md > notes.md
+          cat >> notes.md <<EOF
+
+          ### Downloads
+
+          - **Windows 10/11**: \`keystone-$version-setup.exe\`. If you already have Keystone, it updates itself.
+          - **Android 7+**: \`keystone-$version.apk\`. It installs over the app you have, keeping your data.
+
+          The installer is not code-signed yet, so Windows SmartScreen may warn you: choose **More info** → **Run anyway**. \`SHA256SUMS.txt\` has the checksums of every file.
+          EOF
+          cat notes.md
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" dist/* \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "Keystone ${GITHUB_REF_NAME#v}" \
+            --notes-file notes.md \
+            --verify-tag

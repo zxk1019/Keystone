@@ -9,6 +9,13 @@ import type { SpotifyResult } from '@shared/spotify'
 import { studyPlan, type PhaseEvent, type TimerState } from '@shared/studyTimer'
 import type { SyncStatus } from '@shared/sync'
 import { DEVICE_STUDY_MODE, type Settings, type ThemeSetting } from '@shared/types'
+import {
+  LATEST_RELEASE_API,
+  UPDATE_CHECK_INTERVAL_MS,
+  isNewerVersion,
+  parseLatestRelease,
+  type UpdateStatus
+} from '@shared/updates'
 import { ItemsRepo, ScheduleRepo, SubjectsRepo, agendaOf } from '@core/data/agendaRepos'
 import { DataStore } from '@core/data/dataStore'
 import { HabitsRepo, habitsOf } from '@core/data/habitsRepo'
@@ -49,6 +56,7 @@ const navigate = channel<void>()
 const studyState = channel<TimerState>()
 const studyPhase = channel<PhaseEvent>()
 const syncStatus = channel<SyncStatus>()
+const updateStatus = channel<UpdateStatus>()
 const backButton = new Set<() => boolean>()
 
 let pendingTarget: NavigationTarget | null = null
@@ -85,6 +93,46 @@ function applySystemBars(theme: ThemeSetting): void {
 function openTarget(target: NavigationTarget): void {
   pendingTarget = target
   navigate.emit()
+}
+
+/*
+ * New versions: the phone cannot install them itself, so it asks GitHub for the latest release
+ * and, if it is newer, the app offers to download its APK. Never in the browser (dev:mobile) or
+ * in the test builds, unless they point VITE_UPDATES_API at a local server.
+ */
+const testBuild = import.meta.env.DEV || Boolean(import.meta.env.VITE_FIREBASE_EMULATOR)
+const updatesApi = import.meta.env.VITE_UPDATES_API || (testBuild ? null : LATEST_RELEASE_API)
+let update: UpdateStatus = updatesApi ? { state: 'idle' } : { state: 'disabled' }
+let lastUpdateCheck = 0
+const UPDATE_CHECK_TIMEOUT_MS = 20_000
+
+function setUpdate(status: UpdateStatus): void {
+  update = status
+  updateStatus.emit(status)
+}
+
+async function checkForUpdates(): Promise<UpdateStatus> {
+  if (!updatesApi || update.state === 'checking') return update
+  lastUpdateCheck = Date.now()
+  setUpdate({ state: 'checking' })
+  try {
+    const response = await fetch(updatesApi, {
+      headers: { Accept: 'application/vnd.github+json' },
+      // A network that never answers would leave the check (and its button) waiting forever
+      signal: AbortSignal.timeout(UPDATE_CHECK_TIMEOUT_MS)
+    })
+    // 404: nothing has been published yet
+    if (!response.ok && response.status !== 404) throw new Error(`HTTP ${response.status}`)
+    const release = response.ok ? parseLatestRelease(await response.json()) : null
+    setUpdate(
+      release && isNewerVersion(release.version, __APP_VERSION__)
+        ? { state: 'available', version: release.version, url: release.downloadUrl }
+        : { state: 'upToDate', checkedAt: Date.now() }
+    )
+  } catch {
+    setUpdate({ state: 'error', checkedAt: Date.now() })
+  }
+  return update
 }
 
 async function start(): Promise<Services> {
@@ -158,6 +206,7 @@ async function start(): Promise<Services> {
     // The end of the study block comes as a notification while the app is not in front
     void notifier.studyInBackground(isActive ? null : studyTimer.get())
     if (!isActive) return
+    if (Date.now() - lastUpdateCheck > UPDATE_CHECK_INTERVAL_MS) void checkForUpdates()
     studyTimer.catchUp()
     sync.windowFocused()
     notifier.planSoon()
@@ -171,6 +220,7 @@ async function start(): Promise<Services> {
   // Not awaited: the screens can open while Android asks for the notification permission
   void notifier.start()
   sync.start()
+  void checkForUpdates()
 
   return {
     store,
@@ -209,7 +259,12 @@ async function openSpotify(uri?: string): Promise<void> {
 }
 
 export const platform: Platform = {
-  capabilities: { eyeBreak: false, startWithWindows: false, spotifyControl: false },
+  capabilities: {
+    eyeBreak: false,
+    startWithWindows: false,
+    spotifyControl: false,
+    installsUpdates: false
+  },
   defaultStudyMode: DEVICE_STUDY_MODE.phone,
   onBackButton: (callback) => {
     backButton.add(callback)
@@ -253,7 +308,7 @@ export const platform: Platform = {
   setHabitMark: (habitId, date, status) =>
     withServices(({ habits }) => habits.setMark(habitId, date, status)),
 
-  getAppInfo: async () => ({ packaged: true }),
+  getAppInfo: async () => ({ packaged: true, version: __APP_VERSION__ }),
   sendTestNotification: () => withServices(({ notifier }) => notifier.sendTest()),
   onNavigate: (callback) => navigate.listen(callback),
   takeNavigation: async () => {
@@ -297,7 +352,15 @@ export const platform: Platform = {
   syncSignOut: () => withServices(({ sync }) => sync.signOut()),
   syncResetPassword: (email) => withServices(({ sync }) => sync.resetPassword(email.trim())),
   syncNow: () => withServices(({ sync }) => sync.syncNow()),
-  onSyncStatus: syncStatus.listen
+  onSyncStatus: syncStatus.listen,
+
+  getUpdateStatus: async () => update,
+  checkForUpdates,
+  // The browser downloads the APK; Android then asks to install it over the app
+  installUpdate: async () => {
+    if (update.state === 'available') await AppLauncher.openUrl({ url: update.url })
+  },
+  onUpdateStatus: updateStatus.listen
 }
 
 // Test builds only (the ones for the Firebase emulator): the checks drive the app through

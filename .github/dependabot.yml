@@ -1,0 +1,32 @@
+# Weekly pull requests to keep the dependencies and the GitHub Actions up to date. CI checks
+# each one. New versions wait two weeks before Dependabot proposes them.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    cooldown:
+      default-days: 14
+    open-pull-requests-limit: 5
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
+    ignore:
+      # Pinned on purpose: newer versions need Java 21 to run the emulator (see CLAUDE.md)
+      - dependency-name: firebase-tools
+      # A new major version of Capacitor also changes the Android project: update it by hand
+      - dependency-name: '@capacitor/*'
+        update-types: [version-update:semver-major]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    cooldown:
+      default-days: 14
+    groups:
+      actions:
+        patterns: ['*']

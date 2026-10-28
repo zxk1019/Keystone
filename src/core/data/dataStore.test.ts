@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { createDefaultData } from '@shared/types'
+import { createDefaultData, type Subject } from '@shared/types'
 import { DataStore } from './dataStore'
 import type { TextFile } from './textFile'
 
@@ -19,7 +19,7 @@ function memoryFile(initial: string | null): TextFile & { text: string | null; c
   return file
 }
 
-const subject = { id: 'maths', name: 'Mates', color: 'blue' }
+const subject: Subject = { id: 'maths', name: 'Mates', color: 'blue' }
 
 describe('DataStore', () => {
   it('starts empty when there is no file yet', async () => {
@@ -89,6 +89,32 @@ describe('DataStore', () => {
     expect(calls).toBe(1)
     expect(store.get().sync.pending).toEqual(['subjects/maths'])
     expect(JSON.parse(file.text ?? '').settings.theme).toBe('dark')
+  })
+
+  it('joins many changes in a row into a few writes, ending with the latest data', async () => {
+    const file = memoryFile(null)
+    const writes: string[] = []
+    // A slow disk, like the phone's
+    file.write = async (text) => {
+      await new Promise((resolve) => setTimeout(resolve, 5))
+      writes.push(text)
+      file.text = text
+    }
+    const store = await DataStore.open(file)
+    for (let i = 0; i < 50; i++) {
+      const subjects = [{ ...subject, id: `s${i}`, name: `Subject ${i}` }]
+      store.update((data) => ({ ...data, subjects: [...data.subjects, ...subjects] }))
+    }
+    await store.saved()
+    expect(writes.length).toBeLessThanOrEqual(2)
+    expect(JSON.parse(file.text ?? '').subjects).toHaveLength(50)
+
+    // A change while a write is in progress gets a write of its own after it
+    store.update((data) => ({ ...data, settings: { ...data.settings, theme: 'dark' } }))
+    await new Promise((resolve) => setTimeout(resolve, 1))
+    store.update((data) => ({ ...data, settings: { ...data.settings, theme: 'light' } }))
+    await store.saved()
+    expect(JSON.parse(file.text ?? '').settings.theme).toBe('light')
   })
 
   it('saves what the sync brings without recording it as a change of this device', async () => {

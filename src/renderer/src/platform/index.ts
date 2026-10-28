@@ -8,6 +8,8 @@ export interface PlatformCapabilities {
   startWithWindows: boolean
   /** Spotify controlled through its Web API; without it the app can only open Spotify */
   spotifyControl: boolean
+  /** The app installs new versions itself; without it, it only offers the download */
+  installsUpdates: boolean
 }
 
 /**

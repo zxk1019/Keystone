@@ -4,6 +4,7 @@ import type { EyeBreakStatus } from '@shared/eyeBreak'
 import type { SpotifyStatus } from '@shared/spotify'
 import type { PhaseEvent, TimerState } from '@shared/studyTimer'
 import type { SyncStatus } from '@shared/sync'
+import type { UpdateStatus } from '@shared/updates'
 import type { Settings } from '@shared/types'
 
 /** Subscribes to a channel and returns the function that unsubscribes. */
@@ -65,7 +66,12 @@ const api: DesktopApi = {
   syncSignOut: () => ipcRenderer.invoke(IPC.syncSignOut),
   syncResetPassword: (email) => ipcRenderer.invoke(IPC.syncResetPassword, email),
   syncNow: () => ipcRenderer.invoke(IPC.syncNow),
-  onSyncStatus: (callback) => listen<SyncStatus>(IPC.syncStatusChanged, callback)
+  onSyncStatus: (callback) => listen<SyncStatus>(IPC.syncStatusChanged, callback),
+
+  getUpdateStatus: () => ipcRenderer.invoke(IPC.updateStatus),
+  checkForUpdates: () => ipcRenderer.invoke(IPC.checkForUpdates),
+  installUpdate: () => ipcRenderer.invoke(IPC.installUpdate),
+  onUpdateStatus: (callback) => listen<UpdateStatus>(IPC.updateStatusChanged, callback)
 }
 
 contextBridge.exposeInMainWorld('api', api)

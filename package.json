@@ -1,10 +1,20 @@
 {
   "name": "keystone",
   "productName": "Keystone",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Keystone: agenda, avisos, hábitos y zona de estudio",
   "main": "./out/main/index.js",
   "author": "Xinkai Zheng",
+  "license": "MIT",
+  "homepage": "https://github.com/zxk1019/Keystone#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zxk1019/Keystone.git"
+  },
+  "bugs": {
+    "url": "https://github.com/zxk1019/Keystone/issues"
+  },
+  "private": true,
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint --cache .",
@@ -17,8 +27,8 @@
     "dev": "electron-vite dev",
     "build": "npm run typecheck && electron-vite build",
     "postinstall": "install-electron && electron-builder install-app-deps",
-    "build:unpack": "npm run build && electron-builder --dir",
-    "build:win": "npm run build && electron-builder --win",
+    "build:unpack": "npm run build && electron-builder --dir --publish never",
+    "build:win": "npm run build && electron-builder --win --publish never",
     "icons": "electron scripts/make-icons.cjs",
     "dev:mobile": "vite --config vite.mobile.config.ts",
     "build:mobile": "vite build --config vite.mobile.config.ts",
@@ -29,6 +39,7 @@
   "dependencies": {
     "@electron-toolkit/utils": "^4.0.0",
     "date-fns": "^4.4.0",
+    "electron-updater": "^6.8.10",
     "i18next": "^26.5.3",
     "lucide-react": "^1.59.0",
     "react-i18next": "^17.1.0",

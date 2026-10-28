@@ -285,6 +285,29 @@
       "unknown": "Something went wrong. Please try again."
     }
   },
+  "updates": {
+    "title": "Updates",
+    "descriptionAuto": "Keystone looks for new versions by itself, downloads them in the background and installs them when it restarts. Your data stays as it is.",
+    "descriptionPhone": "Keystone checks for a new version every time you open it. To install it, download the APK and open it: it installs over the app and keeps your data.",
+    "installed": "Installed version",
+    "check": "Check for updates",
+    "idle": "Not checked yet.",
+    "checking": "Looking for new versions…",
+    "upToDate": "You have the latest version (checked at {{time}}).",
+    "downloading": "Downloading version {{version}}… {{percent}}%",
+    "ready": "Version {{version}} is ready. It installs when the app restarts.",
+    "available": "A new version is out: {{version}}.",
+    "error": "Couldn't check. Are you online? It will try again later.",
+    "disabled": "Development and test runs don't look for new versions.",
+    "whatsNew": "See what's new",
+    "restart": "Restart and update",
+    "download": "Download",
+    "later": "Not now",
+    "banner": {
+      "ready": "Keystone {{version}} is ready to install.",
+      "available": "A new version of Keystone is out: {{version}}."
+    }
+  },
   "agenda": {
     "week": "Week",
     "month": "Month",
