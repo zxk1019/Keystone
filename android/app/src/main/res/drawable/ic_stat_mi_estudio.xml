@@ -1,26 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Small icon of the notifications: Android draws it white on the status bar -->
+<!-- Made by scripts/make-icons.cjs: the Keystone stone for the notifications -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
     <path
-        android:pathData="M21.42 10.922a1 1 0 0 0-0.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"
-        android:strokeColor="#FFFFFFFF"
-        android:strokeWidth="2"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round" />
-    <path
-        android:pathData="M22 10v6"
-        android:strokeColor="#FFFFFFFF"
-        android:strokeWidth="2"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round" />
-    <path
-        android:pathData="M6 12.5V16a6 3 0 0 0 12 0v-3.5"
-        android:strokeColor="#FFFFFFFF"
-        android:strokeWidth="2"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round" />
+        android:fillColor="#FFFFFFFF"
+        android:fillType="evenOdd"
+        android:pathData="M4.8 5.07Q4.5 3.5 6.1 3.5L17.9 3.5Q19.5 3.5 19.2 5.07L16.6 18.93Q16.3 20.5 14.7 20.5L9.3 20.5Q7.7 20.5 7.4 18.93ZM8.75 6.5H10.75V9.58L13.9 6.43L15.31 7.86L11.17 12L15.31 16.14L13.9 17.57L10.75 14.42V17.5H8.75Z" />
 </vector>

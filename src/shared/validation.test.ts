@@ -130,7 +130,7 @@ describe('parseAgendaItem', () => {
 })
 
 describe('parseAppData', () => {
-  it('rejects files that are not Mi Estudio data', () => {
+  it('rejects files that are not data of the app', () => {
     expect(parseAppData({ foo: 1 })).toBeNull()
     expect(parseAppData({ version: 4, subjects: [], schedule: [], items: [] })).toBeNull()
     expect(parseAppData({ version: 2, subjects: [], schedule: {}, items: [] })).toBeNull()

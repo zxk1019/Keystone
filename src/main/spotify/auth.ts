@@ -14,7 +14,7 @@ export interface Tokens {
 
 /** The small page the browser shows after the Spotify login. */
 function page(message: string): string {
-  return `<!doctype html><html><head><meta charset="utf-8"><title>Mi Estudio</title></head>
+  return `<!doctype html><html><head><meta charset="utf-8"><title>Keystone</title></head>
 <body style="font-family:system-ui,sans-serif;display:grid;place-items:center;height:100vh;margin:0;background:#09090b;color:#f4f4f5">
 <p style="font-size:18px;max-width:28rem;text-align:center">${message}</p></body></html>`
 }

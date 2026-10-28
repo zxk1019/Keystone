@@ -1,8 +1,8 @@
 {
-  "name": "mi-estudio",
-  "productName": "Mi Estudio",
-  "version": "1.3.0",
-  "description": "Mi Estudio: agenda, avisos y zona de estudio",
+  "name": "keystone",
+  "productName": "Keystone",
+  "version": "1.4.0",
+  "description": "Keystone: agenda, avisos, hábitos y zona de estudio",
   "main": "./out/main/index.js",
   "author": "Xinkai Zheng",
   "scripts": {

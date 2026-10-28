@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "Mi Estudio"
+    "name": "Keystone"
   },
   "nav": {
     "today": "Today",
@@ -250,12 +250,12 @@
     "noDevicesFound": "Spotify is not open on any device.",
     "openSpotify": "Open Spotify",
     "refresh": "Look again",
-    "browserDone": "Mi Estudio is now connected to Spotify. You can close this tab and go back to the app.",
-    "browserError": "Could not connect to Spotify. Go back to Mi Estudio and try again.",
+    "browserDone": "Keystone is now connected to Spotify. You can close this tab and go back to the app.",
+    "browserError": "Could not connect to Spotify. Go back to Keystone and try again.",
     "errors": {
       "notConfigured": "The Spotify Client ID is missing. Add it in Settings.",
       "sessionExpired": "Your Spotify session has expired. Connect again.",
-      "premiumRequired": "Spotify Premium is needed to control the music from Mi Estudio.",
+      "premiumRequired": "Spotify Premium is needed to control the music from Keystone.",
       "noDevice": "Spotify is not open on any device.",
       "notRegistered": "Your account is not allowed in your Spotify app. Add it under \"User Management\" in the developer dashboard.",
       "rateLimited": "Spotify asks to wait a moment. Try again in a few seconds.",
@@ -395,13 +395,13 @@
       "playOnStudyStart": "Play the study playlist when a study block starts",
       "howTo": "How to get the Client ID",
       "step1": "Open the Spotify developer dashboard with your account and accept the terms.",
-      "step2": "Click \"Create app\". Name it \"Mi Estudio\", add this Redirect URI and tick \"Web API\":",
+      "step2": "Click \"Create app\". Name it \"Keystone\", add this Redirect URI and tick \"Web API\":",
       "step3": "Save, open the app you created and copy the \"Client ID\". You do not need the Client Secret: never share it.",
       "step4": "Paste the Client ID above and click \"Connect to Spotify\".",
       "openDashboard": "Open the Spotify dashboard",
       "copy": "Copy",
       "copied": "Copied",
-      "phoneDescription": "On the phone, Mi Estudio opens Spotify with your study playlist.",
+      "phoneDescription": "On the phone, Keystone opens Spotify with your study playlist.",
       "playlistLink": "Link to your study playlist",
       "playlistLinkPlaceholder": "https://open.spotify.com/playlist/…",
       "playlistLinkHint": "In Spotify, open the playlist, tap ⋯ → Share → Copy link and paste it here.",
@@ -431,7 +431,7 @@
       "apiKeyPlaceholder": "Starts with AIza",
       "apiKeyInvalid": "The web API key starts with \"AIza\" and is 39 characters long.",
       "projectId": "Project ID",
-      "projectIdPlaceholder": "mi-estudio-1a2b3",
+      "projectIdPlaceholder": "keystone-1a2b3",
       "projectIdInvalid": "The project ID has 6 to 30 lowercase letters, numbers and hyphens.",
       "email": "Email",
       "password": "Password",
@@ -474,13 +474,13 @@
       "import": "Import backup",
       "exported": "Backup saved to {{path}}",
       "imported": "Backup imported successfully.",
-      "invalid": "That file is not a valid Mi Estudio backup.",
+      "invalid": "That file is not a valid Keystone backup.",
       "error": "Could not complete: {{message}}",
       "shared": "Backup ready to save or send."
     }
   },
   "tray": {
-    "open": "Open Mi Estudio",
+    "open": "Open Keystone",
     "quit": "Quit",
     "studying": "Studying · {{minutes}} min left",
     "onBreak": "On a break · {{minutes}} min left",
@@ -503,7 +503,7 @@
     "examTomorrow": "Exam tomorrow: {{title}}",
     "examIn": "Exam in {{count}} days: {{title}}",
     "testTitle": "Notifications work",
-    "testBody": "This is how Mi Estudio will remind you of what you have to do.",
+    "testBody": "This is how Keystone will remind you of what you have to do.",
     "breakStartTitle": "Break time!",
     "breakStartBody": "Get up and take {{count}} minutes off.",
     "breakEndTitle": "Break over",
@@ -517,8 +517,8 @@
   "dialog": {
     "exportTitle": "Export backup",
     "importTitle": "Import backup",
-    "backupFileType": "Mi Estudio backup",
-    "backupFileName": "mi-estudio-backup-{{date}}.json",
+    "backupFileType": "Keystone backup",
+    "backupFileName": "keystone-backup-{{date}}.json",
     "importConfirm": "All your current data will be replaced with the data in the backup. If sync is on, it will also be replaced on your other devices. Do you want to continue?",
     "importButton": "Import",
     "cancelButton": "Cancel"

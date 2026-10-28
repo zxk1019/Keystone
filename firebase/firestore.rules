@@ -1,6 +1,6 @@
 rules_version = '2';
 
-// Mi Estudio: each user can only read and write their own synced records.
+// Keystone: each user can only read and write their own synced records.
 service cloud.firestore {
   match /databases/{database}/documents {
     match /users/{userId}/records/{recordId} {

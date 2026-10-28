@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "Mi Estudio"
+    "name": "Keystone"
   },
   "nav": {
     "today": "Hoy",
@@ -250,12 +250,12 @@
     "noDevicesFound": "Spotify no está abierto en ningún dispositivo.",
     "openSpotify": "Abrir Spotify",
     "refresh": "Buscar otra vez",
-    "browserDone": "Mi Estudio ya está conectado con Spotify. Puedes cerrar esta pestaña y volver a la app.",
-    "browserError": "No se ha podido conectar con Spotify. Vuelve a Mi Estudio e inténtalo de nuevo.",
+    "browserDone": "Keystone ya está conectado con Spotify. Puedes cerrar esta pestaña y volver a la app.",
+    "browserError": "No se ha podido conectar con Spotify. Vuelve a Keystone e inténtalo de nuevo.",
     "errors": {
       "notConfigured": "Falta el Client ID de Spotify. Añádelo en Ajustes.",
       "sessionExpired": "La sesión de Spotify ha caducado. Vuelve a conectar.",
-      "premiumRequired": "Hace falta Spotify Premium para controlar la música desde Mi Estudio.",
+      "premiumRequired": "Hace falta Spotify Premium para controlar la música desde Keystone.",
       "noDevice": "Spotify no está abierto en ningún dispositivo.",
       "notRegistered": "Tu cuenta no está autorizada en tu app de Spotify. Añádela en «User Management» del panel de desarrollador.",
       "rateLimited": "Spotify pide esperar un momento. Inténtalo de nuevo en unos segundos.",
@@ -395,13 +395,13 @@
       "playOnStudyStart": "Poner la playlist de estudio al empezar a estudiar",
       "howTo": "Cómo conseguir el Client ID",
       "step1": "Entra en el panel de desarrollador de Spotify con tu cuenta y acepta las condiciones.",
-      "step2": "Pulsa «Create app». Ponle de nombre «Mi Estudio», añade esta Redirect URI y marca «Web API»:",
+      "step2": "Pulsa «Create app». Ponle de nombre «Keystone», añade esta Redirect URI y marca «Web API»:",
       "step3": "Guarda, abre la app que has creado y copia el «Client ID». El Client Secret no hace falta: no lo compartas con nadie.",
       "step4": "Pega el Client ID aquí arriba y pulsa «Conectar con Spotify».",
       "openDashboard": "Abrir el panel de Spotify",
       "copy": "Copiar",
       "copied": "Copiado",
-      "phoneDescription": "En el móvil, Mi Estudio abre Spotify con tu playlist de estudio.",
+      "phoneDescription": "En el móvil, Keystone abre Spotify con tu playlist de estudio.",
       "playlistLink": "Enlace de tu playlist de estudio",
       "playlistLinkPlaceholder": "https://open.spotify.com/playlist/…",
       "playlistLinkHint": "En Spotify, abre la playlist, pulsa ⋯ → Compartir → Copiar enlace y pégalo aquí.",
@@ -431,7 +431,7 @@
       "apiKeyPlaceholder": "Empieza por AIza",
       "apiKeyInvalid": "La clave de API web empieza por «AIza» y tiene 39 caracteres.",
       "projectId": "ID del proyecto",
-      "projectIdPlaceholder": "mi-estudio-1a2b3",
+      "projectIdPlaceholder": "keystone-1a2b3",
       "projectIdInvalid": "El ID del proyecto tiene de 6 a 30 letras minúsculas, números y guiones.",
       "email": "Correo",
       "password": "Contraseña",
@@ -474,13 +474,13 @@
       "import": "Importar copia",
       "exported": "Copia guardada en {{path}}",
       "imported": "Copia importada correctamente.",
-      "invalid": "Ese archivo no es una copia válida de Mi Estudio.",
+      "invalid": "Ese archivo no es una copia válida de Keystone.",
       "error": "No se ha podido completar: {{message}}",
       "shared": "Copia lista para guardar o enviar."
     }
   },
   "tray": {
-    "open": "Abrir Mi Estudio",
+    "open": "Abrir Keystone",
     "quit": "Salir",
     "studying": "Estudiando · quedan {{minutes}} min",
     "onBreak": "Descanso · quedan {{minutes}} min",
@@ -503,7 +503,7 @@
     "examTomorrow": "Examen mañana: {{title}}",
     "examIn": "Examen dentro de {{count}} días: {{title}}",
     "testTitle": "Los avisos funcionan",
-    "testBody": "Así te avisará Mi Estudio de lo que tienes pendiente.",
+    "testBody": "Así te avisará Keystone de lo que tienes pendiente.",
     "breakStartTitle": "¡Descanso!",
     "breakStartBody": "Levántate y despéjate {{count}} minutos.",
     "breakEndTitle": "Fin del descanso",
@@ -517,8 +517,8 @@
   "dialog": {
     "exportTitle": "Exportar copia de seguridad",
     "importTitle": "Importar copia de seguridad",
-    "backupFileType": "Copia de Mi Estudio",
-    "backupFileName": "mi-estudio-copia-{{date}}.json",
+    "backupFileType": "Copia de Keystone",
+    "backupFileName": "keystone-copia-{{date}}.json",
     "importConfirm": "Se reemplazarán todos tus datos actuales por los de la copia. Si tienes la sincronización activada, también se reemplazarán en tus otros dispositivos. ¿Quieres continuar?",
     "importButton": "Importar",
     "cancelButton": "Cancelar"

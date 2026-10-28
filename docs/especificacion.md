@@ -1,6 +1,6 @@
-# Prompt: app de estudio "Mi Estudio"
+# Prompt: app de estudio "Keystone"
 
-Quiero que construyas conmigo una app de escritorio para estudiantes llamada **Mi Estudio**. Primero será para **Windows**. Más adelante la pasaré al móvil con **Capacitor**, así que la arquitectura tiene que dejarlo preparado desde el principio.
+Quiero que construyas conmigo una app de escritorio para estudiantes llamada **Keystone** (hasta la versión 1.3.0 se llamaba **Mi Estudio**). Primero será para **Windows**. Más adelante la pasaré al móvil con **Capacitor**, así que la arquitectura tiene que dejarlo preparado desde el principio.
 
 La app tiene cuatro partes:
 1. **Agenda**: mi horario del cole, deberes, exámenes, trabajos y eventos.
@@ -61,14 +61,15 @@ Las traducciones están en `shared/` y no en `renderer/` porque el proceso main 
 
 - **Tema claro y oscuro**, con tres opciones en Ajustes: Claro, Oscuro y Seguir el sistema (por defecto).
 - **Idiomas**: castellano (por defecto), inglés y chino simplificado (`zh-CN`), que se eligen en Ajustes. Fechas y horas con el formato del idioma elegido.
-- **Barra lateral fija a la izquierda** con el nombre de la app arriba y estas secciones:
+- **Nombre e icono**: Keystone, la piedra clave que cierra un arco, con una K. El icono es la piedra blanca con la K recortada sobre un cuadrado morado; en la barra lateral, la misma piedra en morado.
+- **Barra lateral fija a la izquierda** con el icono y el nombre de la app arriba y estas secciones:
   `Hoy` · `Agenda` · `Tareas` · `Hábitos` · `Estudio` · y `Ajustes` abajo del todo.
 - Cada **asignatura tiene un color**, y ese color se usa en el horario, las tareas y los exámenes.
 - Diseño limpio y con espacio. Aunque es para PC, las vistas deben adaptarse a pantallas estrechas para que pasarlo al móvil sea fácil.
 
 ```
 +------------+------------------------------+
-| MI ESTUDIO |                              |
+| KEYSTONE   |                              |
 |            |                              |
 | > Hoy      |                              |
 |   Agenda   |      contenido de la         |
@@ -214,7 +215,8 @@ Cada 20 minutos de uso del ordenador hay que mirar algo a unos 6 metros durante 
 9. **Sincronización**: datos con registro de cambios, cuenta de Firebase, subir y bajar cambios, Ajustes → Sincronización y pruebas con el emulador de Firebase (ver sección 9).
 10. **App Android con Capacitor**: reutiliza el renderer de React y cambia las implementaciones de `platform/` (datos, avisos y sincronización en el móvil). Los servicios con estado (datos, sincronización, temporizador) pasan a `src/core/` para funcionar en los dos. Avisan los dos dispositivos. En el móvil no hay 20-20-20 ni bandeja, y Spotify solo se abre (con la playlist de estudio si se ha puesto su enlace).
 11. **Hábitos y modos de estudio**: sección Hábitos (vista semana y mes, ✓ y ✗, racha y récord, sincronizada), modos del temporizador (20-20-20, 45 + 5 y personalizado) y quitar los consejos.
-12. **Publicar en GitHub**: README con cómo instalarla y configurar Firebase y Spotify, licencia, quitar datos personales del repositorio, actualizaciones automáticas y Releases con el instalador del PC y el APK.
+12. **Nuevo nombre: Keystone**: nombre e icono nuevos en el PC, el móvil, el instalador y los textos. Por dentro se quedan los nombres de antes (el id `com.miestudio.app`, la carpeta de datos `%APPDATA%\Mi Estudio`, el programa `mi-estudio.exe`, los archivos `mi-estudio-*` y los enlaces `miestudio://`), para que la versión nueva se instale encima y no se pierda nada.
+13. **Publicar en GitHub**: README con cómo instalarla y configurar Firebase y Spotify, licencia, quitar datos personales del repositorio, actualizaciones automáticas y Releases con el instalador del PC y el APK.
 
 ---
 

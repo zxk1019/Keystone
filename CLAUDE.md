@@ -1,15 +1,17 @@
-# Mi Estudio
+# Keystone
 
-App de estudio para el PC (Electron + React + TypeScript) y Android (Capacitor), con la misma interfaz de React.
+App de estudio para el PC (Electron + React + TypeScript) y Android (Capacitor), con la misma interfaz de React. Hasta la versión 1.3.0 se llamaba Mi Estudio.
 
 El proyecto vive en esta carpeta (`Mi Estudio`, con el repositorio git). Al lado, en `..\exe`, se guarda el instalador para el usuario.
+
+- Nombres que se quedan como antes a propósito (cambiarlos haría que la versión nueva no se instale encima o que no encuentre los datos): el id `com.miestudio.app` (Windows y Android), la carpeta de datos `%APPDATA%\Mi Estudio` (fijada en `src/main/index.ts`, porque Electron la nombraría como la app), el programa `mi-estudio.exe` (al actualizar, el instalador conserva los accesos directos viejos, que apuntan a él), los archivos `mi-estudio-*`, los enlaces `miestudio://`, el icono de los avisos `ic_stat_mi_estudio` (los avisos ya programados en el móvil lo nombran), la carpeta de la clave de firma y las variables `MI_ESTUDIO_*` de las pruebas. La carpeta del proyecto también sigue siendo `Mi Estudio`.
 
 - La especificación completa está en `docs/especificacion.md`. Síguela y, si algo no encaja, pregúntame antes de cambiarla.
 - Trabajamos por fases (sección 8 de la especificación). Al acabar cada fase:
   1. explica qué has hecho y cómo probarlo,
   2. actualiza la línea "Fase actual" de este archivo,
   3. espera a que te confirme antes de seguir.
-- **Fase actual: 11 — Hábitos y modos de estudio** (hecha, pendiente de que la confirme). La siguiente es la 12 — Publicar en GitHub (README, licencia, quitar datos personales, actualizaciones automáticas y Releases).
+- **Fase actual: 12 — Nuevo nombre: Keystone** (hecha, pendiente de que la confirme). La siguiente es la 13 — Publicar en GitHub (README, licencia, quitar datos personales, actualizaciones automáticas y Releases).
 - Sincronización: solo se ha probado contra el emulador de Firebase. Falta que el usuario cree su proyecto de Firebase (la guía está en Ajustes → Sincronización), ponga el ID del proyecto y la clave de API web, y cree su cuenta. La contraseña la escribe siempre él.
 - Avisos: el usuario quiere que avisen el PC y el móvil, aunque lleguen dos veces.
 - Pendiente de probar con la app instalada (solo ella se registra en Windows), juntos:
@@ -21,10 +23,10 @@ El proyecto vive en esta carpeta (`Mi Estudio`, con el repositorio git). Al lado
 - `npm run dev`: abre la app en modo desarrollo (F12 abre las DevTools).
 - `npm test`: tests de Vitest (`*.test.ts` junto al código) para la lógica que no necesita Electron.
 - `npm run typecheck`, `npm run lint` y `npm test`: pásalos antes de dar una fase por acabada.
-- `npm run build:win`: genera el instalador de Windows en `dist/mi-estudio-<versión>-setup.exe` y la app sin instalar en `dist/win-unpacked/mi-estudio.exe`. No está firmado, así que SmartScreen avisa al instalarlo. Después, copia el instalador nuevo a `..\exe` (y borra el de la versión anterior si cambia el número).
-- `npm run icons`: vuelve a dibujar los iconos (`build/`, `resources/` y los de Android en `android/app/src/main/res/mipmap-*`) a partir del SVG de `scripts/make-icons.cjs`.
+- `npm run build:win`: genera el instalador de Windows en `dist/keystone-<versión>-setup.exe` y la app sin instalar en `dist/win-unpacked/mi-estudio.exe`. No está firmado, así que SmartScreen avisa al instalarlo. Después, copia el instalador nuevo a `..\exe` (y borra el de la versión anterior si cambia el número).
+- `npm run icons`: vuelve a dibujar los iconos (`build/`, `resources/`, los de Android en `android/app/src/main/res/mipmap-*` y el de los avisos del móvil) a partir del dibujo de `scripts/make-icons.cjs`. La barra lateral dibuja la misma piedra en `components/KeystoneLogo.tsx`: si cambias una, cambia la otra.
 - Android:
-  - `npm run build:android` compila la versión móvil, la copia a `android/` y genera el APK firmado en `dist/mi-estudio-<versión>.apk` (con `-- debug`, uno de pruebas). Después, cópialo a `..\exe`. Usa el Java 21 de Android Studio (`jbr`) solo para Gradle; el Java 17 del PC no se toca.
+  - `npm run build:android` compila la versión móvil, la copia a `android/` y genera el APK firmado en `dist/keystone-<versión>.apk` (con `-- debug`, uno de pruebas). Después, cópialo a `..\exe`. Usa el Java 21 de Android Studio (`jbr`) solo para Gradle; el Java 17 del PC no se toca.
   - La clave de firma está en `%USERPROFILE%\.mi-estudio` (`mi-estudio-release.jks` y `keystore.properties` con la contraseña), fuera del repositorio. Sin ella no se pueden instalar actualizaciones encima de la app.
   - `npm run dev:mobile` abre la versión móvil en el navegador para ver las pantallas; los avisos no funcionan ahí.
   - Para probar el móvil virtual contra el emulador de Firebase: `VITE_FIREBASE_EMULATOR=10.0.2.2 npm run build:android -- debug` (10.0.2.2 es el PC visto desde el móvil virtual). Ese APK permite http y deja manejar la app desde las pruebas con `window.miEstudio` (como `window.api` en el PC); los que se dan al usuario se compilan sin la variable y no tienen nada de eso.
