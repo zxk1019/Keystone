@@ -146,6 +146,7 @@ Las traducciones están en `shared/` y no en `renderer/` porque el proceso main 
 - Arrancar con Windows.
 - Sincronización: proyecto de Firebase, iniciar sesión o crear la cuenta, estado y «Sincronizar ahora» (ver sección 9).
 - Exportar e importar datos.
+- Actualizaciones: la versión instalada y «Buscar actualizaciones» (ver sección 10).
 
 ---
 
@@ -233,3 +234,15 @@ Cada 20 minutos de uso del ordenador hay que mirar algo a unos 6 metros durante 
 - **Importar una copia** reemplaza los datos también en los otros dispositivos.
 - **Datos versión 2:** el archivo de la versión 1 se convierte solo al abrir la app, y antes se guarda una copia en `mi-estudio-data.v1.json`.
 - **Datos versión 3 (hábitos):** el archivo de la versión 2 se convierte solo y se guarda una copia en `mi-estudio-data.v2.json`. Al convertirlo, la siguiente sincronización vuelve a bajar todo, para recoger los hábitos que el otro dispositivo creó mientras este tenía la versión vieja (la versión vieja ignora los hábitos que le llegan).
+
+---
+
+## 10. Publicar y actualizar
+
+- **Repositorio público** en GitHub (`zxk1019/Keystone`), con licencia MIT, README en inglés y en castellano con capturas, `CHANGELOG.md`, `CONTRIBUTING.md`, `SECURITY.md` y plantillas para issues y pull requests. Sin datos personales: el horario propio (`docs/mi-horario.json`) se queda solo en el PC.
+- **Versiones:** cada versión es una etiqueta `vX.Y.Z` que coincide con `package.json`. Al subir la etiqueta, GitHub Actions compila el instalador del PC y el APK firmado y crea la Release con las notas de esa versión en `CHANGELOG.md`, `latest.yml` (para las actualizaciones del PC) y `SHA256SUMS.txt`. La clave de firma del APK está en los secretos del repositorio.
+- **CI:** cada cambio en `main` y cada pull request pasa el typecheck, el lint, los tests, la compilación de las dos versiones y las pruebas con el emulador de Firebase. `main` está protegida: solo se fusiona con la CI en verde.
+- **Actualizaciones en el PC** (`electron-updater`): solo en la app instalada. Busca al arrancar (a los 15 s) y cada 6 horas, descarga en segundo plano y la instala al reiniciar. Un aviso encima de la pantalla deja reiniciar en ese momento o más tarde. La app no está firmada, así que no se comprueba la firma del instalador (sí que viene por HTTPS de GitHub). Al actualizar no se borran «Arrancar con Windows» ni los enlaces `miestudio://`: eso solo pasa al desinstalar.
+- **Actualizaciones en el móvil:** Android no deja que una app se instale sola sin pasar por una tienda. Al abrir la app (y al volver al frente si han pasado 6 horas) mira la última Release en la API de GitHub; si hay una versión nueva, el aviso ofrece descargar el APK, que el usuario instala encima.
+- **Ajustes → Actualizaciones:** la versión instalada, el estado y «Buscar actualizaciones».
+- Sin firma de código en Windows ni Play Store, por ahora.

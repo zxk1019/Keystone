@@ -19,6 +19,7 @@ import { createTranslator } from '@core/i18n'
 import { takeNavigation } from './navigation'
 import type { Notifier } from './notifier'
 import type { StudyTimer } from '@core/studyTimer'
+import type { Updater } from './updater'
 
 interface IpcDeps {
   store: DataStore
@@ -32,6 +33,7 @@ interface IpcDeps {
   eyeBreak: EyeBreakService
   spotify: SpotifyService
   sync: SyncService
+  updater: Updater
   /** Called whenever the settings change, from the UI or from an imported backup. */
   onSettingsChanged: (settings: Settings) => void
 }
@@ -65,6 +67,7 @@ export function registerIpc({
   eyeBreak,
   spotify,
   sync,
+  updater,
   onSettingsChanged
 }: IpcDeps): void {
   const translator = (): ReturnType<typeof createTranslator> =>
@@ -105,7 +108,7 @@ export function registerIpc({
     habits.setMark(habitId, date, status)
   )
 
-  ipcMain.handle(IPC.getAppInfo, () => ({ packaged: app.isPackaged }))
+  ipcMain.handle(IPC.getAppInfo, () => ({ packaged: app.isPackaged, version: app.getVersion() }))
   ipcMain.handle(IPC.sendTestNotification, () => notifier.sendTest())
   ipcMain.handle(IPC.takeNavigation, () => takeNavigation())
 
@@ -150,6 +153,10 @@ export function registerIpc({
     return sync.resetPassword(email.trim())
   })
   ipcMain.handle(IPC.syncNow, () => sync.syncNow())
+
+  ipcMain.handle(IPC.updateStatus, () => updater.status())
+  ipcMain.handle(IPC.checkForUpdates, () => updater.check())
+  ipcMain.handle(IPC.installUpdate, () => updater.install())
 }
 
 /** Firebase checks the email and the password itself; here only that they are sensible text. */

@@ -10,6 +10,7 @@ import type {
 import type { PhaseEvent, TimerCommand, TimerState } from './studyTimer'
 import type { SyncResult } from './firebase'
 import type { SyncStatus } from './sync'
+import type { UpdateStatus } from './updates'
 import type {
   AgendaData,
   AgendaItem,
@@ -66,7 +67,11 @@ export const IPC = {
   syncSignOut: 'sync:sign-out',
   syncResetPassword: 'sync:reset-password',
   syncNow: 'sync:now',
-  syncStatusChanged: 'sync:status-changed'
+  syncStatusChanged: 'sync:status-changed',
+  updateStatus: 'updates:status',
+  checkForUpdates: 'updates:check',
+  installUpdate: 'updates:install',
+  updateStatusChanged: 'updates:status-changed'
 } as const
 
 /** 'shared': on the phone the copy goes to the Android share menu (Drive, email...) */
@@ -101,6 +106,8 @@ export const EYE_BREAK_COMMANDS: EyeBreakCommand[] = [
 export interface AppInfo {
   /** False when running with `npm run dev` */
   packaged: boolean
+  /** The version of the app, e.g. "1.5.0" */
+  version: string
 }
 
 export type SaveSlotResult =
@@ -169,4 +176,11 @@ export interface DesktopApi {
   syncResetPassword(email: string): Promise<SyncResult<null>>
   syncNow(): Promise<SyncStatus>
   onSyncStatus(callback: (status: SyncStatus) => void): () => void
+
+  getUpdateStatus(): Promise<UpdateStatus>
+  /** Looks for a new version now (the button in Settings) */
+  checkForUpdates(): Promise<UpdateStatus>
+  /** PC: restarts the app to install the downloaded version. Phone: opens the download. */
+  installUpdate(): Promise<void>
+  onUpdateStatus(callback: (status: UpdateStatus) => void): () => void
 }

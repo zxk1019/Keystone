@@ -3,20 +3,24 @@
 //
 // Capacitor 8 compiles with exactly Java 21, and the Gradle of the project (8.14) does not run
 // on the Java 25 of Android Studio. A Java 21 (Temurin) lives in %USERPROFILE%\.mi-estudio\jdk-21
-// and is used only here, so the Java installed on the computer does not change. Test builds
-// that talk to the Firebase emulator set VITE_FIREBASE_EMULATOR=10.0.2.2 before running this.
+// and is used only here, so the Java installed on the computer does not change. Without that
+// folder (the Release workflow on GitHub) it uses the Java 21 of JAVA_HOME. Test builds that
+// talk to the Firebase emulator set VITE_FIREBASE_EMULATOR=10.0.2.2 before running this.
 const { spawnSync } = require('child_process')
 const { copyFileSync, existsSync, mkdirSync, writeFileSync } = require('fs')
+const { homedir } = require('os')
 const { join } = require('path')
 
 const ROOT = join(__dirname, '..')
 const ANDROID = join(ROOT, 'android')
 const debug = process.argv.includes('debug')
 
-const javaHome = join(process.env.USERPROFILE ?? '', '.mi-estudio', 'jdk-21')
+const windows = process.platform === 'win32'
+const projectJava = join(homedir(), '.mi-estudio', 'jdk-21')
+const javaHome = existsSync(projectJava) ? projectJava : (process.env.JAVA_HOME ?? '')
 const sdk = process.env.ANDROID_HOME || join(process.env.LOCALAPPDATA ?? '', 'Android', 'Sdk')
-if (!existsSync(join(javaHome, 'bin', 'java.exe'))) {
-  throw new Error(`No se encuentra Java 21 en ${javaHome}`)
+if (!existsSync(join(javaHome, 'bin', windows ? 'java.exe' : 'java'))) {
+  throw new Error(`No se encuentra Java 21 en ${projectJava} ni en JAVA_HOME`)
 }
 if (!existsSync(sdk)) throw new Error(`No se encuentra el SDK de Android en ${sdk}`)
 
@@ -27,7 +31,7 @@ if (!existsSync(localProperties)) {
 }
 
 const env = { ...process.env, JAVA_HOME: javaHome, ANDROID_HOME: sdk }
-/** Runs a whole command line in the Windows shell (npm, npx and gradlew are .cmd/.bat files). */
+/** Runs a whole command line in the shell (on Windows, npm, npx and gradlew are .cmd/.bat files). */
 function run(commandLine, cwd = ROOT) {
   const result = spawnSync(commandLine, { cwd, env, stdio: 'inherit', shell: true })
   if (result.status !== 0) process.exit(result.status ?? 1)
@@ -36,7 +40,8 @@ function run(commandLine, cwd = ROOT) {
 run('npm run build:mobile')
 run('npx cap sync android')
 // Quoted: the project folder has a space ("Mi Estudio")
-run(`"${join(ANDROID, 'gradlew.bat')}" ${debug ? 'assembleDebug' : 'assembleRelease'}`, ANDROID)
+const gradle = `"${join(ANDROID, windows ? 'gradlew.bat' : 'gradlew')}"`
+run(`${gradle} ${debug ? 'assembleDebug' : 'assembleRelease'}`, ANDROID)
 
 const { name, version } = require(join(ROOT, 'package.json'))
 const variant = debug ? 'debug' : 'release'

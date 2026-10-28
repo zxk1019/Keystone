@@ -4,7 +4,12 @@ import type { Platform } from '.'
 /** The PC app: the main process does the work, reached through the preload bridge. */
 export const platform: Platform = {
   ...window.api,
-  capabilities: { eyeBreak: true, startWithWindows: true, spotifyControl: true },
+  capabilities: {
+    eyeBreak: true,
+    startWithWindows: true,
+    spotifyControl: true,
+    installsUpdates: true
+  },
   defaultStudyMode: DEVICE_STUDY_MODE.desktop,
   // Computers have no back button
   onBackButton: () => () => {}

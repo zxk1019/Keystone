@@ -33,6 +33,7 @@ import {
 } from './startup'
 import { SecureSyncSessionStore } from './sync/sessionStore'
 import { createTray, setTrayStatus, updateTrayMenu } from './tray'
+import { Updater } from './updater'
 
 // The app was called Mi Estudio until version 1.4.0. The id and the data folder keep that
 // name: Windows knows the app by its id, and Electron would name the folder after the app,
@@ -182,6 +183,8 @@ async function start(): Promise<void> {
       }
     }
   })
+  const updater = new Updater((status) => broadcast(IPC.updateStatusChanged, status))
+
   // Coming back to the window is a good moment to pick up what changed on the phone
   app.on('browser-window-focus', () => sync.windowFocused())
 
@@ -197,6 +200,7 @@ async function start(): Promise<void> {
     eyeBreak,
     spotify,
     sync,
+    updater,
     onSettingsChanged
   })
 
@@ -228,6 +232,7 @@ async function start(): Promise<void> {
   notifier.start()
   eyeBreak.start()
   sync.start()
+  updater.start()
   // Keeps the minutes in the tray tooltip up to date
   setInterval(refreshTrayStatus, 15_000)
 }

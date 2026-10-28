@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { CalendarClock, FileText, ListChecks, Pencil, Plus } from 'lucide-react'
 import { daysUntil } from '@shared/dates'
 import { dueGroup, upcomingExams, urgentItems } from '@shared/items'
-import { currentAndNextSlot, timeToMinutes } from '@shared/schedule'
+import { currentAndNextSlot, sortSlots, timeToMinutes } from '@shared/schedule'
 import type { AgendaItem, ScheduleSlot, Subject } from '@shared/types'
 import Button from '../../components/Button'
 import Card from '../../components/Card'
@@ -68,7 +68,8 @@ function ClassesCard({
   const openScheduleEditor = useNavigationStore((state) => state.openScheduleEditor)
   const weekday = isoWeekday(now)
   const minutes = now.getHours() * 60 + now.getMinutes()
-  const todaySlots = schedule.filter((slot) => slot.weekday === weekday)
+  // In order of time: an imported backup can have them in any order
+  const todaySlots = sortSlots(schedule.filter((slot) => slot.weekday === weekday))
   const { current, next } = currentAndNextSlot(todaySlots, minutes)
 
   let empty: JSX.Element | null = null

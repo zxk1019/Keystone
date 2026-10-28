@@ -1,6 +1,7 @@
 import { useEffect, type ComponentType, type JSX } from 'react'
 import BottomNav from './components/BottomNav'
 import Sidebar from './components/Sidebar'
+import UpdateBanner from './components/UpdateBanner'
 import AgendaPage from './features/agenda/AgendaPage'
 import HabitsPage from './features/habits/HabitsPage'
 import SettingsPage from './features/settings/SettingsPage'
@@ -22,6 +23,7 @@ import { useSettingsStore } from './store/settingsStore'
 import { useSpotifyStore } from './store/spotifyStore'
 import { useStudyStore } from './store/studyStore'
 import { useSyncStore } from './store/syncStore'
+import { useUpdateStore } from './store/updateStore'
 
 const PAGES: Record<SectionId, ComponentType> = {
   today: TodayPage,
@@ -41,6 +43,7 @@ export default function App(): JSX.Element | null {
   const loadEyeBreak = useEyeBreakStore((state) => state.load)
   const loadSpotify = useSpotifyStore((state) => state.load)
   const loadSync = useSyncStore((state) => state.load)
+  const loadUpdates = useUpdateStore((state) => state.load)
   const section = useNavigationStore((state) => state.section)
   const goTo = useNavigationStore((state) => state.goTo)
 
@@ -52,6 +55,7 @@ export default function App(): JSX.Element | null {
     loadEyeBreak()
     loadSpotify()
     loadSync()
+    loadUpdates()
     // Changes that do not come from this window's own updates, e.g. a backup or another device
     const stopSettings = platform.onSettingsChanged((updated) =>
       useSettingsStore.setState({ settings: updated })
@@ -68,6 +72,7 @@ export default function App(): JSX.Element | null {
     )
     const stopSpotify = platform.onSpotifyStatus((status) => useSpotifyStore.setState({ status }))
     const stopSync = platform.onSyncStatus((status) => useSyncStore.setState({ status }))
+    const stopUpdates = platform.onUpdateStatus((status) => useUpdateStore.setState({ status }))
     return () => {
       stopSettings()
       stopData()
@@ -76,8 +81,18 @@ export default function App(): JSX.Element | null {
       stopEyeBreak()
       stopSpotify()
       stopSync()
+      stopUpdates()
     }
-  }, [loadSettings, loadAgenda, loadHabits, loadStudy, loadEyeBreak, loadSpotify, loadSync])
+  }, [
+    loadSettings,
+    loadAgenda,
+    loadHabits,
+    loadStudy,
+    loadEyeBreak,
+    loadSpotify,
+    loadSync,
+    loadUpdates
+  ])
 
   useApplySettings(settings)
   useNotificationNavigation()
@@ -91,9 +106,12 @@ export default function App(): JSX.Element | null {
     // Phones: content with the navigation at the bottom. Wider screens: sidebar on the left
     <div className="safe-area flex h-dvh flex-col bg-white text-zinc-900 md:flex-row dark:bg-zinc-950 dark:text-zinc-100">
       <Sidebar current={section} onSelect={goTo} />
-      <main className="min-h-0 min-w-0 flex-1 overflow-y-auto">
-        <Page />
-      </main>
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+        <UpdateBanner />
+        <main className="min-h-0 flex-1 overflow-y-auto">
+          <Page />
+        </main>
+      </div>
       <BottomNav current={section} onSelect={goTo} />
       <ItemDialog />
     </div>

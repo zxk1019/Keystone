@@ -12,6 +12,7 @@ import EyeBreakSection from './EyeBreakSection'
 import NotificationsSection from './NotificationsSection'
 import SpotifySection from './SpotifySection'
 import SyncSection from './SyncSection'
+import UpdatesSection from './UpdatesSection'
 import { SettingsRow, SettingsSection } from './SettingsLayout'
 
 const THEME_ICONS: Record<ThemeSetting, LucideIcon> = {
@@ -148,6 +149,8 @@ export default function SettingsPage(): JSX.Element | null {
           </p>
         )}
       </SettingsSection>
+
+      <UpdatesSection />
     </div>
   )
 }

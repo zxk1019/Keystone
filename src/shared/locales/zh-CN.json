@@ -285,6 +285,29 @@
       "unknown": "出了点问题，请再试一次。"
     }
   },
+  "updates": {
+    "title": "更新",
+    "descriptionAuto": "Keystone 会自动查找新版本，在后台下载，并在重启时安装。你的数据不会受影响。",
+    "descriptionPhone": "每次打开 Keystone 时都会检查有没有新版本。安装方法：下载 APK 并打开，它会覆盖安装，数据不会丢失。",
+    "installed": "当前版本",
+    "check": "检查更新",
+    "idle": "尚未检查。",
+    "checking": "正在查找新版本…",
+    "upToDate": "已是最新版本（{{time}} 检查）。",
+    "downloading": "正在下载 {{version}} 版… {{percent}}%",
+    "ready": "{{version}} 版已准备好，重启应用后安装。",
+    "available": "有新版本：{{version}}。",
+    "error": "无法检查。请确认已联网，稍后会自动重试。",
+    "disabled": "开发和测试模式下不会查找新版本。",
+    "whatsNew": "查看更新内容",
+    "restart": "重启并更新",
+    "download": "下载",
+    "later": "以后再说",
+    "banner": {
+      "ready": "Keystone {{version}} 已准备好安装。",
+      "available": "Keystone 有新版本：{{version}}。"
+    }
+  },
   "agenda": {
     "week": "周",
     "month": "月",

@@ -1,0 +1,24 @@
+name: Idea or improvement
+description: Something that would make Keystone more useful
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What would you like to do?
+      description: The situation or the problem, before the solution.
+      placeholder: When I study for several exams at once, I would like to …
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: How could Keystone help?
+  - type: dropdown
+    id: device
+    attributes:
+      label: Where?
+      options:
+        - PC
+        - Phone
+        - Both

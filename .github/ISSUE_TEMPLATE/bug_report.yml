@@ -1,0 +1,60 @@
+name: Bug report
+description: Something in Keystone does not work as it should
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report it. Please do not paste passwords, API keys or
+        your data file here. For security problems, see the security policy instead.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What you did, what you expected and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open Agenda
+        2. Click on …
+        3. …
+    validations:
+      required: true
+  - type: dropdown
+    id: device
+    attributes:
+      label: Device
+      options:
+        - Windows (PC app)
+        - Android (phone app)
+        - Both
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Keystone version
+      description: It is in Settings → Updates.
+      placeholder: 1.5.0
+    validations:
+      required: true
+  - type: input
+    id: system
+    attributes:
+      label: Windows or Android version
+      placeholder: Windows 11 24H2 / Android 15
+  - type: dropdown
+    id: sync
+    attributes:
+      label: Do you use sync between the PC and the phone?
+      options:
+        - 'No'
+        - 'Yes'
+  - type: textarea
+    id: extra
+    attributes:
+      label: Screenshots or anything else
