@@ -28,7 +28,7 @@ export function createMainWindow({ show = true }: { show?: boolean } = {}): Brow
     minWidth: 800,
     minHeight: 560,
     show: false,
-    title: 'Mi Estudio',
+    title: 'Keystone',
     icon,
     autoHideMenuBar: true,
     backgroundColor: backgroundColor(),

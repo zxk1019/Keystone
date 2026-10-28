@@ -12,7 +12,7 @@ let eyeBreakCommand: (command: EyeBreakCommand) => void = () => {}
 export function createTray(onEyeBreakCommand: (command: EyeBreakCommand) => void): void {
   eyeBreakCommand = onEyeBreakCommand
   tray = new Tray(icon)
-  tray.setToolTip('Mi Estudio')
+  tray.setToolTip('Keystone')
   tray.on('click', showMainWindow)
 }
 
@@ -47,7 +47,7 @@ export function updateTrayMenu(t: Translate, status: EyeBreakStatus): void {
   )
 }
 
-/** E.g. "Mi Estudio · Estudiando · quedan 23 min" while the study timer runs. */
+/** E.g. "Keystone · Estudiando · quedan 23 min" while the study timer runs. */
 export function setTrayStatus(status: string | null): void {
-  tray?.setToolTip(status ? `Mi Estudio · ${status}` : 'Mi Estudio')
+  tray?.setToolTip(status ? `Keystone · ${status}` : 'Keystone')
 }

@@ -25,9 +25,9 @@ describe('miestudio:// links', () => {
   })
 
   it('finds the link among the arguments Windows passes to the app', () => {
-    expect(findAppUrl(['Mi Estudio.exe', '--flag', 'miestudio://done?item=a'])).toBe(
+    expect(findAppUrl(['mi-estudio.exe', '--flag', 'miestudio://done?item=a'])).toBe(
       'miestudio://done?item=a'
     )
-    expect(findAppUrl(['Mi Estudio.exe'])).toBeUndefined()
+    expect(findAppUrl(['mi-estudio.exe'])).toBeUndefined()
   })
 })

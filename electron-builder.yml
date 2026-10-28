@@ -1,5 +1,5 @@
 appId: com.miestudio.app
-productName: Mi Estudio
+productName: Keystone
 directories:
   buildResources: build
 files:
@@ -24,6 +24,8 @@ asarUnpack:
   # The icons must be real files: Windows reads them for the tray and the notifications
   - resources/**
 win:
+  # Keeps the name of when the app was Mi Estudio: on an update the installer keeps the old
+  # shortcuts (it only renames them), and they point to this file
   executableName: mi-estudio
 nsis:
   # One click, only for the current user: no administrator permission needed
@@ -33,7 +35,7 @@ nsis:
   shortcutName: ${productName}
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
-  # Uninstalling keeps the user's data (%APPDATA%\Mi Estudio)
+  # Uninstalling keeps the user's data (%APPDATA%\Mi Estudio: the folder keeps the old name)
   deleteAppDataOnUninstall: false
   # Removes what the app registers with Windows (miestudio:// links, start with Windows)
   include: build/installer.nsh

@@ -1,4 +1,4 @@
-; Extra steps for the Mi Estudio installer (electron-builder NSIS).
+; Extra steps for the Keystone installer (electron-builder NSIS).
 
 !macro customUnInstall
   ; The miestudio:// links that the app registers when it starts (notification buttons)

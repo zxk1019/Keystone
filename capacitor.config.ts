@@ -11,7 +11,7 @@ const emulatorHost = process.env['VITE_FIREBASE_EMULATOR']
 
 const config: CapacitorConfig = {
   appId: 'com.miestudio.app',
-  appName: 'Mi Estudio',
+  appName: 'Keystone',
   webDir: 'out/mobile',
   android: {
     allowMixedContent: Boolean(emulatorHost)
@@ -19,7 +19,7 @@ const config: CapacitorConfig = {
   server: emulatorHost ? { cleartext: true } : undefined,
   plugins: {
     LocalNotifications: {
-      // White graduation cap in android/app/src/main/res/drawable
+      // The white keystone in android/app/src/main/res/drawable (made by npm run icons)
       smallIcon: 'ic_stat_mi_estudio',
       iconColor: '#4f46e5'
     }

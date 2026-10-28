@@ -34,12 +34,16 @@ import {
 import { SecureSyncSessionStore } from './sync/sessionStore'
 import { createTray, setTrayStatus, updateTrayMenu } from './tray'
 
+// The app was called Mi Estudio until version 1.4.0. The id and the data folder keep that
+// name: Windows knows the app by its id, and Electron would name the folder after the app,
+// so after the update the data would be somewhere else.
 const APP_ID = 'com.miestudio.app'
+const DATA_FOLDER = 'Mi Estudio'
 
 // A separate data folder for tests and experiments, so they never touch the real data:
 // MI_ESTUDIO_DATA_DIR=C:\temp\pruebas npm run dev
 const customDataDir = process.env['MI_ESTUDIO_DATA_DIR']
-if (customDataDir) app.setPath('userData', customDataDir)
+app.setPath('userData', customDataDir || join(app.getPath('appData'), DATA_FOLDER))
 
 // Only one copy of the app can run; opening it again just shows the existing window
 if (!app.requestSingleInstanceLock()) {

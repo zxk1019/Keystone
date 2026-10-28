@@ -323,7 +323,7 @@ export function parseSyncMeta(value: unknown): SyncMeta {
 }
 
 /**
- * Returns the data if it looks like a Mi Estudio data file, or null if it does not.
+ * Returns the data if it looks like a data file of the app, or null if it does not.
  * Invalid entries inside the lists are dropped instead of rejecting the whole file.
  * Version 1 files (from before sync) come back with no sync bookkeeping, and files from before
  * habits (1 and 2) with no habits: whoever loads them decides what else to do (see DataStore).

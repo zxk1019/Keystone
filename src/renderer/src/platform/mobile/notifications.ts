@@ -31,7 +31,7 @@ const REMINDERS_CHANNEL = 'reminders'
 const STUDY_CHANNEL = 'study'
 const OVERDUE_ACTIONS = 'overdue'
 const DONE_ACTION = 'done'
-/** White graduation cap in android/app/src/main/res/drawable */
+/** The white keystone in android/app/src/main/res/drawable (old name, see make-icons.cjs) */
 const SMALL_ICON = 'ic_stat_mi_estudio'
 /** Several changes in a row are planned once */
 const PLAN_DELAY_MS = 1000

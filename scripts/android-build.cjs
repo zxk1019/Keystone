@@ -1,5 +1,5 @@
 // npm run build:android [-- debug]: builds the phone screens, copies them into android/ and
-// compiles the APK with Gradle. The APK ends up in dist/mi-estudio-<version>.apk.
+// compiles the APK with Gradle. The APK ends up in dist/keystone-<version>.apk.
 //
 // Capacitor 8 compiles with exactly Java 21, and the Gradle of the project (8.14) does not run
 // on the Java 25 of Android Studio. A Java 21 (Temurin) lives in %USERPROFILE%\.mi-estudio\jdk-21
@@ -38,13 +38,13 @@ run('npx cap sync android')
 // Quoted: the project folder has a space ("Mi Estudio")
 run(`"${join(ANDROID, 'gradlew.bat')}" ${debug ? 'assembleDebug' : 'assembleRelease'}`, ANDROID)
 
-const version = require(join(ROOT, 'package.json')).version
+const { name, version } = require(join(ROOT, 'package.json'))
 const variant = debug ? 'debug' : 'release'
 const apk = join(ANDROID, 'app', 'build', 'outputs', 'apk', variant, `app-${variant}.apk`)
 if (!existsSync(apk)) {
   throw new Error(`Gradle no ha dejado el APK en ${apk} (¿falta la clave de firma?)`)
 }
 mkdirSync(join(ROOT, 'dist'), { recursive: true })
-const output = join(ROOT, 'dist', `mi-estudio-${version}${debug ? '-debug' : ''}.apk`)
+const output = join(ROOT, 'dist', `${name}-${version}${debug ? '-debug' : ''}.apk`)
 copyFileSync(apk, output)
 console.log(`APK listo: ${output}`)

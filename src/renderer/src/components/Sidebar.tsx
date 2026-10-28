@@ -1,11 +1,11 @@
 import type { JSX } from 'react'
 import { useTranslation } from 'react-i18next'
-import { GraduationCap } from 'lucide-react'
 import { remainingMs } from '@shared/studyTimer'
 import { useNow } from '../hooks/useNow'
 import { formatCountdown } from '../lib/time'
 import { useStudyStore } from '../store/studyStore'
 import { MAIN_SECTIONS, SECTION_ICONS, type SectionId } from '../sections'
+import KeystoneLogo from './KeystoneLogo'
 
 interface SidebarProps {
   current: SectionId
@@ -18,7 +18,7 @@ export default function Sidebar({ current, onSelect }: SidebarProps): JSX.Elemen
   return (
     <nav className="hidden w-56 shrink-0 flex-col md:flex border-r border-zinc-200 bg-zinc-50 px-3 py-5 select-none dark:border-zinc-800 dark:bg-zinc-900">
       <div className="mb-6 flex items-center gap-2 px-3">
-        <GraduationCap className="size-6 text-indigo-600 dark:text-indigo-400" />
+        <KeystoneLogo className="size-6 text-indigo-600 dark:text-indigo-400" />
         <span className="text-lg font-semibold tracking-tight">{t('app.name')}</span>
       </div>
 
