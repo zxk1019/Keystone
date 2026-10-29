@@ -11,7 +11,7 @@ El proyecto vive en esta carpeta (`Mi Estudio`, con el repositorio git). Al lado
   1. explica qué has hecho y cómo probarlo,
   2. actualiza la línea "Fase actual" de este archivo,
   3. espera a que te confirme antes de seguir.
-- **Fase actual: 13 — Publicar en GitHub** (versión 1.5.0, hecha, pendiente de que la confirme y de subirla).
+- **Fase actual: 13 — Publicar en GitHub** (versión 1.5.0 publicada el 29-10-2026, pendiente de que la confirme). Las PRs de Dependabot que quedan abiertas están por revisar.
 - Git: no hagas commit ni `push` hasta que te lo pida. Los commits van a nombre de «Xinkai Zheng» con el correo `348464665+zxk1019@users.noreply.github.com` (el que da GitHub para no enseñar el real). Las ramas `fase-*` son solo locales.
 - Sincronización: solo se ha probado contra el emulador de Firebase. Falta que el usuario cree su proyecto de Firebase (la guía está en Ajustes → Sincronización), ponga el ID del proyecto y la clave de API web, y cree su cuenta. La contraseña la escribe siempre él.
 - Avisos: el usuario quiere que avisen el PC y el móvil, aunque lleguen dos veces.
@@ -38,7 +38,7 @@ El proyecto vive en esta carpeta (`Mi Estudio`, con el repositorio git). Al lado
 - Para probar sin tocar los datos reales, lanza la app con otra carpeta de datos: `MI_ESTUDIO_DATA_DIR=<carpeta>`. Usa una ruta corta: si la ruta es larga, Windows no deja crear los archivos de Chromium y la app se cierra al arrancar. Una ejecución con esta variable cuenta como prueba (`isTestRun`) y no registra nada en Windows, ni siquiera desde `dist/win-unpacked`.
 - `npm run test:emulator`: arranca el emulador de Firebase, pasa `src/shared/firebase.emulator.test.ts` (cuentas, subir y bajar, y las reglas de `firebase/firestore.rules`) y lo cierra. `npm run emulators` lo deja abierto para probar la app: lánzala con `MI_ESTUDIO_FIREBASE_EMULATOR=127.0.0.1` (solo en desarrollo; la app instalada lo ignora) y en Ajustes pon el ID de proyecto `demo-mi-estudio` y cualquier clave que empiece por `AIza` y tenga 39 caracteres.
   - El emulador usa los puertos 9099 y 8085 (el 8080 lo ocupa Oracle). Si al cerrarlo el 8085 se queda ocupado, ciérralo con `curl -X POST http://127.0.0.1:8085/shutdown`.
-  - `firebase-tools` está fijado en la 14.18.0 porque las versiones nuevas piden Java 21 y en este PC hay Java 17.
+  - `firebase-tools` (versión exacta, desde la 15) necesita Java 21 para los emuladores. `scripts/firebase.cjs` (lo usan `npm run emulators` y `npm run test:emulator`) le da el Java 21 de `%USERPROFILE%\.mi-estudio\jdk-21`, el mismo del APK; el Java 17 del PC no se toca. Si lanzas `firebase` a mano, usará el Java 17 y fallará.
   - Para probar dos dispositivos a la vez, abre dos copias con carpetas de datos distintas (`MI_ESTUDIO_DATA_DIR`).
 - Para probar las actualizaciones sin GitHub:
   - PC: `MI_ESTUDIO_UPDATES_URL=http://127.0.0.1:<puerto>/` (solo en desarrollo) apunta el actualizador a una carpeta servida con `latest.yml` y el instalador de una versión mayor. Escribe `keystone-dev-app-update.yml` en la carpeta temporal y descarga en `keystone-updater-test`; bórralos al acabar. En desarrollo no se instala nada: solo se prueba hasta «lista para instalar».
