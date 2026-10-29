@@ -11,7 +11,7 @@ You need:
   full-screen detection of the 20-20-20 rule.
 - **Node.js 24** (the version is in [`.nvmrc`](.nvmrc)) and Git.
 - For the Android app: Android Studio (for the Android SDK) and a **Java 21** JDK.
-- For the Firebase emulator tests: Java 17 or later.
+- For the Firebase emulator tests: Java 21.
 
 ```bash
 git clone https://github.com/zxk1019/Keystone.git

@@ -7,6 +7,11 @@ Android APK on its [GitHub Release](https://github.com/zxk1019/Keystone/releases
 
 ## [Unreleased]
 
+### Changed
+
+- The Windows installer is built with electron-builder 26.17.0, which compresses the program
+  files with a filter that the installer can always unpack. The installer is about 9 MB bigger.
+
 ## [1.5.0] - 2026-10-28
 
 ### Added
