@@ -22,6 +22,10 @@ Android APK on its [GitHub Release](https://github.com/zxk1019/Keystone/releases
 - Updating no longer removes "Start with Windows" or the links of the notification buttons
   for a moment: only uninstalling does.
 
+### Security
+
+- Electron 44.10.0, which stops trusting some compromised eMudhra intermediate certificates.
+
 ### Fixed
 
 - Today lists the classes in order of time also when the timetable comes from an imported

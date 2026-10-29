@@ -34,6 +34,16 @@ npm run dev
 | `npm run build:android` | Signed APK in `dist/keystone-<version>.apk` (`-- debug` for a test build). |
 | `npm run icons`         | Draws all the icons again from `scripts/make-icons.cjs`.                   |
 
+### Changing dependencies
+
+npm on Windows drops from `package-lock.json` a few packages that Tailwind's WebAssembly build
+carries inside, and then `npm ci` fails on Linux (CI) with "Missing: @emnapi/... from lock
+file". After `npm install` or `npm update`, run:
+
+```bash
+node scripts/fix-lockfile.cjs
+```
+
 ### Test without touching your own data
 
 Start the app with a separate data folder. A run like this never registers anything with
