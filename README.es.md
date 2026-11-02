@@ -118,14 +118,18 @@ y copiar las reglas, está en **Ajustes → Sincronización**. En resumen:
 
 1. Crea un proyecto en la [consola de Firebase](https://console.firebase.google.com/) (no hace
    falta Google Analytics).
-2. En **Authentication**, activa el proveedor **Correo electrónico/contraseña**.
-3. En **Firestore Database**, crea una base de datos en modo de producción.
+2. Abre **Authentication** (dentro de **Seguridad**), pulsa **Comenzar** y activa el proveedor
+   **Correo electrónico/contraseña**.
+3. Abre **Firestore Database** (dentro de **Bases de datos y almacenamiento**) y crea una base de
+   datos: edición **Standard**, el ID `(default)` y modo de producción.
 4. En la pestaña **Reglas**, pega las reglas de
-   [`firebase/firestore.rules`](firebase/firestore.rules) y publícalas. Solo dejan que cada
-   cuenta lea y escriba sus propios datos.
-5. Copia el **ID del proyecto** y la **clave de API web** de la configuración del proyecto en
-   Keystone.
-6. Crea tu cuenta en Keystone y entra con el mismo correo en el otro dispositivo.
+   [`firebase/firestore.rules`](firebase/firestore.rules) (Keystone tiene un botón para copiarlas)
+   y publícalas. Solo dejan que cada cuenta lea y escriba sus propios datos.
+5. En **Configuración del proyecto**, copia el **ID del proyecto** en Keystone. Para la **clave
+   de API web**, registra una app web con el icono `</>` de **Tus apps** (sin Hosting) y copia el
+   valor de `apiKey` que sale.
+6. En Keystone, elige **Crear cuenta**. En el otro dispositivo, pon el mismo ID y la misma clave e
+   inicia sesión con la misma cuenta.
 
 Se sincronizan las asignaturas, el horario, las tareas, los hábitos y los ajustes compartidos.
 Si lo mismo cambia en los dos dispositivos, gana el último cambio.

@@ -117,12 +117,18 @@ copy the rules, is in **Settings → Sync**. In short:
 
 1. Create a project in the [Firebase console](https://console.firebase.google.com/) (Google
    Analytics is not needed).
-2. In **Authentication**, enable the **Email/Password** provider.
-3. In **Firestore Database**, create a database in production mode.
+2. Open **Authentication** (under **Security**), click **Get started** and enable the
+   **Email/Password** provider.
+3. Open **Firestore Database** (under **Databases & Storage**) and create a database: the
+   **Standard** edition, the ID `(default)` and production mode.
 4. In the **Rules** tab, paste the rules of [`firebase/firestore.rules`](firebase/firestore.rules)
-   and publish them. They only let each account read and write its own data.
-5. Copy the **Project ID** and the **Web API Key** from the project settings into Keystone.
-6. Create your account in Keystone and sign in with the same email on your other device.
+   (Keystone has a button to copy them) and publish them. They only let each account read and
+   write its own data.
+5. In **Project settings**, copy the **Project ID** into Keystone. For the **Web API key**,
+   register a web app with the `</>` icon under **Your apps** (no Hosting) and copy the `apiKey`
+   value it shows.
+6. In Keystone, choose **Create account**. On your other device, enter the same project ID and key
+   and sign in with the same account.
 
 Subjects, timetable, tasks, habits and the shared settings sync. If the same thing changes on
 both devices, the last change wins.

@@ -7,6 +7,19 @@ Android APK on its [GitHub Release](https://github.com/zxk1019/Keystone/releases
 
 ## [Unreleased]
 
+### Added
+
+- The password fields of Settings → Sync have an eye button to show what you typed, and
+  creating an account asks for the password twice.
+
+### Changed
+
+- Settings → Sync has a clearer guide to set up Firebase: each step has a title, says where to
+  find each button in the new Firebase console and how to get the web API key (it no longer
+  shows in the project settings until you register a web app). The rules are copied with one
+  button.
+- Signing in and creating an account are now two separate choices.
+
 ## [1.6.0] - 2026-11-02
 
 ### Added
