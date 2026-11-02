@@ -7,6 +7,8 @@ Android APK on its [GitHub Release](https://github.com/zxk1019/Keystone/releases
 
 ## [Unreleased]
 
+## [1.6.1] - 2026-11-02
+
 ### Added
 
 - The password fields of Settings → Sync have an eye button to show what you typed, and
@@ -121,7 +123,8 @@ First version for Windows.
 - Backups that you can export and import, and an installer that keeps your data when you
   uninstall the app.
 
-[Unreleased]: https://github.com/zxk1019/Keystone/compare/v1.6.0...HEAD
+[Unreleased]: https://github.com/zxk1019/Keystone/compare/v1.6.1...HEAD
+[1.6.1]: https://github.com/zxk1019/Keystone/compare/v1.6.0...v1.6.1
 [1.6.0]: https://github.com/zxk1019/Keystone/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/zxk1019/Keystone/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/zxk1019/Keystone/compare/v1.3.0...v1.4.0
