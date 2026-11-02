@@ -14,10 +14,18 @@ updates:
       minor-and-patch:
         update-types: [minor, patch]
     ignore:
-      # Pinned on purpose: newer versions need Java 21 to run the emulator (see CLAUDE.md)
+      # A new major version of the emulators can need another Java: update it by hand (see
+      # scripts/firebase.cjs)
       - dependency-name: firebase-tools
+        update-types: [version-update:semver-major]
       # A new major version of Capacitor also changes the Android project: update it by hand
       - dependency-name: '@capacitor/*'
+        update-types: [version-update:semver-major]
+      # eslint-plugin-react does not support ESLint 10 yet
+      - dependency-name: eslint
+        update-types: [version-update:semver-major]
+      # The types follow the Node.js of .nvmrc (24), not the newest one
+      - dependency-name: '@types/node'
         update-types: [version-update:semver-major]
 
   - package-ecosystem: github-actions
