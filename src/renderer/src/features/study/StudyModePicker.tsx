@@ -4,6 +4,7 @@ import { BookOpen, Monitor, SlidersHorizontal, type LucideIcon } from 'lucide-re
 import { STUDY_LIMITS, STUDY_MODES, type StudyMode, type StudySettings } from '@shared/types'
 import Field from '../../components/Field'
 import { inputClass, segmentClass } from '../../components/styles'
+import Switch from '../../components/Switch'
 import { platform } from '../../platform'
 import { useSettingsStore } from '../../store/settingsStore'
 
@@ -65,6 +66,20 @@ export default function StudyModePicker({ locked }: { locked: boolean }): JSX.El
       <p className="text-center text-xs text-zinc-500 dark:text-zinc-400">
         {locked ? t('study.mode.locked') : t(`study.mode.${mode}Hint`)}
       </p>
+
+      {/* Only the PC has the dark screens. It can change while the timer runs */}
+      {mode === 'computer' && platform.capabilities.eyeBreak && (
+        <div className="flex items-center justify-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
+          <Switch
+            checked={settings.eyeBreak.studyRestScreen}
+            onChange={(studyRestScreen) =>
+              void update({ eyeBreak: { ...settings.eyeBreak, studyRestScreen } })
+            }
+            label={t('study.mode.restScreen')}
+          />
+          <span>{t('study.mode.restScreen')}</span>
+        </div>
+      )}
 
       {mode === 'custom' && (
         <div className="flex justify-center gap-3">

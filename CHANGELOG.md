@@ -7,6 +7,19 @@ Android APK on its [GitHub Release](https://github.com/zxk1019/Keystone/releases
 
 ## [Unreleased]
 
+### Added
+
+- In the "At the computer" study mode (20-20-20), the 20 seconds of looking far away now cover
+  every monitor with the dark screen, like the automatic eye breaks. A switch under the study
+  modes and in Settings → Eye breaks (20-20-20) turns it off; without it you only get the chime
+  and a notification.
+
+### Fixed
+
+- The 20-second rest of the "At the computer" study mode was easy to miss: it only showed a
+  Windows notification, which does not appear while Keystone is in front, with Do Not Disturb
+  on or in full screen.
+
 ### Changed
 
 - The Windows installer is built with electron-builder 26.17.0, which compresses the program

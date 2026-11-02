@@ -101,6 +101,11 @@ export function remainingMs(state: TimerState, now: number): number {
     : state.remainingMs
 }
 
+/** The 20 seconds of looking far away of the 20-20-20 mode are running. */
+export function isEyeRest(state: TimerState): boolean {
+  return state.status === 'running' && state.phase === 'break' && state.eyeRest
+}
+
 /** Only time actually spent studying silences the notifications (not breaks, not pauses). */
 export function isStudying(state: TimerState): boolean {
   return state.status === 'running' && state.phase === 'focus'

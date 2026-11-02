@@ -129,7 +129,7 @@ Las traducciones están en `shared/` y no en `renderer/` porque el proceso main 
 
 ### 4.5 Estudio
 - **Temporizador** con tres modos, que se eligen encima del temporizador y solo con él parado:
-  - **Con ordenador (20-20-20)**: 20 minutos de estudio y 20 segundos mirando algo a 6 metros; después el siguiente bloque empieza solo. La música no se pausa en esos 20 segundos, y mientras va este modo no sale la pantalla oscura del 20-20-20.
+  - **Con ordenador (20-20-20)**: 20 minutos de estudio y 20 segundos mirando algo a 6 metros; después el siguiente bloque empieza solo. La música no se pausa en esos 20 segundos. En el PC, esos 20 segundos tapan los monitores con la pantalla oscura del 20-20-20 (se puede quitar con un interruptor debajo de los modos o en Ajustes; sin ella solo suena la campanita y llega un aviso). La pantalla oscura automática del 20-20-20 no sale mientras va este modo.
   - **Sin ordenador**: 45 minutos de estudio y 5 de descanso.
   - **Personalizado**: los minutos de estudio y de descanso que yo ponga.
   Por defecto el PC usa «Con ordenador» y el móvil «Sin ordenador»; cada dispositivo recuerda su modo. Botones de empezar, pausa, saltar fase y reiniciar. Suena un sonido suave al cambiar de fase.
@@ -141,7 +141,7 @@ Las traducciones están en `shared/` y no en `renderer/` porque el proceso main 
 - Tema e idioma.
 - Asignaturas y horario (o un enlace al modo editar de la Agenda).
 - Avisos y horas de silencio (ver sección 5).
-- 20-20-20: activado o no, intervalo (20 min), duración (20 s) y pausa por inactividad.
+- 20-20-20: activado o no, intervalo (20 min), duración (20 s) y pausa por inactividad, y si los 20 segundos del modo «Con ordenador» sacan la pantalla oscura (por defecto sí; funciona aunque el 20-20-20 automático esté apagado).
 - Spotify: conectar o desconectar y playlist por defecto.
 - Arrancar con Windows.
 - Sincronización: proyecto de Firebase, iniciar sesión o crear la cuenta, estado y «Sincronizar ahora» (ver sección 9).
@@ -197,7 +197,7 @@ Cada 20 minutos de uso del ordenador hay que mirar algo a unos 6 metros durante 
 +-------------------------------------------+
 ```
 
-- **Con el temporizador de estudio**: el descanso del temporizador reinicia el contador del 20-20-20. Si faltan menos de 2 minutos para el descanso del temporizador, el 20-20-20 no salta. Con el temporizador en marcha en el modo «Con ordenador», la pantalla oscura no sale, porque el propio temporizador ya avisa cada 20 minutos.
+- **Con el temporizador de estudio**: el descanso del temporizador reinicia el contador del 20-20-20. Si faltan menos de 2 minutos para el descanso del temporizador, el 20-20-20 no salta. Con el temporizador en marcha en el modo «Con ordenador», la pantalla oscura automática no sale, porque el propio temporizador ya manda mirar lejos cada 20 minutos: son sus 20 segundos de descanso los que tapan los monitores (si está activada la opción), hasta que acaban o se pausa, salta o reinicia el temporizador. Si hay un juego o una presentación a pantalla completa, en vez de la pantalla oscura llega el aviso.
 - **Menú de la bandeja** para pausar el 20-20-20 durante 30 minutos, 1 hora o hasta reiniciar (para cuando juego, veo una peli o hago una presentación), y para reanudarlo.
 - En Ajustes: activarlo o no, intervalo, duración y umbral de inactividad.
 

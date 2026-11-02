@@ -49,6 +49,25 @@ describe('sanitizeSettings', () => {
       quietEnd: '08:00'
     })
   })
+
+  it('turns on the dark screen of the 20-second study rest for data from older versions', () => {
+    const older = { enabled: false, intervalMinutes: 30, durationSeconds: 20, idleResetMinutes: 5 }
+    expect(sanitizeSettings({ eyeBreak: older }).eyeBreak).toEqual({
+      ...older,
+      studyRestScreen: true
+    })
+    const off = { ...older, studyRestScreen: false }
+    expect(sanitizeSettings({ eyeBreak: off }).eyeBreak.studyRestScreen).toBe(false)
+    expect(
+      sanitizeSettings(
+        { eyeBreak: { ...older, studyRestScreen: 'no' } },
+        {
+          ...current,
+          eyeBreak: off
+        }
+      ).eyeBreak.studyRestScreen
+    ).toBe(false)
+  })
 })
 
 describe('parseSubject', () => {

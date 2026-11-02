@@ -5,7 +5,13 @@ import { IPC } from '@shared/api'
 import { findAppUrl, parseAppUrl } from '@shared/appUrl'
 import type { EyeBreakStatus } from '@shared/eyeBreak'
 import { FIREBASE_URLS, emulatorUrls } from '@shared/firebase'
-import { isStudying, studyPlan, type TimerState } from '@shared/studyTimer'
+import {
+  isEyeRest,
+  isStudying,
+  studyPlan,
+  type PhaseEvent,
+  type TimerState
+} from '@shared/studyTimer'
 import { DEVICE_STUDY_MODE, type Settings } from '@shared/types'
 import { ItemsRepo, ScheduleRepo, SubjectsRepo } from '@core/data/agendaRepos'
 import { DataStore } from '@core/data/dataStore'
@@ -108,6 +114,8 @@ async function start(): Promise<void> {
       wasStudying = studying
       // A new study block (not resuming from a pause) brings the music back
       if (previousTimer?.status === 'idle' && studying) spotify.onStudyEvent('blockStarted')
+      // Pausing, skipping or resetting during the 20 seconds of the 20-20-20 uncovers the screens
+      if (!isEyeRest(state)) eyeBreak.endStudyRest()
       previousTimer = state
     },
     onPhaseEvent: (event, state) => {
@@ -118,10 +126,22 @@ async function start(): Promise<void> {
         // 20 seconds looking far away are no reason to stop the music
         if (!state.eyeRest) spotify.onStudyEvent('breakStarted')
       }
-      const notification = phaseNotification(event, state, translator())
-      if (notification && !isMainWindowInFront()) notifier.show(notification)
+      void announcePhase(event, state)
     }
   })
+
+  /**
+   * The 20 seconds of the 20-20-20 mode go on the dark screens if the user chose it (they show
+   * even with the window in front, a full-screen app or Windows' "Do not disturb"). Otherwise,
+   * and for the other breaks, a notification when the app is not in front.
+   */
+  const announcePhase = async (event: PhaseEvent, state: TimerState): Promise<void> => {
+    if (event === 'breakStarted' && isEyeRest(state) && (await eyeBreak.showStudyRest(state))) {
+      return
+    }
+    const notification = phaseNotification(event, state, translator())
+    if (notification && !isMainWindowInFront()) notifier.show(notification)
+  }
 
   previousTimer = studyTimer.get()
 

@@ -3,6 +3,7 @@ import {
   advance,
   applyCommand,
   createTimer,
+  isEyeRest,
   isStudying,
   remainingMs,
   studyPlan,
@@ -123,6 +124,19 @@ describe('study modes', () => {
       expect(next.state).toMatchObject({ status: 'running', phase: 'focus', block: 2 })
       expect(isStudying(next.state)).toBe(true)
       expect(remainingMs(next.state, t0 + 21 * MIN + 20_000)).toBe(19 * MIN)
+    })
+
+    it('knows when the 20 seconds of looking far away are running (for the dark screens)', () => {
+      expect(isEyeRest(running)).toBe(false)
+      const onBreak = advance(running, t0 + 20 * MIN, eyes).state
+      expect(isEyeRest(onBreak)).toBe(true)
+      expect(isEyeRest(applyCommand(onBreak, 'pause', t0 + 20 * MIN + 5000, eyes).state)).toBe(
+        false
+      )
+      // A normal break is not one
+      const longBreak = advance(run(createTimer(plan), ['start', t0]), t0 + 45 * MIN, plan).state
+      expect(longBreak.phase).toBe('break')
+      expect(isEyeRest(longBreak)).toBe(false)
     })
 
     it('skipping the 20 seconds starts the next block right away', () => {

@@ -49,6 +49,11 @@ export interface EyeBreakSettings {
   durationSeconds: number
   /** Minutes without mouse or keyboard after which the count starts again */
   idleResetMinutes: number
+  /**
+   * The 20-second rest of the study timer's 20-20-20 mode also covers the monitors with the
+   * dark screen. Works even with the automatic eye breaks (`enabled`) turned off.
+   */
+  studyRestScreen: boolean
 }
 
 export const EYE_BREAK_LIMITS = {
@@ -238,7 +243,8 @@ export const DEFAULT_EYE_BREAK: EyeBreakSettings = {
   enabled: true,
   intervalMinutes: 20,
   durationSeconds: 20,
-  idleResetMinutes: 5
+  idleResetMinutes: 5,
+  studyRestScreen: true
 }
 
 export const DEFAULT_SPOTIFY: SpotifySettings = {

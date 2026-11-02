@@ -9,16 +9,18 @@ import { platform } from '../../platform'
 /** Leaves time for the chime to play before the window closes */
 const CLOSE_DELAY_MS = 1200
 
-function readParams(): { primary: boolean; endsAt: number; durationMs: number } {
+function readParams(): { primary: boolean; endsAt: number; durationMs: number; chime: boolean } {
   const params = new URLSearchParams(window.location.hash.split('?')[1] ?? '')
   return {
     primary: params.get('primary') === '1',
     endsAt: Number(params.get('endsAt')),
-    durationMs: Number(params.get('duration'))
+    durationMs: Number(params.get('duration')),
+    // The 20 seconds of the study timer: the main window plays the chime instead
+    chime: params.get('chime') !== '0'
   }
 }
 
-const { primary, endsAt, durationMs } = readParams()
+const { primary, endsAt, durationMs, chime } = readParams()
 
 /**
  * The dark screen of the 20-20-20 rule. Each monitor gets one; only the main one shows the
@@ -40,7 +42,7 @@ export default function EyeBreakOverlay(): JSX.Element {
   useEffect(() => {
     if (!primary || left > 0 || finished.current) return
     finished.current = true
-    playChime('breakEnded')
+    if (chime) playChime('breakEnded')
     setTimeout(() => platform.eyeBreakCommand('finish'), CLOSE_DELAY_MS)
   }, [left])
 
