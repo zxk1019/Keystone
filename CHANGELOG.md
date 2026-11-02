@@ -7,6 +7,8 @@ Android APK on its [GitHub Release](https://github.com/zxk1019/Keystone/releases
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-11-02
+
 ### Added
 
 - In the "At the computer" study mode (20-20-20), the 20 seconds of looking far away now cover
@@ -106,7 +108,8 @@ First version for Windows.
 - Backups that you can export and import, and an installer that keeps your data when you
   uninstall the app.
 
-[Unreleased]: https://github.com/zxk1019/Keystone/compare/v1.5.0...HEAD
+[Unreleased]: https://github.com/zxk1019/Keystone/compare/v1.6.0...HEAD
+[1.6.0]: https://github.com/zxk1019/Keystone/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/zxk1019/Keystone/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/zxk1019/Keystone/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/zxk1019/Keystone/compare/v1.2.0...v1.3.0
