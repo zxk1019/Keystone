@@ -11,7 +11,7 @@ El proyecto vive en esta carpeta (`Mi Estudio`, con el repositorio git). Al lado
   1. explica qué has hecho y cómo probarlo,
   2. actualiza la línea "Fase actual" de este archivo,
   3. espera a que te confirme antes de seguir.
-- **Fase actual: 13 — Publicar en GitHub** (versión 1.5.0 publicada el 29-10-2026, pendiente de que la confirme). Dependabot ignora las versiones mayores de ESLint (hasta que eslint-plugin-react admita la 10), de `@types/node` (sigue al Node 24 de `.nvmrc`), de firebase-tools y de Capacitor: esas se actualizan a mano. TypeScript 7 queda pendiente (quita `baseUrl` de los tsconfig).
+- **Fase actual: 13 — Publicar en GitHub** (versión 1.5.0 publicada el 29-10-2026, pendiente de que la confirme). Dependabot ignora las versiones mayores de ESLint (hasta que eslint-plugin-react admita la 10), de `@types/node` (sigue al Node 24 de `.nvmrc`), de firebase-tools y de Capacitor: esas se actualizan a mano. TypeScript está en la 6.0 (`~6.0.3`, porque typescript-eslint solo admite `<6.1.0`). La 7 (reescrita en Go) espera a que typescript-eslint la admita; los tsconfig ya están listos para ella (sin `baseUrl`, `paths` con `./`).
 - Git: no hagas commit ni `push` hasta que te lo pida. Los commits van a nombre de «Xinkai Zheng» con el correo `348464665+zxk1019@users.noreply.github.com` (el que da GitHub para no enseñar el real). Las ramas `fase-*` son solo locales.
 - Sincronización: solo se ha probado contra el emulador de Firebase. Falta que el usuario cree su proyecto de Firebase (la guía está en Ajustes → Sincronización), ponga el ID del proyecto y la clave de API web, y cree su cuenta. La contraseña la escribe siempre él.
 - Avisos: el usuario quiere que avisen el PC y el móvil, aunque lleguen dos veces.

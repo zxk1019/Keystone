@@ -8,15 +8,16 @@
     "src/shared/**/*",
     "src/core/**/*"
   ],
+  // The tests of shared/ and core/ run on Node.js: tsconfig.node.json checks them
+  "exclude": ["src/shared/**/*.test.ts", "src/core/**/*.test.ts"],
   "compilerOptions": {
     "composite": true,
     "jsx": "react-jsx",
-    "baseUrl": ".",
     "paths": {
-      "@renderer/*": ["src/renderer/src/*"],
-      "@shared/*": ["src/shared/*"],
-      "@core/*": ["src/core/*"],
-      "@platform": ["src/renderer/src/platform/desktop.ts"]
+      "@renderer/*": ["./src/renderer/src/*"],
+      "@shared/*": ["./src/shared/*"],
+      "@core/*": ["./src/core/*"],
+      "@platform": ["./src/renderer/src/platform/desktop.ts"]
     }
   }
 }

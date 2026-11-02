@@ -24,6 +24,9 @@ updates:
       # eslint-plugin-react does not support ESLint 10 yet
       - dependency-name: eslint
         update-types: [version-update:semver-major]
+      # typescript-eslint does not support TypeScript 7 yet (it needs the JavaScript API of 6)
+      - dependency-name: typescript
+        update-types: [version-update:semver-major]
       # The types follow the Node.js of .nvmrc (24), not the newest one
       - dependency-name: '@types/node'
         update-types: [version-update:semver-major]
