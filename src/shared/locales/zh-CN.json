@@ -112,6 +112,7 @@
       "noComputer": "不用电脑",
       "custom": "自定义",
       "computerHint": "20-20-20：学习 20 分钟，看 6 米外 20 秒，然后继续。",
+      "restScreen": "20 秒休息时显示暗屏",
       "noComputerHint": "学习 45 分钟，休息 5 分钟。",
       "customHint": "学习和休息的时长由你决定。",
       "focusMinutes": "学习分钟数",
@@ -406,7 +407,9 @@
       "minutes": "{{count}} 分钟",
       "seconds": "{{count}} 秒",
       "test": "立即试试",
-      "resume": "恢复"
+      "resume": "恢复",
+      "studyRestScreen": "“用电脑”模式的 20 秒休息时显示暗屏",
+      "studyRestScreenHint": "看远处时盖住所有显示器。关掉后只有提示音和通知。"
     },
     "spotify": {
       "title": "Spotify",

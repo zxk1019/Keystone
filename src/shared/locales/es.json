@@ -112,6 +112,7 @@
       "noComputer": "Sin ordenador",
       "custom": "Personalizado",
       "computerHint": "20-20-20: estudias 20 minutos, miras algo a 6 metros durante 20 segundos y sigues.",
+      "restScreen": "Pantalla oscura en los 20 segundos",
       "noComputerHint": "Estudias 45 minutos y descansas 5.",
       "customHint": "Tú eliges cuánto duran el estudio y el descanso.",
       "focusMinutes": "Minutos de estudio",
@@ -406,7 +407,9 @@
       "minutes": "{{count}} min",
       "seconds": "{{count}} s",
       "test": "Probar ahora",
-      "resume": "Reanudar"
+      "resume": "Reanudar",
+      "studyRestScreen": "Pantalla oscura en los 20 segundos del modo «Con ordenador»",
+      "studyRestScreenHint": "Tapa los monitores mientras miras lejos. Si la quitas, solo suena la campanita y llega un aviso."
     },
     "spotify": {
       "title": "Spotify",

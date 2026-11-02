@@ -148,11 +148,15 @@ function sanitizeEyeBreak(
   const input = isRecord(value) ? value : {}
   const number = (key: keyof typeof EYE_BREAK_LIMITS): number =>
     wholeNumber(input[key], EYE_BREAK_LIMITS[key]) ?? fallback[key]
+  const flag = (key: 'enabled' | 'studyRestScreen'): boolean =>
+    typeof input[key] === 'boolean' ? input[key] : fallback[key]
   return {
-    enabled: typeof input.enabled === 'boolean' ? input.enabled : fallback.enabled,
+    enabled: flag('enabled'),
     intervalMinutes: number('intervalMinutes'),
     durationSeconds: number('durationSeconds'),
-    idleResetMinutes: number('idleResetMinutes')
+    idleResetMinutes: number('idleResetMinutes'),
+    // Data from before 1.6.0 does not have it: the default (on)
+    studyRestScreen: flag('studyRestScreen')
   }
 }
 

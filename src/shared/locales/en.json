@@ -112,6 +112,7 @@
       "noComputer": "Away from it",
       "custom": "Custom",
       "computerHint": "20-20-20: study for 20 minutes, look at something 6 metres away for 20 seconds, and carry on.",
+      "restScreen": "Dark screen during the 20 seconds",
       "noComputerHint": "Study for 45 minutes and rest for 5.",
       "customHint": "You choose how long studying and breaks last.",
       "focusMinutes": "Study minutes",
@@ -406,7 +407,9 @@
       "minutes": "{{count}} min",
       "seconds": "{{count}} s",
       "test": "Try it now",
-      "resume": "Resume"
+      "resume": "Resume",
+      "studyRestScreen": "Dark screen during the 20 seconds of the “At the computer” mode",
+      "studyRestScreenHint": "Covers the monitors while you look far away. Without it, you only get the chime and a notification."
     },
     "spotify": {
       "title": "Spotify",

@@ -9,7 +9,7 @@ import {
   type EyeBreakState,
   type EyeBreakStatus
 } from '@shared/eyeBreak'
-import type { TimerState } from '@shared/studyTimer'
+import { isEyeRest, type TimerState } from '@shared/studyTimer'
 import type { EyeBreakSettings } from '@shared/types'
 import { loadRenderer, PRELOAD_PATH } from './mainWindow'
 
@@ -18,6 +18,8 @@ const TICK_MS = 10_000
 const MAX_TICK_MS = 30_000
 /** The dark screens close by themselves this long after they should have, just in case */
 const SAFETY_MARGIN_MS = 10_000
+/** A study rest with less time left than this does not get the dark screens */
+const MIN_STUDY_REST_MS = 3_000
 
 interface EyeBreakDeps {
   settings: () => EyeBreakSettings
@@ -32,7 +34,8 @@ function createOverlay(
   display: Display,
   primary: boolean,
   endsAt: number,
-  durationMs: number
+  durationMs: number,
+  chime: boolean
 ): BrowserWindow {
   const { x, y, width, height } = display.bounds
   const window = new BrowserWindow({
@@ -73,7 +76,7 @@ function createOverlay(
   })
   loadRenderer(
     window,
-    `eye-break?primary=${primary ? 1 : 0}&endsAt=${endsAt}&duration=${durationMs}`
+    `eye-break?primary=${primary ? 1 : 0}&endsAt=${endsAt}&duration=${durationMs}&chime=${chime ? 1 : 0}`
   )
   return window
 }
@@ -84,6 +87,8 @@ export class EyeBreakService {
   private lastTick = Date.now()
   private overlays: BrowserWindow[] = []
   private safetyTimeout: NodeJS.Timeout | undefined
+  /** The dark screens up now are the 20 seconds of the study timer, not an eye break */
+  private studyRest = false
 
   constructor(private readonly deps: EyeBreakDeps) {}
 
@@ -111,7 +116,7 @@ export class EyeBreakService {
         this.closeOverlays()
         break
       case 'test':
-        this.showOverlays()
+        this.showEyeBreak()
         break
       case 'resume':
         this.update(restartCount({ ...this.state, pause: null }))
@@ -127,6 +132,31 @@ export class EyeBreakService {
         break
     }
     return this.status()
+  }
+
+  /**
+   * The study timer's 20-20-20 mode starts its 20-second rest: covers the monitors until the
+   * timer's rest ends, if the user wants it and there is no full-screen game or presentation.
+   * Says whether the dark screens are up (if not, the user gets the notification instead).
+   */
+  async showStudyRest(timer: TimerState): Promise<boolean> {
+    if (!this.deps.settings().studyRestScreen || this.state.showing) return false
+    const endsAt = timer.endsAt ?? 0
+    // After a sleep the rest may be almost over: not worth covering the screens
+    if (endsAt - Date.now() < MIN_STUDY_REST_MS) return false
+    if (await this.deps.isBusy()) return false
+    // The timer may have moved on while Windows was asked about full screen
+    const current = this.deps.study()
+    if (this.state.showing || !isEyeRest(current) || current.endsAt !== endsAt) return false
+    // The main window already chimes when the timer's rest ends
+    this.showOverlays(endsAt, timer.durationMs, false)
+    this.studyRest = true
+    return true
+  }
+
+  /** The timer's rest ended, or the timer was paused, skipped or reset during it. */
+  endStudyRest(): void {
+    if (this.studyRest) this.closeOverlays()
   }
 
   settingsChanged(): void {
@@ -150,18 +180,25 @@ export class EyeBreakService {
     if (!show) return
 
     if (await this.deps.isBusy()) this.update(deferEyeBreak(this.state, Date.now()))
-    else this.showOverlays()
+    else this.showEyeBreak()
   }
 
-  private showOverlays(): void {
-    if (this.state.showing) return
+  /** An eye break of the length chosen in the settings. */
+  private showEyeBreak(): void {
     const durationMs = this.deps.settings().durationSeconds * 1000
-    const endsAt = Date.now() + durationMs
+    this.showOverlays(Date.now() + durationMs, durationMs, true)
+  }
+
+  private showOverlays(endsAt: number, durationMs: number, chime: boolean): void {
+    if (this.state.showing) return
     const primaryId = screen.getPrimaryDisplay().id
     this.overlays = screen
       .getAllDisplays()
-      .map((display) => createOverlay(display, display.id === primaryId, endsAt, durationMs))
-    this.safetyTimeout = setTimeout(() => this.closeOverlays(), durationMs + SAFETY_MARGIN_MS)
+      .map((display) => createOverlay(display, display.id === primaryId, endsAt, durationMs, chime))
+    this.safetyTimeout = setTimeout(
+      () => this.closeOverlays(),
+      endsAt - Date.now() + SAFETY_MARGIN_MS
+    )
     this.update({ ...this.state, showing: true })
   }
 
@@ -169,6 +206,7 @@ export class EyeBreakService {
     clearTimeout(this.safetyTimeout)
     for (const window of this.overlays) if (!window.isDestroyed()) window.destroy()
     this.overlays = []
+    this.studyRest = false
     this.update(restartCount({ ...this.state, showing: false }))
   }
 

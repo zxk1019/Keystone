@@ -88,6 +88,18 @@ export default function EyeBreakSection({ settings, update }: EyeBreakSectionPro
           <EyeBreakNotice />
         </div>
       </fieldset>
+
+      {/* Outside the fieldset: it works with the automatic eye breaks off too */}
+      <SettingsRow
+        label={t('settings.eyeBreak.studyRestScreen')}
+        hint={t('settings.eyeBreak.studyRestScreenHint')}
+      >
+        <Switch
+          checked={options.studyRestScreen}
+          onChange={(studyRestScreen) => change({ studyRestScreen })}
+          label={t('settings.eyeBreak.studyRestScreen')}
+        />
+      </SettingsRow>
     </SettingsSection>
   )
 }
