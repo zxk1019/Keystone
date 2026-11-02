@@ -1,4 +1,4 @@
-import { useState, type FormEvent, type JSX } from 'react'
+import { useState, type FormEvent, type JSX, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Cloud, Copy, ExternalLink, LogOut, RefreshCw, UserPlus } from 'lucide-react'
 import type { SyncStatus } from '@shared/sync'
@@ -7,7 +7,9 @@ import { FIREBASE_API_KEY_PATTERN, FIREBASE_PROJECT_ID_PATTERN } from '@shared/v
 // The same rules the emulator tests use, so what the user publishes is what was tested
 import firestoreRules from '../../../../../firebase/firestore.rules?raw'
 import Button from '../../components/Button'
-import { inputClass } from '../../components/styles'
+import Field from '../../components/Field'
+import PasswordInput from '../../components/PasswordInput'
+import { inputClass, segmentClass, segmentedClass } from '../../components/styles'
 import { useSyncStore } from '../../store/syncStore'
 import { SettingsSection } from './SettingsLayout'
 
@@ -38,8 +40,10 @@ export default function SyncSection({ settings, update }: SyncSectionProps): JSX
   const config = settings.sync
   const [draft, setDraft] = useState<SyncSettings>(config)
   const [invalid, setInvalid] = useState<keyof SyncSettings | null>(null)
+  const [creating, setCreating] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [repeated, setRepeated] = useState('')
   const [needsEmail, setNeedsEmail] = useState(false)
   const [copied, setCopied] = useState(false)
 
@@ -54,14 +58,25 @@ export default function SyncSection({ settings, update }: SyncSectionProps): JSX
     update({ sync: { ...config, [key]: value } })
   }
 
-  const submit = async (create: boolean): Promise<void> => {
+  // A new account asks for the password twice, so a typo does not lock the user out
+  const passwordsDiffer = creating && repeated !== password
+  // Says so once the second one is as long as the first, not while it is still being typed
+  const showDiffer = passwordsDiffer && repeated.length >= password.length && repeated !== ''
+
+  const handleSubmit = async (event: FormEvent): Promise<void> => {
+    event.preventDefault()
+    if (passwordsDiffer) return
     setNeedsEmail(false)
-    if (await signIn(email, password, create)) setPassword('')
+    if (await signIn(email, password, creating)) {
+      setPassword('')
+      setRepeated('')
+    }
   }
 
-  const handleSubmit = (event: FormEvent): void => {
-    event.preventDefault()
-    submit(false)
+  const chooseCreating = (value: boolean): void => {
+    setCreating(value)
+    setRepeated('')
+    setNeedsEmail(false)
   }
 
   const handleForgot = (): void => {
@@ -122,17 +137,32 @@ export default function SyncSection({ settings, update }: SyncSectionProps): JSX
           onSignOut={signOut}
         />
       ) : (
-        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+        <form onSubmit={(event) => void handleSubmit(event)} className="flex flex-col gap-3">
           {status?.state === 'signedOut' && status.expired && (
             <p className="text-sm text-amber-800 dark:text-amber-300">
               {t('settings.sync.expired')}
             </p>
           )}
+          <div
+            role="radiogroup"
+            aria-label={t('settings.sync.account')}
+            className={`${segmentedClass} self-start`}
+          >
+            {[false, true].map((option) => (
+              <button
+                key={String(option)}
+                type="button"
+                role="radio"
+                aria-checked={creating === option}
+                onClick={() => chooseCreating(option)}
+                className={segmentClass(creating === option)}
+              >
+                {option ? t('settings.sync.signUp') : t('settings.sync.signIn')}
+              </button>
+            ))}
+          </div>
           <div className="flex flex-wrap gap-3">
-            <label className="flex min-w-56 flex-1 flex-col gap-1.5 text-sm">
-              <span className="font-medium text-zinc-700 dark:text-zinc-300">
-                {t('settings.sync.email')}
-              </span>
+            <Field label={t('settings.sync.email')} className="min-w-56 flex-1">
               <input
                 type="email"
                 autoComplete="email"
@@ -141,43 +171,50 @@ export default function SyncSection({ settings, update }: SyncSectionProps): JSX
                 disabled={notConfigured}
                 className={inputClass}
               />
-            </label>
-            <label className="flex min-w-56 flex-1 flex-col gap-1.5 text-sm">
-              <span className="font-medium text-zinc-700 dark:text-zinc-300">
-                {t('settings.sync.password')}
-              </span>
-              <input
-                type="password"
-                autoComplete="current-password"
+            </Field>
+            <Field label={t('settings.sync.password')} className="min-w-56 flex-1">
+              <PasswordInput
+                autoComplete={creating ? 'new-password' : 'current-password'}
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
                 disabled={notConfigured}
-                className={inputClass}
               />
-            </label>
+            </Field>
+            {creating && (
+              <Field label={t('settings.sync.repeatPassword')} className="min-w-56 flex-1">
+                <PasswordInput
+                  autoComplete="new-password"
+                  value={repeated}
+                  onChange={(event) => setRepeated(event.target.value)}
+                  disabled={notConfigured}
+                  aria-invalid={showDiffer}
+                />
+              </Field>
+            )}
           </div>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400">
-            {t('settings.sync.passwordHint')}
-          </p>
+          {showDiffer ? (
+            <p role="alert" className="text-sm text-red-700 dark:text-red-400">
+              {t('settings.sync.passwordsDiffer')}
+            </p>
+          ) : (
+            <p className="text-xs text-zinc-500 dark:text-zinc-400">
+              {t('settings.sync.passwordHint')}
+            </p>
+          )}
           <div className="flex flex-wrap items-center gap-3">
             <Button
               type="submit"
               variant="primary"
-              icon={Cloud}
-              disabled={notConfigured || busy || !email || !password}
+              icon={creating ? UserPlus : Cloud}
+              disabled={notConfigured || busy || !email || !password || passwordsDiffer}
             >
-              {t('settings.sync.signIn')}
+              {creating ? t('settings.sync.signUp') : t('settings.sync.signIn')}
             </Button>
-            <Button
-              icon={UserPlus}
-              onClick={() => submit(true)}
-              disabled={notConfigured || busy || !email || !password}
-            >
-              {t('settings.sync.signUp')}
-            </Button>
-            <Button variant="ghost" onClick={handleForgot} disabled={notConfigured || busy}>
-              {t('settings.sync.forgot')}
-            </Button>
+            {!creating && (
+              <Button variant="ghost" onClick={handleForgot} disabled={notConfigured || busy}>
+                {t('settings.sync.forgot')}
+              </Button>
+            )}
           </div>
           {error && (
             <p role="alert" className="text-sm text-red-700 dark:text-red-400">
@@ -202,38 +239,60 @@ export default function SyncSection({ settings, update }: SyncSectionProps): JSX
         className="rounded-lg border border-zinc-200 p-3 text-sm dark:border-zinc-800"
       >
         <summary className="cursor-pointer font-medium">{t('settings.sync.howTo')}</summary>
-        <ol className="mt-3 flex list-decimal flex-col gap-2 pl-5">
-          <li>
-            {t('settings.sync.step1')}{' '}
+        <p className="mt-2 text-zinc-600 dark:text-zinc-400">{t('settings.sync.howToIntro')}</p>
+        <ol className="mt-3 flex list-decimal flex-col gap-3 pl-5">
+          <Step title={t('settings.sync.step1Title')}>
+            {t('settings.sync.step1')}
             <a
               href={CONSOLE_URL}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-1 text-indigo-600 underline dark:text-indigo-400"
+              className="inline-flex items-center gap-1 self-start text-indigo-600 underline dark:text-indigo-400"
             >
               {t('settings.sync.openConsole')}
               <ExternalLink className="size-3" />
             </a>
-          </li>
-          <li>{t('settings.sync.step2')}</li>
-          <li>{t('settings.sync.step3')}</li>
-          <li>
-            {/* The flex layout goes inside: on the <li> itself it would hide the number */}
-            <div className="flex flex-col gap-2">
-              {t('settings.sync.step4')}
-              <pre className="max-h-40 overflow-auto rounded bg-zinc-100 p-2 font-mono text-xs dark:bg-zinc-800">
+          </Step>
+          <Step title={t('settings.sync.step2Title')}>{t('settings.sync.step2')}</Step>
+          <Step title={t('settings.sync.step3Title')}>{t('settings.sync.step3')}</Step>
+          <Step title={t('settings.sync.step4Title')}>
+            {t('settings.sync.step4')}
+            <Button variant="primary" icon={Copy} onClick={copyRules} className="self-start">
+              {copied ? t('settings.sync.copied') : t('settings.sync.copyRules')}
+            </Button>
+            <details>
+              <summary className="cursor-pointer text-xs text-zinc-500 dark:text-zinc-400">
+                {t('settings.sync.showRules')}
+              </summary>
+              <pre className="mt-2 max-h-40 overflow-auto rounded bg-zinc-100 p-2 font-mono text-xs dark:bg-zinc-800">
                 {firestoreRules}
               </pre>
-              <Button variant="ghost" icon={Copy} onClick={copyRules} className="self-start">
-                {copied ? t('settings.sync.copied') : t('settings.sync.copyRules')}
-              </Button>
-            </div>
-          </li>
-          <li>{t('settings.sync.step5')}</li>
-          <li>{t('settings.sync.step6')}</li>
+            </details>
+          </Step>
+          <Step title={t('settings.sync.step5Title')}>
+            {t('settings.sync.step5')}
+            <span>{t('settings.sync.step5Key')}</span>
+          </Step>
+          <Step title={t('settings.sync.step6Title')}>
+            {t('settings.sync.step6')}
+            <span>{t('settings.sync.step6Phone')}</span>
+          </Step>
         </ol>
       </details>
     </SettingsSection>
+  )
+}
+
+/** One step of the Firebase guide: a short title and what to click. */
+function Step({ title, children }: { title: string; children: ReactNode }): JSX.Element {
+  return (
+    <li>
+      {/* The flex layout goes inside: on the <li> itself it would hide the number */}
+      <div className="flex flex-col gap-1.5">
+        <span className="font-medium text-zinc-900 dark:text-zinc-100">{title}</span>
+        {children}
+      </div>
+    </li>
   )
 }
 
