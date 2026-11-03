@@ -1,7 +1,7 @@
 {
   "name": "keystone",
   "productName": "Keystone",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "description": "Keystone: agenda, avisos, hábitos y zona de estudio",
   "main": "./out/main/index.js",
   "author": "Xinkai Zheng",
