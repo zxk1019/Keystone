@@ -7,6 +7,13 @@ Android APK on its [GitHub Release](https://github.com/zxk1019/Keystone/releases
 
 ## [Unreleased]
 
+### Fixed
+
+- A copy of Keystone that was only built, not installed (`dist/win-unpacked`), could register
+  itself to start with Windows and take over the Start menu shortcut. Then "Restart and update"
+  installed the new version but Windows kept opening the old copy. Now only the installed app
+  registers itself and looks for updates.
+
 ## [1.6.1] - 2026-11-02
 
 ### Added

@@ -3,7 +3,7 @@ import { autoUpdater } from 'electron-updater'
 import { writeFileSync } from 'fs'
 import { join } from 'path'
 import { UPDATE_CHECK_INTERVAL_MS, type UpdateStatus } from '@shared/updates'
-import { isTestRun } from './startup'
+import { isInstalled, isTestRun } from './startup'
 
 /** The first look for a new version waits a little, so it does not slow down the start. */
 const FIRST_CHECK_DELAY_MS = 15_000
@@ -13,8 +13,9 @@ const FIRST_CHECK_DELAY_MS = 15_000
  * electron-builder.yml). They download in the background and install when the app restarts:
  * with the button in the app, or the next time the app quits.
  *
- * Only the installed app looks for them, never in development or in a test run. Development
- * tests can point it at a local server that serves a latest.yml:
+ * Only the installed app looks for them, never in development, in a test run or from
+ * dist/win-unpacked (it would install the new version somewhere else and keep running itself).
+ * Development tests can point it at a local server that serves a latest.yml:
  * MI_ESTUDIO_UPDATES_URL=http://127.0.0.1:8090 (the installed app ignores it).
  */
 export class Updater {
@@ -22,7 +23,7 @@ export class Updater {
 
   constructor(private readonly onStatus: (status: UpdateStatus) => void) {
     const testServer = !app.isPackaged && process.env['MI_ESTUDIO_UPDATES_URL']
-    const enabled = (app.isPackaged && !isTestRun()) || Boolean(testServer)
+    const enabled = (isInstalled() && !isTestRun()) || Boolean(testServer)
     this.current = enabled ? { state: 'idle' } : { state: 'disabled' }
     if (!enabled) return
 
