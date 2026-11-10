@@ -6,4 +6,5 @@ out
 *.log*
 
 # Personal files that stay on this PC
+CLAUDE.md
 docs/mi-horario.json

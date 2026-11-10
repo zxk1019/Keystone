@@ -9,7 +9,7 @@ You need:
 
 - **Windows 10 or 11**: the PC app uses Windows notifications, "Start with Windows" and the
   full-screen detection of the 20-20-20 rule.
-- **Node.js 24** (the version is in [`.nvmrc`](.nvmrc)) and Git.
+- **Node.js 24** (the version is in `engines` of [`package.json`](package.json)) and Git.
 - For the Android app: Android Studio (for the Android SDK) and a **Java 21** JDK.
 - For the Firebase emulator tests: Java 21.
 
@@ -54,7 +54,7 @@ MI_ESTUDIO_DATA_DIR=C:/temp/keystone-test npm run dev
 ```
 
 Use a short path: with a long one Windows cannot create Chromium's files and the app closes as
-it starts. [`docs/ejemplo-horario.json`](docs/ejemplo-horario.json) is an example timetable that
+it starts. [`examples/horario.json`](examples/horario.json) is an example timetable that
 you can load with Settings → Import backup.
 
 ## How the code is organized
@@ -67,11 +67,12 @@ src/
   preload/     The only bridge between the screens and the main process (window.api)
   renderer/    React screens; platform/ hides what is different on the PC and on the phone
 android/       Capacitor project of the phone app
-firebase/      Firestore rules
+firebase/      Firestore rules and the emulator configuration
+examples/      Example timetable to import
+scripts/       Build, lockfile and emulator helpers
 ```
 
-[`CLAUDE.md`](CLAUDE.md) (in Spanish) has detailed notes on each part, and
-[`docs/especificacion.md`](docs/especificacion.md) is the full specification.
+[`docs/especificacion.md`](docs/especificacion.md) (in Spanish) is the full specification.
 
 ## Conventions
 
@@ -84,8 +85,8 @@ firebase/      Firestore rules
 - Some internal names still say "Mi Estudio" on purpose: the app id `com.miestudio.app`, the
   data folder, `mi-estudio.exe`, the `miestudio://` links. Changing them would make new versions
   install as a different app and lose the data.
-- If you add a synced field or a new kind of record, read the sync notes in `CLAUDE.md` first:
-  devices with an older version must not lose data.
+- If you add a synced field or a new kind of record, read section 9 of the
+  specification first: devices with an older version must not lose data.
 
 ## Pull requests
 

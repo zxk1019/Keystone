@@ -232,6 +232,7 @@ Cada 20 minutos de uso del ordenador hay que mirar algo a unos 6 metros durante 
 - **Primera vez:** al iniciar sesión, la app une lo que tiene el dispositivo con lo que hay en la nube, sin borrar nada. Los ajustes que nunca se han tocado no pisan los de la nube.
 - **Seguridad:** las reglas de Firestore (`firebase/firestore.rules`) solo dejan a cada usuario leer y escribir lo suyo, y no dejan que una versión más vieja pise a una más nueva. La contraseña no se guarda; la sesión se guarda cifrada en `mi-estudio-sync.bin`, fuera de las copias de seguridad.
 - **Importar una copia** reemplaza los datos también en los otros dispositivos.
+- **Cambios en lo que se sincroniza:** si se añade un campo sincronizado a un registro, los dispositivos con la versión vieja lo pierden al editar ese registro. Si se añade un tipo de registro nuevo, la versión vieja lo ignora (y al actualizarse tiene que volver a bajarlo todo). Las reglas de `firebase/firestore.rules` dicen qué colecciones se aceptan: si se añade otra, quien ya tenga su proyecto de Firebase tiene que pegar las reglas nuevas.
 - **Datos versión 2:** el archivo de la versión 1 se convierte solo al abrir la app, y antes se guarda una copia en `mi-estudio-data.v1.json`.
 - **Datos versión 3 (hábitos):** el archivo de la versión 2 se convierte solo y se guarda una copia en `mi-estudio-data.v2.json`. Al convertirlo, la siguiente sincronización vuelve a bajar todo, para recoger los hábitos que el otro dispositivo creó mientras este tenía la versión vieja (la versión vieja ignora los hábitos que le llegan).
 

@@ -4,8 +4,9 @@ apply plugin: 'com.android.application'
 def appVersion = new groovy.json.JsonSlurper().parse(file('../../package.json')).version
 def versionParts = appVersion.tokenize('.').collect { it as int }
 
-// The release key lives outside the project, in the user's folder (see CLAUDE.md). Without it,
-// release builds are not signed and only debug builds can be installed.
+// The release key lives outside the project, in the user's folder (see "The Android signing key"
+// in CONTRIBUTING.md). Without it, release builds are not signed and only debug builds can be
+// installed.
 def keystoreProperties = new Properties()
 def keystorePropertiesFile = file("${System.getProperty('user.home')}/.mi-estudio/keystore.properties")
 if (keystorePropertiesFile.exists()) {

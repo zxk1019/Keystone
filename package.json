@@ -15,6 +15,9 @@
     "url": "https://github.com/zxk1019/Keystone/issues"
   },
   "private": true,
+  "engines": {
+    "node": "24.x"
+  },
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint --cache .",
@@ -34,7 +37,7 @@
     "build:mobile": "vite build --config vite.mobile.config.ts",
     "android": "npm run build:mobile && cap sync android",
     "build:android": "node scripts/android-build.cjs",
-    "emulators": "node scripts/firebase.cjs emulators:start --only auth,firestore --project demo-mi-estudio"
+    "emulators": "node scripts/firebase.cjs emulators:start --config firebase/firebase.json --only auth,firestore --project demo-mi-estudio"
   },
   "dependencies": {
     "@electron-toolkit/utils": "^4.0.0",
@@ -78,5 +81,11 @@
     "typescript": "~6.0.3",
     "vite": "^8.3.4",
     "vitest": "^5.0.5"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "semi": false,
+    "printWidth": 100,
+    "trailingComma": "none"
   }
 }
