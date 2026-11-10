@@ -7,6 +7,10 @@ Android APK on its [GitHub Release](https://github.com/zxk1019/Keystone/releases
 
 ## [Unreleased]
 
+### Changed
+
+- Electron 45 and newer versions of the other libraries.
+
 ## [1.6.2] - 2026-11-03
 
 ### Fixed
